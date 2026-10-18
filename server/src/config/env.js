@@ -43,6 +43,33 @@ export const envSchema = z
   SMTP_SECURE: z.enum(["true", "false"]).default("false").transform((v) => v === "true"),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
+
+  // AI (Gemini). Without a key the server still runs: reports are saved as "validation pending".
+  GEMINI_API_KEY: z.string().optional(),
+  GEMINI_MODEL: z.string().min(1).default("gemini-3.8-flash"),
+  GEMINI_TIMEOUT_MS: z.coerce.number().int().min(1000).max(120_000).default(45_000),
+
+  // Uploads (local disk in development, behind the storage interface)
+  UPLOAD_DIR: z.string().min(1).default("uploads"),
+  MAX_UPLOAD_MB: z.coerce.number().positive().max(25).default(10),
+
+  // Reports must be inside this rectangle: minLng,minLat,maxLng,maxLat (decimal degrees).
+  // Default: SMKC (Sangli-Miraj-Kupwad), 16°46'28"–16°53'45" N, 74°31'08"–74°40'51" E.
+  SERVICE_AREA_BBOX: z
+    .string()
+    .default("74.518889,16.774444,74.680833,16.895833")
+    .transform((v, ctx) => {
+      const n = v.split(",").map(Number);
+      const [minLng, minLat, maxLng, maxLat] = n;
+      if (n.length !== 4 || n.some((x) => !Number.isFinite(x)) || minLng >= maxLng || minLat >= maxLat) {
+        ctx.addIssue({ code: "custom", message: "use minLng,minLat,maxLng,maxLat" });
+        return z.NEVER;
+      }
+      return { minLng, minLat, maxLng, maxLat };
+    }),
+
+  // Background jobs (pg-boss). Tests turn this off and call the job code directly.
+  JOBS_ENABLED: z.enum(["true", "false"]).default("true").transform((v) => v === "true"),
   })
   .superRefine((e, ctx) => {
     if (e.MAIL_TRANSPORT === "smtp" && !e.SMTP_HOST) {

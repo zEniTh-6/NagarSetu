@@ -19,7 +19,7 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 ### OD-3 — Where INVALID photos go
 - **Question:** does an INVALID photo result go straight back to the citizen (retake request), or to the admin first until the AI is trusted?
 - **Brief suggests:** nothing yet. Either way the AI never rejects on its own.
-- **Status:** undecided
+- **Status:** **decided** — see D-010
 
 ### OD-4 — Duplicate distances and similarity threshold
 - **Question:** exact duplicate radius per category and the text-similarity threshold.
@@ -34,7 +34,7 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 ### OD-6 — Embedding model and where it runs
 - **Question:** run a small multilingual model inside Node (e.g. Transformers.js), as a separate small service, or use a hosted embedding API?
 - **Constraints:** must be multilingual (English, Hindi, Marathi, and Hindi/Marathi typed in English letters); kept behind `embed(text)`; changing it later means recomputing all stored embeddings. Check current model names and sizes before choosing.
-- **Status:** undecided
+- **Status:** **decided** — see D-011
 
 ### OD-7 — Image storage for deployment
 - **Question:** which S3-compatible service for deployment (e.g. Cloudinary, Supabase Storage)?
@@ -118,3 +118,38 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 
 - CLAUDE.md and the brief said "email only for signup OTP"; forgot-password needs email too, so
   both now say "signup OTP and password reset links". All other notifications stay in-app.
+
+### D-010 — INVALID photos go straight back to the citizen (closes OD-3) (2026-10-18)
+
+- **Choice:** when the AI says INVALID, the citizen sees "please retake" (with the AI's one-line
+  reason) and can upload a new photo. The report is **not** rejected and stays visible to the admin.
+  UNCERTAIN adds a PENDING_REVIEW flag for the admin. The old photo is kept (marked replaced).
+
+### D-011 — Embeddings: Gemini `gemini-embedding-001`, 768 dimensions (closes OD-6) (2026-10-18)
+
+- **Choice:** hosted Gemini embedding API, same API key as the photo check, behind `embed(text)`.
+  768 dimensions, vectors normalised before storing (needed for shortened Gemini vectors).
+- **Why:** best chance with Hinglish ("road pe gaddha hai") without running another service or
+  shipping a model. Built in Phase 2b; Marathi/Hinglish quality is measured with our own test set.
+- **If it fails:** the report is saved, its embedding is retried by pg-boss; duplicate checking waits.
+
+### D-012 — Service area: SMKC bounding box (2026-10-18)
+
+- **Choice:** reports must be inside 16°46'28"–16°53'45" N, 74°31'08"–74°40'51" E
+  (`SERVICE_AREA_BBOX=74.518889,16.774444,74.680833,16.895833`). A rectangle, not the exact
+  boundary; the exact ward polygon is future scope.
+
+### D-013 — GPS comparison rule (starting values) (2026-10-18)
+
+- No device location → neutral. Device accuracy ≤ 50 m and pin more than accuracy + 300 m away →
+  SUSPICIOUS flag (a human should look; never blocks). Worse accuracy → distance recorded only.
+  Constants in `server/src/modules/issues/location.js`.
+
+### D-014 — Photo check runs in the background (2026-10-18)
+
+- The report is saved and answered immediately ("checking"); a pg-boss job calls Gemini
+  (`gemini-3.8-flash`, configurable) with a 45 s timeout (raised from 20 s after real runs hit
+  slow answers under load) and up to 6 attempts with growing delays.
+  The web app polls the issue for the result. Failures add "validation pending"; after the last
+  attempt the issue is left for the admin with a PENDING_REVIEW flag.
+- The citizen's description is not sent with the photo check (untrusted text should not steer it).
