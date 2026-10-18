@@ -7,8 +7,10 @@
     "node": ">=22.18"
   },
   "scripts": {
+    "predev": "prisma generate",
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
+    "pretest": "prisma generate",
     "test": "vitest run",
     "test:watch": "vitest",
     "db:migrate": "prisma migrate dev",

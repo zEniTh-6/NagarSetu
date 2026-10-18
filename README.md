@@ -80,6 +80,10 @@ First time only, or after pulling a phase that adds settings: compare your `.env
 `.env.example` and copy over any lines you don't have yet (for Phase 1b: the "Auth" and "Email"
 blocks). Use the same password as `POSTGRES_PASSWORD` inside both database URLs.
 
+After every `git pull`, run `npm run db:deploy` (applies new migrations). `npm test` and
+`npm run dev` regenerate the Prisma client themselves; if something else complains about an
+unknown field or enum value, run `npx prisma generate`.
+
 ```powershell
 # Make the two secrets (run twice, paste one into JWT_SECRET and the other into OTP_SECRET)
 node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"
