@@ -5,6 +5,7 @@ import { assertInDepartment } from "../../auth/scope.js";
 import { writeAudit, AuditAction, AuditTarget } from "../../audit/audit.js";
 import { notifyIssueFollowers } from "../notifications/notifications.service.js";
 import { resumeData } from "./deadline.js";
+import { clearEscalation } from "./escalation.service.js";
 
 /** First try + 5 retries (pg-boss retryLimit = MAX - 1), like the report photo check. */
 export const MAX_REPAIR_CHECK_ATTEMPTS = 6;
@@ -112,6 +113,7 @@ export async function approveSubmission(prisma, { user, submissionId, note, now 
       reason: "Repair evidence approved",
       metadata: { from: "IN_PROGRESS", to: "RESOLVED", submissionId: s.id },
     });
+    await clearEscalation(tx, s.issueId, { actor: actorOf(user), reason: "Resolved", now });
     await notifyIssueFollowers(tx, { issueId: s.issueId, type: "RESOLVED", params: {} });
     await tx.notification.create({
       data: { userId: s.contractorId, type: "RESOLVED", issueId: s.issueId, params: { audience: "CONTRACTOR", submissionId: s.id } },

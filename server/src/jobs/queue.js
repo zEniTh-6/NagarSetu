@@ -1,10 +1,13 @@
-// Background jobs on the existing Postgres (pg-boss): report photo check, embeddings, repair photo check.
+// Background jobs on the existing Postgres (pg-boss): report photo check, embeddings, repair photo
+// check, and the scheduled deadline check (escalation).
 import { PgBoss } from "pg-boss";
 import { runPhotoValidation, MAX_ATTEMPTS } from "../modules/issues/validation.service.js";
 import { runIssueEmbedding, MAX_EMBEDDING_ATTEMPTS } from "../modules/issues/duplicates.service.js";
 import { runRepairValidation, MAX_REPAIR_CHECK_ATTEMPTS } from "../modules/work/repairs.service.js";
+import { runDeadlineCheck } from "../modules/work/escalation.service.js";
 
-export const QUEUE = Object.freeze({ VALIDATE_PHOTO: "validate-photo", EMBED_ISSUE: "embed-issue", VALIDATE_REPAIR: "validate-repair" });
+export const QUEUE = Object.freeze({ VALIDATE_PHOTO: "validate-photo", EMBED_ISSUE: "embed-issue", VALIDATE_REPAIR: "validate-repair", DEADLINE_CHECK: "deadline-check" });
+export const DEADLINE_CHECK_CRON = "*/15 * * * *"; // every 15 minutes
 
 /** Real queue (used by `npm run dev` / `npm start`). */
 export function createJobQueue({ connectionString, prisma, storage, validatePhoto, embed, validateRepair }) {
@@ -46,6 +49,14 @@ export function createJobQueue({ connectionString, prisma, storage, validatePhot
         const result = await runRepairValidation(prisma, job.data, { validateRepair, storage });
         if (result.outcome === "retry") throw new Error(`Repair check will be retried: ${result.reason}`);
         return result;
+      });
+      // Deadline escalation: scheduled, so it also runs after a restart. Only one run at a time.
+      await boss.createQueue(QUEUE.DEADLINE_CHECK, { policy: "singleton" });
+      await boss.schedule(QUEUE.DEADLINE_CHECK, DEADLINE_CHECK_CRON);
+      await boss.work(QUEUE.DEADLINE_CHECK, async () => {
+        const r = await runDeadlineCheck(prisma);
+        if (r.escalated.length || r.cleared.length) console.log(`Deadline check: ${r.escalated.length} escalated, ${r.cleared.length} cleared`);
+        return r;
       });
       await this.sweep();
     },

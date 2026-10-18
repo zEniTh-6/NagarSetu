@@ -104,6 +104,8 @@ describe("issues table", () => {
       needsAssignment: 1,
       repairsToReview: 0,
       needsReassignment: 0,
+      escalated: 0,
+      disputed: 0,
       byStatus: { REPORTED: 1, ACKNOWLEDGED: 1, REJECTED: 1 },
       activeFlags: {}, // b's SUSPICIOUS flag no longer counts: b is closed
     });

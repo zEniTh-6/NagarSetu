@@ -257,3 +257,24 @@ write the choice, the reason and the date, and move it under "Decisions taken".
   issue IN_PROGRESS and asks the contractor for rework.
 - **Next (Phase 5):** escalation when the effective deadline passes, citizen feedback and disputes.
 
+### D-020 — Escalation, citizen feedback and disputes (2026-10-19)
+
+- **Escalation** (background job every 15 minutes): an assignment past its **effective** deadline
+  (the admin's deadline + time paused for review) gets an ESCALATED flag, and the department's admins
+  are notified once, then reminded every 24 h (`ESCALATION_REMINDER_HOURS`) while it stays overdue.
+  While a repair waits for review the clock is paused: no escalation and no reminders. **Nothing
+  happens to the contractor** (no notice, no change). The flag clears when the admin extends the
+  deadline, reassigns or approves a repair (right away), or at the next run once it's not overdue.
+- **Feedback:** the reporter and supporters can answer "Yes, fixed" or "Not fixed" for **14 days**
+  after resolution (`FEEDBACK_WINDOW_DAYS`); one answer per person per resolution. "Not fixed" needs
+  a reason (photo optional, location data removed) and adds DISPUTED for the department's admins.
+  It never reopens anything. Silence is "no response", never "confirmed". Supporters can now open
+  the issue (citizen view) to see the outcome.
+- **Admin decisions** (reason required, audited, shown to the citizens):
+  - **Reopen** (admin only, from RESOLVED, with or without a dispute) → ACKNOWLEDGED. The admin
+    then assigns the follow-up work; earlier rounds, photos and feedback are kept. The next
+    resolution opens a new feedback round.
+  - **Dismiss dispute** → stays RESOLVED; the citizens who said "not fixed" get the reason.
+- **Next (Phase 6, should-haves):** feed with upvotes and comments, comment moderation, official
+  replies. Then the web app.
+

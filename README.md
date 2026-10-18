@@ -247,6 +247,28 @@ Invoke-RestMethod "$api/admin/submissions/<submission id>/approve" @json -WebSes
 After approval the citizen's `GET /api/issues/<id>` shows `status: RESOLVED` and `resolution.photo`
 (before/after). The contractor never has a way to set RESOLVED.
 
+### Feedback and disputes by hand (Phase 5)
+
+After an admin approves the repair (Phase 4 steps), the reporter or a supporter answers within 14 days:
+
+```powershell
+curl.exe -s -b cookies.txt "$api/issues/<id>"                     # feedback.canRespond, windowEndsAt
+curl.exe -s -b cookies.txt "$api/issues/<id>/feedback" -F "verdict=FIXED"
+# or: -F "verdict=NOT_FIXED" -F "reason=Hole is back after the rain" -F "photo=@C:\Users\you\Pictures\still.jpg"
+```
+
+"Not fixed" adds a DISPUTED flag; the status stays RESOLVED. The admin decides:
+
+```powershell
+Invoke-RestMethod "$api/admin/issues/$id/dispute/dismiss" @json -WebSession $a -Body '{"reason":"Inspected, surface is level"}'
+Invoke-RestMethod "$api/admin/issues/$id/reopen" @json -WebSession $a -Body '{"reason":"Re-inspection failed"}'   # back to ACKNOWLEDGED, assign again
+```
+
+**Escalation** runs by itself every 15 minutes while `npm run dev` is running. To see it, assign with
+a deadline a few minutes ahead (`(Get-Date).AddMinutes(5).ToString("o")`), wait until it has passed
+and the next quarter hour has come, then check the admin's `GET /api/notifications` (ESCALATED) and
+the dashboard's `escalated` count. The contractor is not told and nothing changes for them.
+
 ### Multilingual similarity check
 
 `npm run ai:similarity` (in `server/`) embeds the texts in `server/test/fixtures/texts.json` (the same

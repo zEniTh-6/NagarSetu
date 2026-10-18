@@ -51,6 +51,13 @@ const pageQuery = z.object({
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(50).default(20),
 });
+const feedbackBody = z
+  .object({
+    verdict: z.enum(["FIXED", "NOT_FIXED"]),
+    reason: z.preprocess(blankToUndefined, z.string().trim().min(3).max(1000).optional()), // stored as written
+  })
+  .strict()
+  .refine((b) => b.verdict !== "NOT_FIXED" || b.reason, { message: "say what is still wrong", path: ["reason"] });
 const photoQuery = z.object({ variant: z.enum(["public", "original"]).default("public") });
 
 export function issuesRouter({ prisma, limiters, storage, jobs, embed }) {
@@ -63,6 +70,7 @@ export function issuesRouter({ prisma, limiters, storage, jobs, embed }) {
   r.get("/mine", ...citizen, validate({ query: pageQuery }), c.mine);
   r.post("/:id/support", ...citizen, requireVerified, limiters.upvote, validate({ params: idParams, body: supportBody }), c.support);
   r.post("/:id/photo", ...citizen, requireVerified, limiters.report, singlePhoto(), validate({ params: idParams, body: retakeBody }), c.retakePhoto);
+  r.post("/:id/feedback", ...citizen, requireVerified, limiters.feedback, singlePhoto(), validate({ params: idParams, body: feedbackBody }), c.feedback);
   r.post("/:id/withdraw", ...citizen, validate({ params: idParams, body: withdrawBody }), c.withdraw);
   r.get("/:id", requireAuth(prisma), validate({ params: idParams }), c.getOne);
   return r;

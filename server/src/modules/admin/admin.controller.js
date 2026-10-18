@@ -3,6 +3,7 @@ import * as issues from "./adminIssues.service.js";
 import { getIssue } from "../issues/issues.service.js";
 import * as work from "../work/assignments.service.js";
 import * as repairs from "../work/repairs.service.js";
+import * as disputes from "../feedback/feedback.service.js";
 
 export const makeAdminIssuesController = ({ prisma, jobs }) => {
   // After an action, answer with the fresh review view.
@@ -55,6 +56,14 @@ export const makeAdminIssuesController = ({ prisma, jobs }) => {
     },
     async deadline(req, res) {
       await work.changeDeadline(prisma, { ...ids(req), ...req.validated.body });
+      res.json(await fresh(req));
+    },
+    async reopen(req, res) {
+      await disputes.reopenIssue(prisma, { ...ids(req), reason: req.validated.body.reason });
+      res.json(await fresh(req));
+    },
+    async dismissDispute(req, res) {
+      await disputes.dismissDispute(prisma, { ...ids(req), reason: req.validated.body.reason });
       res.json(await fresh(req));
     },
     async approveSubmission(req, res) {

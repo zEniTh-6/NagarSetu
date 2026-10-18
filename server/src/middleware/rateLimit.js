@@ -12,6 +12,7 @@ export const DEFAULT_LIMITS = Object.freeze({
   report: { windowMs: HOUR, limit: 10 }, // per user
   duplicateCheck: { windowMs: HOUR, limit: 60 }, // per user (one per report form, plus edits)
   repairUpload: { windowMs: HOUR, limit: 20 }, // per contractor
+  feedback: { windowMs: HOUR, limit: 20 }, // per user
   // Attached in later phases:
   upvote: { windowMs: HOUR, limit: 100 }, // per user
   comment: { windowMs: HOUR, limit: 30 }, // per user
@@ -31,6 +32,7 @@ const KEYS = {
   report: byUser,
   duplicateCheck: byUser,
   repairUpload: byUser,
+  feedback: byUser,
   upvote: byUser,
   comment: byUser,
 };
