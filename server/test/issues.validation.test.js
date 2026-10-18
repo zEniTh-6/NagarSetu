@@ -126,3 +126,14 @@ describe("prompt and answer format", () => {
     expect(ok.suggestedCategory).toBeNull();
   });
 });
+
+describe("Gemini error messages", () => {
+  it("are short and say what happened", async () => {
+    const { describeFailureForTest } = await import("../src/ai/gemini.js");
+    const quota = Object.assign(new Error('{"error":{"code":429,"message":"You exceeded your current quota ... Please retry in 45.31s."}}'), { status: 429 });
+    const e = describeFailureForTest(quota, false);
+    expect(e).toMatchObject({ kind: "rate_limited", retryAfterSeconds: 46 });
+    expect(e.message.length).toBeLessThan(120);
+    expect(describeFailureForTest(new Error("aborted"), true).kind).toBe("timeout");
+  });
+});

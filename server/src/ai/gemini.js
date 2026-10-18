@@ -5,11 +5,31 @@ import { env } from "../config/env.js";
 import { buildPhotoPrompt, photoCheckJsonSchema, photoCheckSchema } from "./photoCheck.js";
 
 export class AiUnavailableError extends Error {
-  constructor(message, cause) {
+  /** @param {{ kind?: "timeout"|"rate_limited"|"error", retryAfterSeconds?: number }} [info] */
+  constructor(message, cause, { kind = "error", retryAfterSeconds } = {}) {
     super(message);
     this.name = "AiUnavailableError";
     this.cause = cause;
+    this.kind = kind;
+    this.retryAfterSeconds = retryAfterSeconds;
   }
+}
+
+/** Turns an SDK error into a short, readable AiUnavailableError. */
+function describeFailure(err, timedOut) {
+  if (timedOut) return new AiUnavailableError(`Gemini timed out after ${env.GEMINI_TIMEOUT_MS / 1000} s`, err, { kind: "timeout" });
+  const status = err?.status;
+  if (status === 429) {
+    const match = /retry in ([\d.]+)s/i.exec(err.message ?? "");
+    const retryAfterSeconds = match ? Math.ceil(Number(match[1])) : undefined;
+    return new AiUnavailableError(
+      `Gemini rate limit reached (quota for ${env.GEMINI_MODEL})${retryAfterSeconds ? `, retry in ${retryAfterSeconds} s` : ""}`,
+      err,
+      { kind: "rate_limited", retryAfterSeconds },
+    );
+  }
+  const brief = String(err?.message ?? err).split("\n")[0].slice(0, 200);
+  return new AiUnavailableError(`Gemini request failed${status ? ` (HTTP ${status})` : ""}: ${brief}`, err);
 }
 
 let client;
@@ -44,7 +64,7 @@ export async function validatePhotoWithGemini({ image, mimeType, categoryKey }) 
       },
     });
   } catch (err) {
-    throw new AiUnavailableError(abort.signal.aborted ? "Gemini timed out" : `Gemini request failed: ${err.message}`, err);
+    throw describeFailure(err, abort.signal.aborted);
   } finally {
     clearTimeout(timer);
   }
@@ -57,3 +77,4 @@ export async function validatePhotoWithGemini({ image, mimeType, categoryKey }) 
   }
   return { ...parsed, model: env.GEMINI_MODEL };
 }
+export const describeFailureForTest = describeFailure;
