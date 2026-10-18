@@ -72,6 +72,11 @@ export const envSchema = z
   // many metres from the issue (D-019). Never rejects anything.
   REPAIR_GPS_EXTRA_M: z.coerce.number().min(0).max(5000).default(100),
 
+  // Feedback and escalation (Phase 5, D-020). Reporter and supporters can answer "fixed / not
+  // fixed" for this many days after resolution. Escalated issues remind the admins this often.
+  FEEDBACK_WINDOW_DAYS: z.coerce.number().int().min(1).max(60).default(14),
+  ESCALATION_REMINDER_HOURS: z.coerce.number().int().min(1).max(24 * 14).default(24),
+
   // Uploads (local disk in development, behind the storage interface)
   UPLOAD_DIR: z.string().min(1).default("uploads"),
   MAX_UPLOAD_MB: z.coerce.number().positive().max(25).default(10),

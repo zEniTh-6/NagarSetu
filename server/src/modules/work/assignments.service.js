@@ -6,6 +6,7 @@ import { assertInDepartment } from "../../auth/scope.js";
 import { writeAudit, AuditAction, AuditTarget } from "../../audit/audit.js";
 import { notifyIssueFollowers } from "../notifications/notifications.service.js";
 import { publicContractor } from "../contractors/contractors.service.js";
+import { clearEscalation } from "./escalation.service.js";
 
 const actorOf = (u) => ({ id: u.id, role: u.role });
 const MAX_DEADLINE_MS = 366 * 24 * 60 * 60 * 1000;
@@ -105,6 +106,7 @@ export async function reassignContractor(prisma, { user, issueId, contractorId, 
       data: { userId: current.contractorId, type: "ASSIGNMENT_ENDED", issueId, params: { reason } },
     });
     await createAssignment(tx, { user, issue, contractor, deadlineAt });
+    await clearEscalation(tx, issueId, { actor: actorOf(user), reason: "Reassigned with a new deadline", now });
   });
 }
 
@@ -116,7 +118,9 @@ export async function changeDeadline(prisma, { user, issueId, deadlineAt, reason
   checkDeadline(deadlineAt, now);
 
   await prisma.$transaction(async (tx) => {
-    await tx.assignment.update({ where: { id: current.id }, data: { deadlineAt } });
+    await tx.assignment.update({ where: { id: current.id }, data: { deadlineAt, lastEscalationNoticeAt: null } });
+    // A future deadline means it's no longer overdue.
+    await clearEscalation(tx, issueId, { actor: actorOf(user), reason: "Deadline extended", now });
     await writeAudit(tx, {
       actor: actorOf(user),
       action: AuditAction.DEADLINE_SET,

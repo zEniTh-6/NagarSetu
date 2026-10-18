@@ -1,5 +1,6 @@
 import * as svc from "./issues.service.js";
 import * as dup from "./duplicates.service.js";
+import { giveFeedback } from "../feedback/feedback.service.js";
 
 export const makeIssuesController = ({ prisma, storage, jobs, embed }) => ({
   async duplicateCheck(req, res) {
@@ -32,6 +33,17 @@ export const makeIssuesController = ({ prisma, storage, jobs, embed }) => ({
       jobs,
     });
     res.json({ issue });
+  },
+
+  async feedback(req, res) {
+    const feedback = await giveFeedback(prisma, {
+      user: req.user,
+      issueId: req.validated.params.id,
+      input: req.validated.body,
+      file: req.file,
+      storage,
+    });
+    res.status(201).json({ feedback });
   },
 
   async withdraw(req, res) {

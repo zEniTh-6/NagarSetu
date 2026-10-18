@@ -77,6 +77,12 @@ enum SubmissionStatus {
 enum PhotoKind {
   ISSUE_ORIGINAL
   REPAIR_EVIDENCE
+  FEEDBACK // optional photo with a citizen's "not fixed" answer
+}
+
+enum FeedbackVerdict {
+  FIXED
+  NOT_FIXED
 }
 
 enum OtpPurpose {
@@ -103,6 +109,8 @@ enum NotificationType {
   LINKED_DUPLICATE // admin linked the issue to an existing one; support still counts
   DEADLINE_CHANGED // to the contractor: the admin changed the deadline
   ASSIGNMENT_ENDED // to the contractor: the job was given to someone else
+  REOPENED // admin reopened a resolved issue (reason shown)
+  DISPUTE_DISMISSED // admin kept it RESOLVED after a "not fixed" answer (reason shown)
 }
 
 // ---------- Organisation ----------
@@ -170,6 +178,7 @@ model User {
 
   reportedIssues      Issue[]              @relation("IssueReporter")
   supports            IssueSupporter[]
+  feedbackGiven       IssueFeedback[]
   upvotes             Upvote[]
   comments            Comment[]            @relation("CommentAuthor")
   hiddenComments      Comment[]            @relation("CommentHiddenBy")
@@ -309,6 +318,7 @@ model Issue {
   submissions   RepairSubmission[]
   photos        Photo[]
   notifications Notification[]
+  feedback      IssueFeedback[]
 
   @@unique([reporterId, clientRequestId])
   @@index([location], type: Gist)
@@ -462,6 +472,7 @@ model Photo {
   kind               PhotoKind
   issueId            String    @map("issue_id") @db.Uuid
   repairSubmissionId String?   @map("repair_submission_id") @db.Uuid
+  feedbackId         String?   @map("feedback_id") @db.Uuid
   uploadedById       String    @map("uploaded_by_id") @db.Uuid
   originalKey        String    @map("original_key")
   publicKey          String?   @map("public_key")
@@ -476,6 +487,7 @@ model Photo {
 
   issue            Issue             @relation(fields: [issueId], references: [id])
   repairSubmission RepairSubmission? @relation(fields: [repairSubmissionId], references: [id])
+  feedback         IssueFeedback?    @relation(fields: [feedbackId], references: [id])
   uploadedBy       User              @relation(fields: [uploadedById], references: [id])
 
   @@index([issueId])
@@ -518,4 +530,24 @@ model AuditLog {
   @@index([targetType, targetId, createdAt])
   @@index([actorId, createdAt])
   @@map("audit_logs")
+}
+
+// Citizen feedback after resolution (reporter and supporters, within the window). A SIGNAL, not a
+// vote: "not fixed" adds DISPUTED for the admin; nothing reopens automatically. Silence is no response.
+model IssueFeedback {
+  id              String          @id @default(uuid()) @db.Uuid
+  issueId         String          @map("issue_id") @db.Uuid
+  userId          String          @map("user_id") @db.Uuid
+  verdict         FeedbackVerdict
+  reason          String? // required for NOT_FIXED; stored as written
+  // Which resolution this answers (issues.resolved_at at the time). Reopen + resolve again = new round.
+  roundResolvedAt DateTime        @map("round_resolved_at")
+  createdAt       DateTime        @default(now()) @map("created_at")
+
+  issue  Issue   @relation(fields: [issueId], references: [id])
+  user   User    @relation(fields: [userId], references: [id])
+  photos Photo[]
+
+  @@unique([issueId, userId, roundResolvedAt]) // one answer per person per round
+  @@map("issue_feedback")
 }

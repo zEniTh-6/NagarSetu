@@ -43,6 +43,7 @@ const reassignBody = z.object({ contractorId: z.string().uuid(), deadlineAt, rea
 const deadlineBody = z.object({ deadlineAt, reason }).strict();
 const approveBody = z.object({ note: optionalReason }).strict();
 const rejectRepairBody = z.object({ reason }).strict(); // sent to the contractor
+const disputeBody = z.object({ reason }).strict(); // shown to the citizens
 
 /** /api/admin — department admins only; every query is limited to their department. */
 export function adminIssuesRouter({ prisma, jobs }) {
@@ -61,6 +62,8 @@ export function adminIssuesRouter({ prisma, jobs }) {
   r.post("/issues/:id/assign", validate({ params: idParams, body: assignBody }), c.assign);
   r.post("/issues/:id/reassign", validate({ params: idParams, body: reassignBody }), c.reassign);
   r.post("/issues/:id/deadline", validate({ params: idParams, body: deadlineBody }), c.deadline);
+  r.post("/issues/:id/reopen", validate({ params: idParams, body: disputeBody }), c.reopen);
+  r.post("/issues/:id/dispute/dismiss", validate({ params: idParams, body: disputeBody }), c.dismissDispute);
   r.post("/submissions/:id/approve", validate({ params: idParams, body: approveBody }), c.approveSubmission);
   r.post("/submissions/:id/reject", validate({ params: idParams, body: rejectRepairBody }), c.rejectSubmission);
   r.post("/issues/:id/flags/:flagId/clear", validate({ params: flagParams, body: flagBody }), c.clearFlag);

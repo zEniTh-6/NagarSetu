@@ -7,6 +7,8 @@ export const FLAG_REASON = Object.freeze({
   AI_UNCERTAIN: "AI was not sure about the photo",
   GPS_MISMATCH: "Pin is far from the device GPS",
   REPAIR_GPS_MISMATCH: "Repair photo was taken far from the issue",
+  DEADLINE_PASSED: "Deadline passed",
+  NOT_FIXED: "Citizen says it is not fixed",
 });
 
 /** Adds an active flag unless the same type+reason is already active. */

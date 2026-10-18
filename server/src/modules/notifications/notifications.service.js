@@ -46,3 +46,13 @@ export async function markAllRead(prisma, { user, now = new Date() }) {
   const { count } = await prisma.notification.updateMany({ where: { userId: user.id, readAt: null }, data: { readAt: now } });
   return { marked: count };
 }
+
+/** Notifies the active admins of a department (escalations, disputes). */
+export async function notifyDepartmentAdmins(tx, { departmentId, type, issueId, params }) {
+  const admins = await tx.user.findMany({ where: { role: "ADMIN", departmentId, status: "ACTIVE" }, select: { id: true } });
+  if (!admins.length) return 0;
+  const { count } = await tx.notification.createMany({
+    data: admins.map((a) => ({ userId: a.id, type, issueId, params: params ?? undefined })),
+  });
+  return count;
+}

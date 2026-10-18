@@ -10,6 +10,7 @@ import { assertInServiceArea, classifyGps } from "./location.js";
 import { citizenIssueView, adminIssueView, resolutionView } from "./issues.views.js";
 import { validCandidateIds, duplicateReason } from "./duplicates.service.js";
 import { adminReviewExtras } from "../admin/adminIssues.service.js";
+import { isFollower, citizenFeedbackState } from "../feedback/feedback.service.js";
 
 const notFound = () => new AppError(404, "NOT_FOUND", "Not found");
 const actorOf = (u) => ({ id: u.id, role: u.role });
@@ -247,11 +248,16 @@ export async function getIssue(prisma, { user, issueId }) {
   });
   if (!issue) throw notFound();
   const isAdmin = user.role === "ADMIN" && user.departmentId === issue.departmentId;
-  const isReporter = user.role === "CITIZEN" && issue.reporterId === user.id;
-  if (!isAdmin && !isReporter) throw notFound();
+  // Reporter and supporters get the citizen view (supporters get the outcome and can give feedback).
+  if (!isAdmin && !(await isFollower(prisma, user, issue))) throw notFound();
 
   const [locations, photo] = await Promise.all([issueLocations(prisma, [issue.id]), currentPhoto(prisma, issue.id)]);
-  if (!isAdmin) return citizenIssueView(issue, locations[issue.id], photo, resolutionView(issue, await approvedRepairPhoto(prisma, issue.id)));
+  if (!isAdmin) {
+    return citizenIssueView(issue, locations[issue.id], photo, {
+      ...resolutionView(issue, await approvedRepairPhoto(prisma, issue.id)),
+      ...(await citizenFeedbackState(prisma, user, issue)),
+    });
+  }
   return adminIssueView(issue, locations[issue.id], photo, await adminReviewExtras(prisma, { user, issue }));
 }
 
@@ -266,7 +272,8 @@ function approvedRepairPhoto(db, issueId) {
 /**
  * Photo bytes. Originals (may have EXIF/GPS): department admin only. Public copies:
  *   - department admin: every photo of the issue;
- *   - reporter: the report photo, and a repair photo only once the admin approved it (published);
+ *   - reporter and supporters: the report photo, and a repair photo only once the admin approved it
+ *     (published); a feedback photo only to the citizen who added it;
  *   - contractor: while assigned, the report photo and their own repair photos.
  * Everyone else: 404.
  */
@@ -288,7 +295,9 @@ export async function getPhotoFile(prisma, { user, photoId, variant, storage }) 
 }
 
 async function canSeePublicCopy(db, user, photo) {
-  if (user.role === "CITIZEN" && photo.issue.reporterId === user.id) {
+  if (user.role === "CITIZEN") {
+    if (photo.kind === "FEEDBACK") return photo.uploadedById === user.id;
+    if (!(await isFollower(db, user, photo.issue))) return false;
     return photo.kind === "ISSUE_ORIGINAL" || photo.repairSubmission?.status === "APPROVED";
   }
   if (user.role === "CONTRACTOR") {

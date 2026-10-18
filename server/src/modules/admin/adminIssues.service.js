@@ -7,6 +7,7 @@ import { photoUrl } from "../issues/issues.views.js";
 import { communitySignals } from "./community.js";
 import { suggestedDeadline, deadlineDays } from "../work/deadline.js";
 import { adminAssignmentView, adminSubmissionView } from "../work/work.views.js";
+import { adminFeedbackView } from "../feedback/feedback.service.js";
 
 const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
 const SHORT = 140;
@@ -74,7 +75,7 @@ export async function listAdminIssues(prisma, { user, page, pageSize, sort, ...f
 /** Dashboard counts for the admin's department. */
 export async function adminDashboard(prisma, { user }) {
   const scope = departmentScope(user);
-  const [byStatus, byFlag, needsPriority, needsAssignment, repairsToReview, needsReassignment] = await Promise.all([
+  const [byStatus, byFlag, needsPriority, needsAssignment, repairsToReview, needsReassignment, escalated, disputed] = await Promise.all([
     prisma.issue.groupBy({ by: ["status"], where: scope, _count: { _all: true } }),
     prisma.issueFlag.groupBy({
       by: ["type"],
@@ -86,6 +87,8 @@ export async function adminDashboard(prisma, { user }) {
     prisma.repairSubmission.count({ where: { status: "SUBMITTED", issue: scope } }),
     // Jobs held by a deactivated contractor: the admin must reassign them (nothing happens automatically).
     prisma.assignment.count({ where: { endedAt: null, issue: scope, contractor: { status: { not: "ACTIVE" } } } }),
+    prisma.issue.count({ where: { ...scope, flags: { some: { type: "ESCALATED", clearedAt: null } } } }),
+    prisma.issue.count({ where: { ...scope, status: "RESOLVED", flags: { some: { type: "DISPUTED", clearedAt: null } } } }),
   ]);
   const statuses = Object.fromEntries(byStatus.map((r) => [r.status, r._count._all]));
   return {
@@ -94,6 +97,8 @@ export async function adminDashboard(prisma, { user }) {
     needsAssignment,
     repairsToReview,
     needsReassignment,
+    escalated,
+    disputed,
     byStatus: statuses,
     activeFlags: Object.fromEntries(byFlag.map((r) => [r.type, r._count._all])),
   };
@@ -139,6 +144,7 @@ export async function adminReviewExtras(prisma, { user, issue }) {
     prisma.repairSubmission.findMany({ where: { issueId: issue.id }, include: { photos: true }, orderBy: { createdAt: "asc" } }),
   ]);
   const current = assignments.find((a) => !a.endedAt) ?? null;
+  const feedback = await adminFeedbackView(prisma, issue, now);
   const distances = await distancesFrom(prisma, issue.id, possible.map((p) => p.id));
 
   return {
@@ -150,6 +156,7 @@ export async function adminReviewExtras(prisma, { user, issue }) {
     // Offered when assigning (OD-5); the admin sets the final deadline.
     suggestedDeadline: !current && issue.status === "ACKNOWLEDGED" ? suggestedDeadline(issue.priority, now) : null,
     deadlineDefaultsDays: deadlineDays(),
+    ...feedback,
     possibleDuplicates: possible.map((p) => brief(p, distances[p.id])),
     duplicateOf: linkedTo ? brief(linkedTo) : null,
     linkedDuplicates: linkedHere.map((d) => brief(d)),
