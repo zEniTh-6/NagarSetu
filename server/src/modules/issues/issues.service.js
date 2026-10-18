@@ -9,6 +9,7 @@ import { addFlag, FLAG_REASON } from "./flags.js";
 import { assertInServiceArea, classifyGps } from "./location.js";
 import { citizenIssueView, adminIssueView } from "./issues.views.js";
 import { validCandidateIds, duplicateReason } from "./duplicates.service.js";
+import { adminReviewExtras } from "../admin/adminIssues.service.js";
 
 const notFound = () => new AppError(404, "NOT_FOUND", "Not found");
 const actorOf = (u) => ({ id: u.id, role: u.role });
@@ -250,7 +251,8 @@ export async function getIssue(prisma, { user, issueId }) {
   if (!isAdmin && !isReporter) throw notFound();
 
   const [locations, photo] = await Promise.all([issueLocations(prisma, [issue.id]), currentPhoto(prisma, issue.id)]);
-  return isAdmin ? adminIssueView(issue, locations[issue.id], photo) : citizenIssueView(issue, locations[issue.id], photo);
+  if (!isAdmin) return citizenIssueView(issue, locations[issue.id], photo);
+  return adminIssueView(issue, locations[issue.id], photo, await adminReviewExtras(prisma, { user, issue }));
 }
 
 /** Photo bytes. Public copy: reporter or department admin. Original (has EXIF/GPS): department admin only. */

@@ -172,6 +172,43 @@ curl.exe -s -b cookies2.txt -H "Content-Type: application/json" "$api/issues/dup
 `POST /api/issues/<id>/support` (body `{"fromDuplicatePopup":true}`), or file a new report with
 `-F "duplicateCandidateIds=<id>"` (it gets a POSSIBLE_DUPLICATE flag for the admin).
 
+### Admin review by hand (Phase 3)
+
+Log in as a seeded admin (after the forced password change, see above) and look at the reports
+waiting for review. In PowerShell:
+
+```powershell
+$api = "http://localhost:4000/api"
+$json = @{ Method = "Post"; ContentType = "application/json" }
+Invoke-RestMethod "$api/auth/login" @json -Body '{"email":"admin.construction@nagarsetu.local","password":"<your new password>"}' -SessionVariable a
+
+Invoke-RestMethod "$api/admin/dashboard" -WebSession $a
+(Invoke-RestMethod "$api/admin/issues" -WebSession $a).items | Format-Table id, status, priority, description
+$id = "<an issue id from the table>"
+(Invoke-RestMethod "$api/issues/$id" -WebSession $a).issue   # review screen: ai, community, flags, history
+
+# Pick one:
+Invoke-RestMethod "$api/admin/issues/$id/accept"  @json -WebSession $a -Body '{"priority":"MEDIUM"}'
+Invoke-RestMethod "$api/admin/issues/$id/reject"  @json -WebSession $a -Body '{"type":"NOT_VALID","reason":"Photo shows a private compound"}'
+Invoke-RestMethod "$api/admin/issues/$id/forward" @json -WebSession $a -Body '{"reason":"State highway, forwarded to PWD Sangli"}'
+Invoke-RestMethod "$api/admin/issues/$id/reroute" @json -WebSession $a -Body '{"categoryKey":"GARBAGE","reason":"Photo shows garbage"}'
+Invoke-RestMethod "$api/admin/issues/$id/link-duplicate" @json -WebSession $a -Body '{"targetIssueId":"<open issue id>"}'
+```
+
+Other admin calls:
+- `POST /api/admin/issues/<id>/priority` with `{"priority":"LOW","reason":"..."}`. The reason is
+  needed when the priority differs from the AI's risk level.
+- `POST /api/admin/issues/<id>/flags/<flagId>/clear` or `/confirm`, with `{"reason":"..."}`.
+- Table filters: `?status=ACTIVE&flag=SUSPICIOUS&priority=NONE&sort=risk` (sort is one of
+  `newest`, `oldest`, `risk`, `priority`, `support`).
+
+The citizen then sees the outcome and the reason. With the citizen's cookies from the steps above:
+
+```powershell
+curl.exe -s -b cookies.txt "$api/notifications"           # ACKNOWLEDGED / REJECTED / REROUTED / LINKED_DUPLICATE
+curl.exe -s -b cookies.txt "$api/issues/<id>"             # status, statusReason, rejectionType
+```
+
 ### Multilingual similarity check
 
 `npm run ai:similarity` (in `server/`) embeds the texts in `server/test/fixtures/texts.json` (the same

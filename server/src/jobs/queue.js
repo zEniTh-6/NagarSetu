@@ -43,8 +43,10 @@ export function createJobQueue({ connectionString, prisma, storage, validatePhot
       return boss.send(QUEUE.VALIDATE_PHOTO, { issueId, photoId }, { singletonKey: `photo:${photoId}` });
     },
 
-    enqueueEmbedding({ issueId }) {
-      return boss.send(QUEUE.EMBED_ISSUE, { issueId }, { singletonKey: `embed:${issueId}` });
+    /** recheck: the issue changed category; search again with the stored embedding. */
+    enqueueEmbedding({ issueId, recheck = false }) {
+      const data = recheck ? { issueId, recheck: true } : { issueId };
+      return boss.send(QUEUE.EMBED_ISSUE, data, { singletonKey: `${recheck ? "recheck" : "embed"}:${issueId}` });
     },
 
     /** On start-up, queue checks that never got queued (e.g. the server stopped right after a report). */
