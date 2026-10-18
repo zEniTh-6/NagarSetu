@@ -1,8 +1,13 @@
 import * as svc from "./contractors.service.js";
+import { listContractors } from "../work/assignments.service.js";
 import { publicUser } from "../auth/auth.service.js";
 import { setSessionCookie } from "../../auth/cookies.js";
 
 export const makeContractorsController = (prisma) => ({
+  async list(req, res) {
+    res.json({ contractors: await listContractors(prisma, req.validated.query) });
+  },
+
   async similar(req, res) {
     res.json({ similar: await svc.findSimilar(prisma, req.validated.body) });
   },

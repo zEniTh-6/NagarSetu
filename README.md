@@ -213,6 +213,40 @@ curl.exe -s -b cookies.txt "$api/notifications"           # ACKNOWLEDGED / REJEC
 curl.exe -s -b cookies.txt "$api/issues/<id>"             # status, statusReason, rejectionType
 ```
 
+### Contractor work by hand (Phase 4)
+
+Continue with the admin session `$a` from the Phase 3 steps. The issue must be accepted and have
+a priority. The contractor must have accepted the invite (`/api/invites/<token>`, see Phase 1b).
+
+```powershell
+(Invoke-RestMethod "$api/admin/contractors" -WebSession $a).contractors | Format-Table id, name, workType, activeJobs
+$deadline = (Get-Date).AddDays(7).ToString("o")      # the review screen also shows suggestedDeadline
+Invoke-RestMethod "$api/admin/issues/$id/assign" @json -WebSession $a -Body (@{ contractorId = "<contractor id>"; deadlineAt = $deadline } | ConvertTo-Json)
+```
+
+As the contractor (in a second PowerShell window, with `curl.exe` for the photo upload):
+
+```powershell
+$api = "http://localhost:4000/api"
+curl.exe -s -c contractor.txt -H "Content-Type: application/json" -d '{\"email\":\"patil@example.com\",\"password\":\"<their password>\"}' "$api/auth/login"
+curl.exe -s -b contractor.txt "$api/contractor/issues"
+curl.exe -s -b contractor.txt -X POST "$api/contractor/issues/<id>/start"
+curl.exe -s -b contractor.txt "$api/contractor/issues/<id>/submissions" `
+  -F "clientRequestId=$([guid]::NewGuid())" -F "note=Pothole filled and levelled" `
+  -F "photo=@C:\Users\you\Pictures\repaired.jpg"
+```
+
+Back as the admin, open the issue: `submissions` shows the repair photo, the AI result (after a few
+seconds, if `GEMINI_API_KEY` is set) and the GPS distance. Then:
+
+```powershell
+Invoke-RestMethod "$api/admin/submissions/<submission id>/approve" @json -WebSession $a -Body '{}'
+# or: .../reject with -Body '{"reason":"Patch only covers half the hole"}'
+```
+
+After approval the citizen's `GET /api/issues/<id>` shows `status: RESOLVED` and `resolution.photo`
+(before/after). The contractor never has a way to set RESOLVED.
+
 ### Multilingual similarity check
 
 `npm run ai:similarity` (in `server/`) embeds the texts in `server/test/fixtures/texts.json` (the same

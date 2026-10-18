@@ -6,6 +6,7 @@ export const FLAG_REASON = Object.freeze({
   VALIDATION_GAVE_UP: "Photo could not be checked automatically. Please review the photo",
   AI_UNCERTAIN: "AI was not sure about the photo",
   GPS_MISMATCH: "Pin is far from the device GPS",
+  REPAIR_GPS_MISMATCH: "Repair photo was taken far from the issue",
 });
 
 /** Adds an active flag unless the same type+reason is already active. */

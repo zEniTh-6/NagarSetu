@@ -7,7 +7,7 @@ import { processPhoto } from "../../images/processPhoto.js";
 import { env } from "../../config/env.js";
 import { addFlag, FLAG_REASON } from "./flags.js";
 import { assertInServiceArea, classifyGps } from "./location.js";
-import { citizenIssueView, adminIssueView } from "./issues.views.js";
+import { citizenIssueView, adminIssueView, resolutionView } from "./issues.views.js";
 import { validCandidateIds, duplicateReason } from "./duplicates.service.js";
 import { adminReviewExtras } from "../admin/adminIssues.service.js";
 
@@ -251,17 +251,30 @@ export async function getIssue(prisma, { user, issueId }) {
   if (!isAdmin && !isReporter) throw notFound();
 
   const [locations, photo] = await Promise.all([issueLocations(prisma, [issue.id]), currentPhoto(prisma, issue.id)]);
-  if (!isAdmin) return citizenIssueView(issue, locations[issue.id], photo);
+  if (!isAdmin) return citizenIssueView(issue, locations[issue.id], photo, resolutionView(issue, await approvedRepairPhoto(prisma, issue.id)));
   return adminIssueView(issue, locations[issue.id], photo, await adminReviewExtras(prisma, { user, issue }));
 }
 
-/** Photo bytes. Public copy: reporter or department admin. Original (has EXIF/GPS): department admin only. */
+/** The published repair photo: the one from the approved submission. */
+function approvedRepairPhoto(db, issueId) {
+  return db.photo.findFirst({
+    where: { issueId, kind: "REPAIR_EVIDENCE", repairSubmission: { status: "APPROVED" } },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+/**
+ * Photo bytes. Originals (may have EXIF/GPS): department admin only. Public copies:
+ *   - department admin: every photo of the issue;
+ *   - reporter: the report photo, and a repair photo only once the admin approved it (published);
+ *   - contractor: while assigned, the report photo and their own repair photos.
+ * Everyone else: 404.
+ */
 export async function getPhotoFile(prisma, { user, photoId, variant, storage }) {
-  const photo = await prisma.photo.findUnique({ where: { id: photoId }, include: { issue: true } });
+  const photo = await prisma.photo.findUnique({ where: { id: photoId }, include: { issue: true, repairSubmission: true } });
   if (!photo) throw notFound();
   const isAdmin = user.role === "ADMIN" && user.departmentId === photo.issue.departmentId;
-  const isReporter = user.role === "CITIZEN" && photo.issue.reporterId === user.id;
-  if (!isAdmin && !(isReporter && variant === "public")) throw notFound();
+  if (!isAdmin && !(variant === "public" && (await canSeePublicCopy(prisma, user, photo)))) throw notFound();
 
   const key = variant === "original" ? photo.originalKey : photo.publicKey;
   let buffer;
@@ -272,6 +285,17 @@ export async function getPhotoFile(prisma, { user, photoId, variant, storage }) 
     throw err;
   }
   return { buffer, contentType: variant === "original" ? photo.mimeType : "image/jpeg" };
+}
+
+async function canSeePublicCopy(db, user, photo) {
+  if (user.role === "CITIZEN" && photo.issue.reporterId === user.id) {
+    return photo.kind === "ISSUE_ORIGINAL" || photo.repairSubmission?.status === "APPROVED";
+  }
+  if (user.role === "CONTRACTOR") {
+    const assigned = await db.assignment.count({ where: { issueId: photo.issueId, contractorId: user.id, endedAt: null } });
+    return assigned > 0 && (photo.kind === "ISSUE_ORIGINAL" || photo.uploadedById === user.id);
+  }
+  return false;
 }
 
 export async function listCategories(prisma) {

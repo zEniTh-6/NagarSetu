@@ -62,6 +62,16 @@ export const envSchema = z
   LOW_DIVERSITY_NEW_SHARE: z.coerce.number().min(0).max(1).default(0.5),
   NEW_ACCOUNT_DAYS: z.coerce.number().int().min(1).max(365).default(7),
 
+  // Work (Phase 4). Deadline offered to the admin per priority, in days (OD-5, D-019). The admin
+  // always sets the final deadline.
+  DEADLINE_DAYS_LOW: z.coerce.number().int().min(1).max(365).default(30),
+  DEADLINE_DAYS_MEDIUM: z.coerce.number().int().min(1).max(365).default(14),
+  DEADLINE_DAYS_HIGH: z.coerce.number().int().min(1).max(365).default(7),
+  DEADLINE_DAYS_CRITICAL: z.coerce.number().int().min(1).max(365).default(2),
+  // Repair photo GPS: SUSPICIOUS when good-accuracy device GPS is farther than accuracy + this
+  // many metres from the issue (D-019). Never rejects anything.
+  REPAIR_GPS_EXTRA_M: z.coerce.number().min(0).max(5000).default(100),
+
   // Uploads (local disk in development, behind the storage interface)
   UPLOAD_DIR: z.string().min(1).default("uploads"),
   MAX_UPLOAD_MB: z.coerce.number().positive().max(25).default(10),

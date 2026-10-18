@@ -30,12 +30,18 @@ const base = (issue, location, photo) => ({
   updatedAt: issue.updatedAt,
 });
 
-export function citizenIssueView(issue, location, photo) {
+export function citizenIssueView(issue, location, photo, extras = {}) {
   const suggestion = issue.aiSuggestedCategory
     ? { key: issue.aiSuggestedCategory.key, name: issue.aiSuggestedCategory.name }
     : null;
-  return { ...base(issue, location, photo), validation: citizenValidation(issue), suggestedCategory: suggestion };
+  return { ...base(issue, location, photo), validation: citizenValidation(issue), suggestedCategory: suggestion, ...extras };
 }
+
+/** RESOLVED: the verified repair photo (public copy, no EXIF/GPS) next to the original ("before/after"). */
+export const resolutionView = (issue, repairPhoto) =>
+  issue.status === "RESOLVED"
+    ? { resolution: { resolvedAt: issue.resolvedAt, photo: repairPhoto ? { id: repairPhoto.id, url: photoUrl(repairPhoto.id) } : null } }
+    : {};
 
 export function adminIssueView(issue, location, photo, extras = {}) {
   return {

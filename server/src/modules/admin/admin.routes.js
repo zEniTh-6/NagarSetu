@@ -37,6 +37,12 @@ const linkBody = z.object({ targetIssueId: z.string().uuid(), reason: optionalRe
 const rerouteBody = z.object({ categoryKey, reason }).strict();
 const priorityBody = z.object({ priority: z.enum(LEVELS), reason: optionalReason }).strict();
 const flagBody = z.object({ reason }).strict();
+const deadlineAt = z.coerce.date();
+const assignBody = z.object({ contractorId: z.string().uuid(), deadlineAt }).strict();
+const reassignBody = z.object({ contractorId: z.string().uuid(), deadlineAt, reason }).strict();
+const deadlineBody = z.object({ deadlineAt, reason }).strict();
+const approveBody = z.object({ note: optionalReason }).strict();
+const rejectRepairBody = z.object({ reason }).strict(); // sent to the contractor
 
 /** /api/admin — department admins only; every query is limited to their department. */
 export function adminIssuesRouter({ prisma, jobs }) {
@@ -52,6 +58,11 @@ export function adminIssuesRouter({ prisma, jobs }) {
   r.post("/issues/:id/link-duplicate", validate({ params: idParams, body: linkBody }), c.linkDuplicate);
   r.post("/issues/:id/reroute", validate({ params: idParams, body: rerouteBody }), c.reroute);
   r.post("/issues/:id/priority", validate({ params: idParams, body: priorityBody }), c.priority);
+  r.post("/issues/:id/assign", validate({ params: idParams, body: assignBody }), c.assign);
+  r.post("/issues/:id/reassign", validate({ params: idParams, body: reassignBody }), c.reassign);
+  r.post("/issues/:id/deadline", validate({ params: idParams, body: deadlineBody }), c.deadline);
+  r.post("/submissions/:id/approve", validate({ params: idParams, body: approveBody }), c.approveSubmission);
+  r.post("/submissions/:id/reject", validate({ params: idParams, body: rejectRepairBody }), c.rejectSubmission);
   r.post("/issues/:id/flags/:flagId/clear", validate({ params: flagParams, body: flagBody }), c.clearFlag);
   r.post("/issues/:id/flags/:flagId/confirm", validate({ params: flagParams, body: flagBody }), c.confirmFlag);
   return r;

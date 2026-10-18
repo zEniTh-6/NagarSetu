@@ -52,3 +52,10 @@ export async function distancesFrom(db, issueId, otherIds) {
     WHERE i.id = ${issueId}::uuid`;
   return Object.fromEntries(rows.map((r) => [r.id, Math.round(r.m)]));
 }
+
+/** Metres from an issue's location to a point (e.g. the contractor's device GPS). */
+export async function distanceToIssue(db, issueId, { lat, lng }) {
+  const rows = await db.$queryRaw`
+    SELECT ST_Distance(location, ${pointGeography({ lat, lng })}) AS m FROM issues WHERE id = ${issueId}::uuid`;
+  return rows[0]?.m ?? null;
+}

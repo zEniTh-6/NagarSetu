@@ -12,6 +12,7 @@ import { adminContractorsRouter, invitesRouter } from "./modules/contractors/con
 import { issuesRouter, photosRouter, categoriesRouter } from "./modules/issues/issues.routes.js";
 import { adminIssuesRouter } from "./modules/admin/admin.routes.js";
 import { notificationsRouter } from "./modules/notifications/notifications.routes.js";
+import { contractorRouter } from "./modules/work/contractor.routes.js";
 import { createLocalDiskStorage } from "./storage/storage.js";
 import { createMemoryQueue } from "./jobs/queue.js";
 import { embed as geminiEmbed } from "./ai/embed.js";
@@ -58,6 +59,7 @@ export function createApp({
   app.use("/api/photos", photosRouter(deps));
   app.use("/api/categories", categoriesRouter(deps));
   app.use("/api/notifications", notificationsRouter(deps));
+  app.use("/api/contractor", contractorRouter(deps));
   if (extraRoutes) app.use(extraRoutes(deps));
 
   app.use(notFoundHandler);
