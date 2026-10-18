@@ -16,7 +16,8 @@
     "db:seed": "prisma db seed",
     "db:generate": "prisma generate",
     "postinstall": "prisma generate",
-    "ai:photos": "node scripts/ai-check-photos.js"
+    "ai:photos": "node scripts/ai-check-photos.js",
+    "fixtures:prepare": "node scripts/prepare-fixture-photos.js"
   },
   "dependencies": {
     "@google/genai": "2.30.0",

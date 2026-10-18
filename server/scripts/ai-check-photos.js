@@ -22,9 +22,9 @@ for (const p of photos) {
   try {
     const processed = await processPhoto(await fs.readFile(path.join(dir, p.file)));
     const r = await validatePhotoWithGemini({ image: processed.public, mimeType: "image/jpeg", categoryKey: p.category });
-    const ok = p.expect.includes(r.verdict);
-    if (!ok) mismatches++;
-    rows.push({ file: p.file, category: p.category, expected: p.expect.join("|"), got: r.verdict, ok: ok ? "yes" : "NO", suggested: r.suggestedCategory ?? "", risk: r.risk.level, reason: r.reason });
+    const ok = p.expect.length ? p.expect.includes(r.verdict) : null; // null = expectation not filled in yet
+    if (ok === false) mismatches++;
+    rows.push({ file: p.file, category: p.category, expected: p.expect.join("|") || "?", got: r.verdict, ok: ok === null ? "?" : ok ? "yes" : "NO", suggested: r.suggestedCategory ?? "", risk: r.risk.level, reason: r.reason });
   } catch (err) {
     mismatches++;
     rows.push({ file: p.file, category: p.category, expected: p.expect.join("|"), got: "ERROR", ok: "NO", reason: err.message });

@@ -160,6 +160,11 @@ it stays "CHECKING" and the server log says the key is missing; that's expected.
 
 ### Live AI check with real photos
 
+Put your photos in `server/test/fixtures/photos/`, then run `npm run fixtures:prepare` (in `server/`).
+It shrinks them to 1600 px, removes all EXIF/GPS (phone photos record where they were taken), and
+adds manifest entries; fill in `expect` for any entry marked "FILL IN". Keep your phone originals
+elsewhere: the files are changed in place.
+
 `npm run ai:photos` (in `server/`) sends every photo listed in `server/test/fixtures/photos/manifest.json`
 to the real Gemini model and prints expected vs actual verdicts. It needs `GEMINI_API_KEY` and
 is not part of `npm test`.
