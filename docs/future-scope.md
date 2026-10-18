@@ -23,6 +23,12 @@ first (see CLAUDE.md, "Scope rules"). Source: [docs/brief.md](brief.md).
 - S3-compatible image storage for deployment (see open decision OD-7).
 - Containerising the backend (only the database runs in Docker for now).
 
+## Reporting
+
+- Exact SMKC ward/boundary polygon instead of the bounding box (D-012).
+- HEIC photos (iPhone default) — today JPEG/PNG/WebP only; browsers usually convert camera captures to JPEG.
+- Blurring faces and number plates in public photos automatically (brief: "where possible").
+
 ## Known limitations
 
 - **No super admin.** A colluding admin could create a fake contractor; the audit log makes this detectable, not preventable.

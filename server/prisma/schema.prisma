@@ -258,6 +258,8 @@ model Issue {
   deviceLat       Float?                               @map("device_lat")
   deviceLng       Float?                               @map("device_lng")
   deviceAccuracyM Float?                               @map("device_accuracy_m")
+  // Distance between the pin and device GPS (PostGIS), null when no device location
+  gpsDistanceM    Float?                               @map("gps_distance_m")
 
   // AI results (suggestions only; null = not run yet / validation pending)
   aiVerdict             AiVerdict? @map("ai_verdict")
@@ -446,6 +448,7 @@ model Photo {
   sizeBytes          Int       @map("size_bytes")
   sha256             String
   capturedAt         DateTime? @map("captured_at")
+  replacedAt         DateTime? @map("replaced_at") // set when the citizen retakes the photo
   createdAt          DateTime  @default(now()) @map("created_at")
 
   issue            Issue             @relation(fields: [issueId], references: [id])

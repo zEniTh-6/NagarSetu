@@ -135,6 +135,35 @@ Invoke-RestMethod "$api/auth/change-password" @json -Body '{"currentPassword":"<
 Invoke-RestMethod "$api/admin/contractors" @json -WebSession $a -Body '{"name":"Patil Road Works","phone":"+91 98220 12345","email":"patil@example.com","workType":"roads"}'
 ```
 
+### Report an issue by hand (Phase 2a)
+
+Windows PowerShell 5.1 can't send file uploads easily, so use `curl.exe` (built into Windows 10/11).
+Log in as a **verified** citizen first (see above), then:
+
+```powershell
+cd D:\nagarsetu
+$api = "http://localhost:4000/api"
+curl.exe -s -c cookies.txt -H "Content-Type: application/json" -d '{\"email\":\"asha@example.com\",\"password\":\"Long-Enough-1\"}' "$api/auth/login"
+
+# Any JPEG/PNG photo on your PC; location must be inside SMKC
+curl.exe -s -b cookies.txt "$api/issues" `
+  -F "clientRequestId=$([guid]::NewGuid())" -F "categoryKey=ROADS" `
+  -F "description=road pe gaddha hai" -F "lat=16.8524" -F "lng=74.5815" `
+  -F "photo=@C:\Users\you\Pictures\pothole.jpg"
+
+curl.exe -s -b cookies.txt "$api/issues/mine"        # validation.state: CHECKING → OK / RETAKE_REQUESTED / UNDER_REVIEW
+Remove-Item cookies.txt
+```
+
+The photo check runs in the background (watch the `npm run dev` window). Without `GEMINI_API_KEY`
+it stays "CHECKING" and the server log says the key is missing; that's expected.
+
+### Live AI check with real photos
+
+`npm run ai:photos` (in `server/`) sends every photo listed in `server/test/fixtures/photos/manifest.json`
+to the real Gemini model and prints expected vs actual verdicts. It needs `GEMINI_API_KEY` and
+is not part of `npm test`.
+
 Errors come back as JSON (`{ error: { code, message } }`); in PowerShell, look at the error
 details printed under the red text.
 
