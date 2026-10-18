@@ -13,6 +13,9 @@ coverage/
 # Local uploads (dev storage)
 server/uploads/
 
+# Generated Prisma client (rebuilt by `npm install` / `npx prisma generate`)
+server/src/generated/
+
 # Logs
 *.log
 npm-debug.log*

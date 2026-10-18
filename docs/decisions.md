@@ -51,3 +51,33 @@ write the choice, the reason and the date, and move it under "Decisions taken".
   is used, not Alpine, so pgvector installs from the PGDG apt repo with no compiling.
 - **Note:** Postgres 18 images store data under `/var/lib/postgresql/18/`, so the named
   volume is mounted at `/var/lib/postgresql`.
+
+### D-002 — Prisma 7.10.1 with the `prisma-client` generator (2026-10-18)
+
+- **Choice:** `prisma` and `@prisma/client` pinned to **7.10.1**, the newest stable release.
+  The npm `latest` tag for the `prisma` CLI pointed at a release candidate (8.0.0-rc.23), so
+  versions are pinned exactly.
+- **Generator:** `prisma-client` (Prisma 7 default). It generates TypeScript into
+  `server/src/generated/prisma/`, which our plain JavaScript imports; Node runs it with built-in
+  type stripping. Requires **Node 22.18+** (team uses Node 24).
+- **Extensions:** `extensions = [postgis, vector]` needs the `postgresqlExtensions` preview
+  feature in 7.10.1.
+- **Config:** Prisma 7 no longer takes the database URL in `schema.prisma` and does not load
+  `.env` itself; `server/prisma.config.mjs` loads the repo-root `.env`. The client connects through
+  the `@prisma/adapter-pg` driver adapter.
+- **Consequence:** `issues.location` is a required `Unsupported` column, so Prisma's `create()` is
+  not available for issues; issues are inserted with parameterised raw SQL from `server/src/geo/`.
+
+### D-003 — "Not our jurisdiction" is a rejection with a reason (2026-10-18)
+
+- **Choice:** no separate FORWARDED status. The admin sets `REJECTED` with
+  `rejectionType = NOT_OUR_JURISDICTION` and a mandatory `statusReason`; the web app shows it to
+  the citizen as "forwarded".
+- **Exit statuses from REPORTED:** `REJECTED`, `DUPLICATE` (linked to another issue),
+  `WITHDRAWN` (reporter, before acknowledgement).
+
+### D-004 — Three departments in the seed (2026-10-18)
+
+- **Choice:** Roads, Sanitation, Electrical, one per prototype category (Roads, Garbage,
+  Streetlight). A department without a category would never receive issues. Adding one later =
+  one entry in `DEPARTMENTS` (server/src/seed/seed.js) plus a category in categories.json.

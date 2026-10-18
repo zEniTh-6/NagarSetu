@@ -1,0 +1,480 @@
+// NagarSetu — Prisma schema
+// Geo/vector columns are Unsupported(...). All geo/vector queries are parameterised raw SQL in src/geo/.
+// Tables and columns are snake_case in the database so raw SQL stays readable.
+
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  importFileExtension = "ts"
+  previewFeatures     = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  // url comes from prisma.config.mjs (Prisma 7 no longer allows it here)
+  extensions = [postgis, vector]
+}
+
+// ---------- Enums ----------
+
+enum Role {
+  CITIZEN
+  ADMIN
+  CONTRACTOR
+}
+
+enum UserStatus {
+  ACTIVE
+  DEACTIVATED
+  LOCKED
+}
+
+enum IssueStatus {
+  REPORTED
+  ACKNOWLEDGED
+  IN_PROGRESS
+  RESOLVED
+  // Exits from REPORTED:
+  REJECTED // admin, with a mandatory reason (rejectionType + statusReason)
+  DUPLICATE // admin linked it to another issue (duplicateOfId); support still counts
+  WITHDRAWN // reporter withdrew it before it was acknowledged
+}
+
+// Why an issue was rejected. NOT_OUR_JURISDICTION is shown to the citizen as "forwarded".
+enum RejectionType {
+  NOT_VALID
+  NOT_OUR_JURISDICTION
+  OTHER
+}
+
+enum FlagType {
+  SUSPICIOUS
+  POSSIBLE_DUPLICATE
+  PENDING_REVIEW
+  ESCALATED
+  DISPUTED
+}
+
+enum AiVerdict {
+  VALID
+  INVALID
+  UNCERTAIN
+}
+
+enum Level {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+enum PhotoKind {
+  ISSUE_ORIGINAL
+  REPAIR_EVIDENCE
+}
+
+enum OtpPurpose {
+  SIGNUP_VERIFY
+  PASSWORD_RESET
+}
+
+enum SupportSource {
+  SUPPORT_BUTTON
+  DUPLICATE_ACCEPTED
+}
+
+enum NotificationType {
+  ACKNOWLEDGED
+  REJECTED
+  ASSIGNED
+  IN_PROGRESS
+  RESOLVED
+  REWORK_REQUESTED
+  ESCALATED
+  DISPUTE_RAISED
+  OFFICIAL_REPLY
+}
+
+// ---------- Organisation ----------
+
+model Department {
+  id        String   @id @default(uuid()) @db.Uuid
+  code      String   @unique // e.g. ROADS, SANITATION, ELECTRICAL
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  admins      User[]       @relation("DepartmentAdmins")
+  categories  Category[]
+  issues      Issue[]
+  assignments Assignment[]
+
+  @@map("departments")
+}
+
+// Category rules (prompt text, duplicate radius, repair rules) live in src/rules/categories.json,
+// keyed by Category.key. The table only holds the key and the default department.
+model Category {
+  id           String   @id @default(uuid()) @db.Uuid
+  key          String   @unique // ROADS | GARBAGE | STREETLIGHT — must match categories.json
+  name         String
+  departmentId String   @map("department_id") @db.Uuid
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  department   Department @relation(fields: [departmentId], references: [id])
+  issues       Issue[]    @relation("IssueCategory")
+  suggestedFor Issue[]    @relation("IssueAiSuggestedCategory")
+
+  @@map("categories")
+}
+
+// ---------- Accounts ----------
+
+model User {
+  id                 String     @id @default(uuid()) @db.Uuid
+  email              String     @unique
+  phone              String?
+  name               String
+  passwordHash       String?    @map("password_hash") // null until a contractor accepts the invite
+  role               Role
+  status             UserStatus @default(ACTIVE)
+  mustChangePassword Boolean    @default(false) @map("must_change_password")
+  emailVerified      Boolean    @default(false) @map("email_verified")
+  departmentId       String?    @map("department_id") @db.Uuid // admins only (DB CHECK)
+  createdById        String?    @map("created_by_id") @db.Uuid // null = self-signup or seed
+  // Contractor details recorded at creation (shown to admins as information, not a restriction)
+  workType           String?    @map("work_type")
+  licenceNumber      String?    @map("licence_number")
+  // Login protection / sessions
+  failedLoginCount   Int        @default(0) @map("failed_login_count")
+  lockedUntil        DateTime?  @map("locked_until")
+  passwordChangedAt  DateTime?  @map("password_changed_at")
+  lastLoginAt        DateTime?  @map("last_login_at")
+  deactivatedAt      DateTime?  @map("deactivated_at")
+  createdAt          DateTime   @default(now()) @map("created_at")
+  updatedAt          DateTime   @updatedAt @map("updated_at")
+
+  department   Department? @relation("DepartmentAdmins", fields: [departmentId], references: [id])
+  createdBy    User?       @relation("UserCreatedBy", fields: [createdById], references: [id])
+  createdUsers User[]      @relation("UserCreatedBy")
+
+  reportedIssues      Issue[]            @relation("IssueReporter")
+  supports            IssueSupporter[]
+  upvotes             Upvote[]
+  comments            Comment[]          @relation("CommentAuthor")
+  hiddenComments      Comment[]          @relation("CommentHiddenBy")
+  flagsRaised         IssueFlag[]        @relation("FlagRaisedBy")
+  flagsCleared        IssueFlag[]        @relation("FlagClearedBy")
+  contractorJobs      Assignment[]       @relation("AssignmentContractor")
+  assignmentsMade     Assignment[]       @relation("AssignmentAssignedBy")
+  submissions         RepairSubmission[] @relation("SubmissionContractor")
+  submissionsReviewed RepairSubmission[] @relation("SubmissionReviewer")
+  photos              Photo[]
+  notifications       Notification[]
+  auditEntries        AuditLog[]
+  invitesForMe        InviteToken[]      @relation("InviteForUser")
+  invitesCreated      InviteToken[]      @relation("InviteCreatedBy")
+  otpCodes            OtpCode[]
+
+  @@index([role, status])
+  @@index([departmentId])
+  @@map("users")
+}
+
+// One-time contractor invite link. Only the SHA-256 hash of the token is stored.
+model InviteToken {
+  id          String    @id @default(uuid()) @db.Uuid
+  tokenHash   String    @unique @map("token_hash")
+  userId      String    @map("user_id") @db.Uuid // the contractor account the link activates
+  createdById String    @map("created_by_id") @db.Uuid // the admin
+  expiresAt   DateTime  @map("expires_at")
+  usedAt      DateTime? @map("used_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  user      User @relation("InviteForUser", fields: [userId], references: [id])
+  createdBy User @relation("InviteCreatedBy", fields: [createdById], references: [id])
+
+  @@index([userId])
+  @@map("invite_tokens")
+}
+
+// Email OTP (signup verification, password reset). Only a hash of the code is stored.
+model OtpCode {
+  id        String     @id @default(uuid()) @db.Uuid
+  userId    String     @map("user_id") @db.Uuid
+  purpose   OtpPurpose
+  codeHash  String     @map("code_hash")
+  attempts  Int        @default(0)
+  expiresAt DateTime   @map("expires_at")
+  usedAt    DateTime?  @map("used_at")
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, purpose])
+  @@map("otp_codes")
+}
+
+// ---------- Issues ----------
+
+model Issue {
+  id              String         @id @default(uuid()) @db.Uuid
+  reporterId      String         @map("reporter_id") @db.Uuid
+  clientRequestId String         @map("client_request_id") // idempotency key sent by the client
+  categoryId      String         @map("category_id") @db.Uuid
+  departmentId    String         @map("department_id") @db.Uuid // current owner; changes on reroute
+  status          IssueStatus    @default(REPORTED)
+  rejectionType   RejectionType? @map("rejection_type")
+  statusReason    String?        @map("status_reason") // why rejected / linked / reopened, shown to the citizen
+
+  // Citizen text, stored exactly as written (never replaced with a translation)
+  description String
+
+  // Location the citizen chose (search or map pin). Raw SQL only, see src/geo/.
+  location        Unsupported("geography(Point,4326)")
+  addressText     String?                              @map("address_text")
+  // Device GPS at report time (null = permission denied / unavailable; neutral, not suspicious)
+  deviceLat       Float?                               @map("device_lat")
+  deviceLng       Float?                               @map("device_lng")
+  deviceAccuracyM Float?                               @map("device_accuracy_m")
+
+  // AI results (suggestions only; null = not run yet / validation pending)
+  aiVerdict             AiVerdict? @map("ai_verdict")
+  aiVerdictReason       String?    @map("ai_verdict_reason")
+  aiRiskLevel           Level?     @map("ai_risk_level")
+  aiRiskReason          String?    @map("ai_risk_reason")
+  aiSuggestedCategoryId String?    @map("ai_suggested_category_id") @db.Uuid
+  aiModel               String?    @map("ai_model")
+  aiAttempts            Int        @default(0) @map("ai_attempts")
+  aiCheckedAt           DateTime?  @map("ai_checked_at")
+
+  // Admin decisions
+  priority       Level?  @map("priority") // final priority, admin only
+  priorityReason String? @map("priority_reason") // required when it differs from the suggestion
+  duplicateOfId  String? @map("duplicate_of_id") @db.Uuid
+
+  acknowledgedAt DateTime? @map("acknowledged_at")
+  resolvedAt     DateTime? @map("resolved_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  reporter            User       @relation("IssueReporter", fields: [reporterId], references: [id])
+  category            Category   @relation("IssueCategory", fields: [categoryId], references: [id])
+  aiSuggestedCategory Category?  @relation("IssueAiSuggestedCategory", fields: [aiSuggestedCategoryId], references: [id])
+  department          Department @relation(fields: [departmentId], references: [id])
+  duplicateOf         Issue?     @relation("IssueDuplicateOf", fields: [duplicateOfId], references: [id])
+  duplicates          Issue[]    @relation("IssueDuplicateOf")
+
+  flags         IssueFlag[]
+  supporters    IssueSupporter[]
+  upvotes       Upvote[]
+  comments      Comment[]
+  assignments   Assignment[]
+  submissions   RepairSubmission[]
+  photos        Photo[]
+  notifications Notification[]
+
+  @@unique([reporterId, clientRequestId])
+  @@index([location], type: Gist)
+  @@index([departmentId, status])
+  @@index([categoryId, status])
+  @@map("issues")
+}
+
+// Flags are independent of status and never block the workflow.
+// A flag is "active" while clearedAt is null.
+model IssueFlag {
+  id          String    @id @default(uuid()) @db.Uuid
+  issueId     String    @map("issue_id") @db.Uuid
+  type        FlagType
+  reason      String? // e.g. "validation pending", "GPS 800 m from pin (accuracy 10 m)"
+  raisedById  String?   @map("raised_by_id") @db.Uuid // null = system
+  clearedAt   DateTime? @map("cleared_at")
+  clearedById String?   @map("cleared_by_id") @db.Uuid
+  clearReason String?   @map("clear_reason")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  issue     Issue @relation(fields: [issueId], references: [id])
+  raisedBy  User? @relation("FlagRaisedBy", fields: [raisedById], references: [id])
+  clearedBy User? @relation("FlagClearedBy", fields: [clearedById], references: [id])
+
+  @@index([issueId, type])
+  @@map("issue_flags")
+}
+
+// Citizens who support an issue (support button, or accepted the duplicate popup).
+model IssueSupporter {
+  issueId   String        @map("issue_id") @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
+  source    SupportSource
+  createdAt DateTime      @default(now()) @map("created_at")
+
+  issue Issue @relation(fields: [issueId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@id([issueId, userId])
+  @@map("issue_supporters")
+}
+
+model Upvote {
+  issueId   String   @map("issue_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  issue Issue @relation(fields: [issueId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@id([issueId, userId]) // one upvote per account
+  @@map("upvotes")
+}
+
+model Comment {
+  id           String    @id @default(uuid()) @db.Uuid
+  issueId      String    @map("issue_id") @db.Uuid
+  authorId     String    @map("author_id") @db.Uuid
+  body         String // stored as written
+  isOfficial   Boolean   @default(false) @map("is_official") // admin official reply
+  hiddenAt     DateTime? @map("hidden_at")
+  hiddenById   String?   @map("hidden_by_id") @db.Uuid
+  hiddenReason String?   @map("hidden_reason")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  issue    Issue @relation(fields: [issueId], references: [id])
+  author   User  @relation("CommentAuthor", fields: [authorId], references: [id])
+  hiddenBy User? @relation("CommentHiddenBy", fields: [hiddenById], references: [id])
+
+  @@index([issueId, createdAt])
+  @@map("comments")
+}
+
+// ---------- Work ----------
+
+// One row per assignment. Reassignment ends the old row (endedAt) and creates a new one.
+// At most one active (endedAt IS NULL) assignment per issue — partial unique index in the migration.
+model Assignment {
+  id                     String    @id @default(uuid()) @db.Uuid
+  issueId                String    @map("issue_id") @db.Uuid
+  contractorId           String    @map("contractor_id") @db.Uuid
+  assignedById           String    @map("assigned_by_id") @db.Uuid
+  departmentId           String    @map("department_id") @db.Uuid // assigning department, logged
+  deadlineAt             DateTime  @map("deadline_at") // set only by the admin
+  // Deadline clock pauses while a submission awaits review
+  pausedSince            DateTime? @map("paused_since")
+  pausedSeconds          Int       @default(0) @map("paused_seconds")
+  lastEscalationNoticeAt DateTime? @map("last_escalation_notice_at")
+  startedAt              DateTime? @map("started_at") // contractor marked IN_PROGRESS
+  endedAt                DateTime? @map("ended_at")
+  endReason              String?   @map("end_reason")
+  createdAt              DateTime  @default(now()) @map("created_at")
+
+  issue       Issue              @relation(fields: [issueId], references: [id])
+  contractor  User               @relation("AssignmentContractor", fields: [contractorId], references: [id])
+  assignedBy  User               @relation("AssignmentAssignedBy", fields: [assignedById], references: [id])
+  department  Department         @relation(fields: [departmentId], references: [id])
+  submissions RepairSubmission[]
+
+  @@index([contractorId, endedAt])
+  @@index([issueId])
+  @@map("assignments")
+}
+
+// Repair evidence. Own lifecycle: SUBMITTED -> APPROVED | REJECTED. Issue stays IN_PROGRESS meanwhile.
+model RepairSubmission {
+  id              String           @id @default(uuid()) @db.Uuid
+  issueId         String           @map("issue_id") @db.Uuid
+  assignmentId    String           @map("assignment_id") @db.Uuid
+  contractorId    String           @map("contractor_id") @db.Uuid
+  clientRequestId String           @map("client_request_id") // safe upload retries
+  status          SubmissionStatus @default(SUBMITTED)
+  note            String?
+  capturedAt      DateTime?        @map("captured_at") // original capture time from the device
+  deviceLat       Float?           @map("device_lat")
+  deviceLng       Float?           @map("device_lng")
+  deviceAccuracyM Float?           @map("device_accuracy_m")
+  aiVerdict       AiVerdict?       @map("ai_verdict")
+  aiVerdictReason String?          @map("ai_verdict_reason")
+  aiCheckedAt     DateTime?        @map("ai_checked_at")
+  reviewedById    String?          @map("reviewed_by_id") @db.Uuid
+  reviewedAt      DateTime?        @map("reviewed_at")
+  reviewReason    String?          @map("review_reason") // mandatory on REJECTED
+  createdAt       DateTime         @default(now()) @map("created_at")
+
+  issue      Issue      @relation(fields: [issueId], references: [id])
+  assignment Assignment @relation(fields: [assignmentId], references: [id])
+  contractor User       @relation("SubmissionContractor", fields: [contractorId], references: [id])
+  reviewedBy User?      @relation("SubmissionReviewer", fields: [reviewedById], references: [id])
+  photos     Photo[]
+
+  @@unique([contractorId, clientRequestId])
+  @@index([issueId, status])
+  @@map("repair_submissions")
+}
+
+// Stored image. originalKey = private full copy; publicKey = resized copy with EXIF/GPS stripped.
+model Photo {
+  id                 String    @id @default(uuid()) @db.Uuid
+  kind               PhotoKind
+  issueId            String    @map("issue_id") @db.Uuid
+  repairSubmissionId String?   @map("repair_submission_id") @db.Uuid
+  uploadedById       String    @map("uploaded_by_id") @db.Uuid
+  originalKey        String    @map("original_key")
+  publicKey          String?   @map("public_key")
+  mimeType           String    @map("mime_type") // detected from file content
+  width              Int
+  height             Int
+  sizeBytes          Int       @map("size_bytes")
+  sha256             String
+  capturedAt         DateTime? @map("captured_at")
+  createdAt          DateTime  @default(now()) @map("created_at")
+
+  issue            Issue             @relation(fields: [issueId], references: [id])
+  repairSubmission RepairSubmission? @relation(fields: [repairSubmissionId], references: [id])
+  uploadedBy       User              @relation(fields: [uploadedById], references: [id])
+
+  @@index([issueId])
+  @@map("photos")
+}
+
+// ---------- Notifications & audit ----------
+
+// In-app only, polled by the web app. Text is rendered in the web app from type + params (i18n).
+model Notification {
+  id        String           @id @default(uuid()) @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  type      NotificationType
+  issueId   String?          @map("issue_id") @db.Uuid
+  params    Json?
+  readAt    DateTime?        @map("read_at")
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  user  User   @relation(fields: [userId], references: [id])
+  issue Issue? @relation(fields: [issueId], references: [id])
+
+  @@index([userId, readAt, createdAt])
+  @@map("notifications")
+}
+
+// Append-only. Written in the same transaction as the change it records.
+model AuditLog {
+  id         BigInt   @id @default(autoincrement())
+  actorId    String?  @map("actor_id") @db.Uuid // null = system / seed / background job
+  actorRole  Role?    @map("actor_role") // snapshot at the time of the action
+  action     String // constant from src/audit/actions.js, e.g. ISSUE_STATUS_CHANGED
+  targetType String   @map("target_type") // e.g. ISSUE, USER, ASSIGNMENT
+  targetId   String   @map("target_id")
+  reason     String?
+  metadata   Json? // e.g. { from: "REPORTED", to: "ACKNOWLEDGED" }
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([targetType, targetId, createdAt])
+  @@index([actorId, createdAt])
+  @@map("audit_logs")
+}
