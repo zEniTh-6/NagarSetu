@@ -53,7 +53,7 @@ export const envSchema = z
   EMBED_TIMEOUT_MS: z.coerce.number().int().min(1000).max(60_000).default(15_000),
   // Text similarity (cosine, 0–1) at or above which a nearby same-category report counts as a
   // possible duplicate. Starting value; tune with `npm run ai:similarity` (OD-4).
-  DUPLICATE_SIMILARITY_THRESHOLD: z.coerce.number().min(0.3).max(0.99).default(0.75),
+  DUPLICATE_SIMILARITY_THRESHOLD: z.coerce.number().min(0.3).max(0.99).default(0.8),
 
   // Uploads (local disk in development, behind the storage interface)
   UPLOAD_DIR: z.string().min(1).default("uploads"),

@@ -45,7 +45,7 @@ describe("duplicate check before submitting", () => {
     expect(res.body.candidates).toHaveLength(1);
     expect(res.body.candidates[0]).toMatchObject({ id: existing.id, status: "REPORTED", category: { key: "ROADS" }, supporters: 0 });
     expect(res.body.candidates[0].distanceM).toBeLessThan(15);
-    expect(res.body.candidates[0].similarity).toBeGreaterThanOrEqual(0.75);
+    expect(res.body.candidates[0].similarity).toBeGreaterThanOrEqual(0.8);
   });
 
   it("a different category at the same spot is not a duplicate", async () => {
