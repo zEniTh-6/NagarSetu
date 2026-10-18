@@ -13,7 +13,13 @@ const postgresUrl = z
   .url()
   .refine((v) => /^postgres(ql)?:\/\//.test(v), "must be a postgresql:// URL");
 
-export const envSchema = z.object({
+const secret = z
+  .string()
+  .min(32, "must be at least 32 characters (see .env.example for a generator command)")
+  .refine((v) => !v.startsWith("change_me"), "still has the placeholder value from .env.example");
+
+export const envSchema = z
+  .object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().int().min(1).max(65535).default(4000),
   WEB_ORIGIN: z.string().url(),
@@ -23,7 +29,29 @@ export const envSchema = z.object({
     .default("100kb"),
   DATABASE_URL: postgresUrl,
   TEST_DATABASE_URL: postgresUrl.optional(),
-});
+
+  // Auth
+  JWT_SECRET: secret,
+  OTP_SECRET: secret,
+  BCRYPT_COST: z.coerce.number().int().min(4).max(15).default(12),
+
+  // Email: "log" prints emails to the console (dev), "smtp" sends them, "memory" is for tests.
+  MAIL_TRANSPORT: z.enum(["log", "smtp", "memory"]).default("log"),
+  MAIL_FROM: z.string().min(3).default("NagarSetu <no-reply@nagarsetu.local>"),
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),
+  SMTP_SECURE: z.enum(["true", "false"]).default("false").transform((v) => v === "true"),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  })
+  .superRefine((e, ctx) => {
+    if (e.MAIL_TRANSPORT === "smtp" && !e.SMTP_HOST) {
+      ctx.addIssue({ code: "custom", path: ["SMTP_HOST"], message: "required when MAIL_TRANSPORT=smtp" });
+    }
+    if (e.NODE_ENV === "production" && e.BCRYPT_COST < 12) {
+      ctx.addIssue({ code: "custom", path: ["BCRYPT_COST"], message: "must be at least 12 in production" });
+    }
+  });
 
 /** Parse an env object. Throws an Error listing every invalid variable (values are not printed). */
 export function parseEnv(source) {

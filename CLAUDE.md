@@ -23,7 +23,7 @@ Decisions taken so far: docs/decisions.md. Future scope (do not build): docs/fut
 - Images: sharp resize, check type from file content (magic bytes), strip EXIF/GPS from public copies.
   Local disk in dev behind a storage interface.
 - Jobs: pg-boss (validation retries, embeddings, deadline checks).
-- Notifications: DB table, polled by the web app. In-app only. Email only for signup OTP (SMTP).
+- Notifications: DB table, polled by the web app. In-app only. Email (SMTP) only for the signup OTP and password reset links.
 - Tests: Vitest + Supertest. Fixture photos and multilingual texts in server/test/fixtures.
 
 ## Domain rules (must not be broken)

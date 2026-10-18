@@ -1,7 +1,7 @@
 // Seed: departments, categories (from categories.json) and one admin per department.
 // Safe to run again: existing rows are kept and existing admins' passwords are NOT reset.
 import crypto from "node:crypto";
-import bcrypt from "bcrypt";
+import { hashPassword } from "../auth/password.js";
 import { categoryRules } from "../rules/categories.js";
 import { writeAudit, AuditAction, AuditTarget } from "../audit/audit.js";
 
@@ -28,7 +28,7 @@ export const DEPARTMENTS = [
   },
 ];
 
-export const BCRYPT_COST = 12;
+
 
 /** 16 random characters from an unambiguous alphabet (no 0/O, 1/l/I). */
 export function randomPassword(length = 16) {
@@ -66,7 +66,7 @@ export async function seed(prisma) {
     if (exists) continue;
 
     const password = randomPassword();
-    const passwordHash = await bcrypt.hash(password, BCRYPT_COST);
+    const passwordHash = await hashPassword(password);
     await prisma.$transaction(async (tx) => {
       const admin = await tx.user.create({
         data: {

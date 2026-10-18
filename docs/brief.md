@@ -24,7 +24,7 @@ The goal is NOT just a complaint portal. The system should make the issue lifecy
 - Image handling: sharp for resizing, file storage (local disk in development; S3-compatible object storage such as Cloudinary or Supabase Storage for deployment). Strip GPS data from public copies. Check file type from content, not only the extension.
 - Background jobs: pg-boss (runs on the existing Postgres, with retries and scheduled jobs) for validation retries, embedding, and deadline checks.
 - Notifications: a database table polled by the app (in-app only).
-- Signup OTP: email OTP via SMTP (SMS costs money).
+- Signup OTP: email OTP via SMTP (SMS costs money). Forgot-password links are also sent by email.
 - Testing: Vitest or Jest with Supertest, plus a small test set of real photos and multilingual descriptions for the AI parts.
 - Version control: Git/GitHub.
 - Keep the AI layer replaceable so Gemini or the embedding model can be swapped later.
@@ -146,7 +146,7 @@ Repair review is a separate record with its own states: SUBMITTED → APPROVED o
 
 ## Notifications
 
-In-app only (no email or SMS, except the signup OTP). Triggered at: acknowledged, rejected (with reason), assigned, in progress, resolved, rework requested, escalated, dispute raised, official admin reply.
+In-app only (no email or SMS, except the signup OTP and password reset links). Triggered at: acknowledged, rejected (with reason), assigned, in progress, resolved, rework requested, escalated, dispute raised, official admin reply.
 
 ## Feed, comments, upvotes
 

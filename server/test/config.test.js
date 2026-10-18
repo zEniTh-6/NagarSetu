@@ -7,6 +7,8 @@ const valid = {
   WEB_ORIGIN: "http://localhost:5173",
   JSON_BODY_LIMIT: "100kb",
   DATABASE_URL: "postgresql://u:p@localhost:5432/nagarsetu",
+  JWT_SECRET: "a".repeat(32),
+  OTP_SECRET: "b".repeat(32),
 };
 
 describe("env config", () => {
@@ -35,6 +37,20 @@ describe("env config", () => {
     expect(() => parseEnv({ ...valid, WEB_ORIGIN: "not a url" })).toThrow(/WEB_ORIGIN/);
     expect(() => parseEnv({ ...valid, PORT: "99999" })).toThrow(/PORT/);
     expect(() => parseEnv({ ...valid, JSON_BODY_LIMIT: "lots" })).toThrow(/JSON_BODY_LIMIT/);
+  });
+
+  it("rejects short or placeholder secrets", () => {
+    expect(() => parseEnv({ ...valid, JWT_SECRET: "short" })).toThrow(/JWT_SECRET/);
+    expect(() => parseEnv({ ...valid, OTP_SECRET: "change_me_to_a_long_random_string_please" })).toThrow(/placeholder/);
+  });
+
+  it("requires SMTP_HOST when MAIL_TRANSPORT=smtp", () => {
+    expect(() => parseEnv({ ...valid, MAIL_TRANSPORT: "smtp" })).toThrow(/SMTP_HOST/);
+    expect(parseEnv({ ...valid, MAIL_TRANSPORT: "smtp", SMTP_HOST: "smtp.example.com" }).SMTP_PORT).toBe(587);
+  });
+
+  it("refuses a low bcrypt cost in production", () => {
+    expect(() => parseEnv({ ...valid, NODE_ENV: "production", BCRYPT_COST: "4" })).toThrow(/BCRYPT_COST/);
   });
 
   it("does not leak secret values in the error message", () => {
