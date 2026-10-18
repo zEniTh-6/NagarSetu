@@ -47,7 +47,7 @@ export const envSchema = z
   // AI (Gemini). Without a key the server still runs: reports are saved as "validation pending".
   GEMINI_API_KEY: z.string().optional(),
   GEMINI_MODEL: z.string().min(1).default("gemini-3.8-flash"),
-  GEMINI_TIMEOUT_MS: z.coerce.number().int().min(1000).max(120_000).default(20_000),
+  GEMINI_TIMEOUT_MS: z.coerce.number().int().min(1000).max(120_000).default(45_000),
 
   // Uploads (local disk in development, behind the storage interface)
   UPLOAD_DIR: z.string().min(1).default("uploads"),

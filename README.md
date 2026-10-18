@@ -169,6 +169,15 @@ elsewhere: the files are changed in place.
 to the real Gemini model and prints expected vs actual verdicts. It needs `GEMINI_API_KEY` and
 is not part of `npm test`.
 
+- Free-tier keys have small per-minute **and per-day** limits. The script pauses between photos,
+  retries when Gemini is overloaded, and stops as soon as the daily quota is used up.
+- Results are saved locally (`.ai-results.local.json`, not committed), so running it again only
+  checks photos that have no result yet. `npm run ai:photos -- --fresh` re-checks everything,
+  `npm run ai:photos -- --only selfie.jpg` checks one photo.
+- See your key's limits per model at https://aistudio.google.com (Usage / Rate limits). A "lite"
+  model usually has higher free limits: set e.g. `GEMINI_MODEL=gemini-3.1-flash-lite` in `.env`
+  to compare.
+
 Errors come back as JSON (`{ error: { code, message } }`); in PowerShell, look at the error
 details printed under the red text.
 

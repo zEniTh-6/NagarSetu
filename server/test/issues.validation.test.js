@@ -135,5 +135,8 @@ describe("Gemini error messages", () => {
     expect(e).toMatchObject({ kind: "rate_limited", retryAfterSeconds: 46 });
     expect(e.message.length).toBeLessThan(120);
     expect(describeFailureForTest(new Error("aborted"), true).kind).toBe("timeout");
+    const daily = Object.assign(new Error('{"quotaId":"GenerateRequestsPerDayPerProjectPerModel-FreeTier"}'), { status: 429 });
+    expect(describeFailureForTest(daily, false).kind).toBe("daily_quota");
+    expect(describeFailureForTest(Object.assign(new Error("high demand"), { status: 503 }), false).kind).toBe("unavailable");
   });
 });

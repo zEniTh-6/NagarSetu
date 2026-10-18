@@ -148,7 +148,8 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 ### D-014 — Photo check runs in the background (2026-10-18)
 
 - The report is saved and answered immediately ("checking"); a pg-boss job calls Gemini
-  (`gemini-3.8-flash`, configurable) with a 20 s timeout and up to 6 attempts with growing delays.
+  (`gemini-3.8-flash`, configurable) with a 45 s timeout (raised from 20 s after real runs hit
+  slow answers under load) and up to 6 attempts with growing delays.
   The web app polls the issue for the result. Failures add "validation pending"; after the last
   attempt the issue is left for the admin with a PENDING_REVIEW flag.
 - The citizen's description is not sent with the photo check (untrusted text should not steer it).

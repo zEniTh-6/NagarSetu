@@ -5,7 +5,11 @@ import { env } from "../config/env.js";
 import { buildPhotoPrompt, photoCheckJsonSchema, photoCheckSchema } from "./photoCheck.js";
 
 export class AiUnavailableError extends Error {
-  /** @param {{ kind?: "timeout"|"rate_limited"|"error", retryAfterSeconds?: number }} [info] */
+  /**
+   * kind: "timeout" | "rate_limited" (per-minute quota) | "daily_quota" (free tier per-day quota used up)
+   *       | "unavailable" (Gemini overloaded / 5xx) | "error"
+   * @param {{ kind?: string, retryAfterSeconds?: number }} [info]
+   */
   constructor(message, cause, { kind = "error", retryAfterSeconds } = {}) {
     super(message);
     this.name = "AiUnavailableError";
@@ -19,6 +23,12 @@ export class AiUnavailableError extends Error {
 function describeFailure(err, timedOut) {
   if (timedOut) return new AiUnavailableError(`Gemini timed out after ${env.GEMINI_TIMEOUT_MS / 1000} s`, err, { kind: "timeout" });
   const status = err?.status;
+  if (status === 429 && /PerDay/i.test(err.message ?? "")) {
+    return new AiUnavailableError(`Gemini daily free quota used up for ${env.GEMINI_MODEL}`, err, { kind: "daily_quota" });
+  }
+  if (status === 503 || status === 500 || status === 502 || status === 504) {
+    return new AiUnavailableError(`Gemini is overloaded or unavailable (HTTP ${status})`, err, { kind: "unavailable" });
+  }
   if (status === 429) {
     const match = /retry in ([\d.]+)s/i.exec(err.message ?? "");
     const retryAfterSeconds = match ? Math.ceil(Number(match[1])) : undefined;
