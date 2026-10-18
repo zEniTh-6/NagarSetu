@@ -71,6 +71,63 @@ so after changing it run `docker compose down -v` and then `docker compose up -d
 - **Password change has no effect** — the password is fixed when the volume is first created.
   Reset with `docker compose down -v` (deletes data).
 
-## Server and web app
+## 4. Server (Phase 1a)
 
-Coming in later phases (`server/`: Express + Prisma, `web/`: React + Vite).
+Needs **Node.js 22.18 or newer** (Node 24 LTS recommended): the Prisma 7 client is generated as
+TypeScript files, which Node runs directly. Check with `node -v`.
+
+First time only — your `.env` from step 1 is missing the server settings:
+
+```powershell
+# Compare with the template and copy over the new "Server" lines
+# (NODE_ENV, PORT, WEB_ORIGIN, JSON_BODY_LIMIT, DATABASE_URL, TEST_DATABASE_URL).
+# Use the same password as POSTGRES_PASSWORD inside both URLs.
+notepad .env.example
+notepad .env
+```
+
+Then, with the database running (step 1):
+
+```powershell
+cd server
+npm install                  # also generates the Prisma client
+
+# Create the tables. Use "deploy" the first time: the database already has the
+# postgis/vector extensions from db/init.sql, and "migrate dev" would offer to reset it.
+npm run db:deploy
+
+# Departments (SMKC names), categories and one admin per department:
+#   admin.construction@ / admin.swm@ / admin.electrical@nagarsetu.local
+# The admin passwords are printed ONCE. Save them; each admin must change it on first login.
+npm run db:seed
+
+npm test                     # creates the nagarsetu_test database on first run
+npm run dev                  # API on http://localhost:4000
+```
+
+Check the API in a second PowerShell window:
+
+```powershell
+Invoke-RestMethod http://localhost:4000/api/health   # status: ok, db: ok
+```
+
+Later, when a phase changes `server/prisma/schema.prisma`, create and apply a migration with
+`npm run db:migrate -- --name <short_name>` (from `server/`).
+
+### Tests
+
+- Tests use a **separate database** (`TEST_DATABASE_URL`, its name must end in `_test`).
+  They empty it between tests and never touch your dev data.
+- The test setup creates that database if it doesn't exist and applies all migrations to it.
+- Run one file: `npx vitest run test/audit.test.js`. Watch mode: `npm run test:watch`.
+
+### Server troubleshooting
+
+- **"Invalid environment configuration"** — a variable is missing from `.env`; the message names it.
+- **`P1000` / authentication failed** — the password in `DATABASE_URL` doesn't match `POSTGRES_PASSWORD`.
+- **"We need to reset the public schema"** — you ran `db:migrate` on a fresh database; run `npm run db:deploy` instead.
+- **Lost the admin passwords** — reset the database (`docker compose down -v`, then steps 1 and 4 again). This deletes all data.
+
+## Web app
+
+Coming in a later phase (`web/`: React + Vite).
