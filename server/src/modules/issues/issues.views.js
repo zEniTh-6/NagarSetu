@@ -18,6 +18,9 @@ const base = (issue, location, photo) => ({
   id: issue.id,
   status: issue.status,
   statusReason: issue.statusReason,
+  // REJECTED: NOT_VALID / NOT_OUR_JURISDICTION ("forwarded") / OTHER; DUPLICATE: the open issue
+  rejectionType: issue.rejectionType ?? null,
+  duplicateOfId: issue.duplicateOfId ?? null,
   category: { key: issue.category.key, name: issue.category.name },
   description: issue.description,
   location,
@@ -34,9 +37,12 @@ export function citizenIssueView(issue, location, photo) {
   return { ...base(issue, location, photo), validation: citizenValidation(issue), suggestedCategory: suggestion };
 }
 
-export function adminIssueView(issue, location, photo) {
+export function adminIssueView(issue, location, photo, extras = {}) {
   return {
     ...base(issue, location, photo),
+    priority: issue.priority,
+    priorityReason: issue.priorityReason,
+    acknowledgedAt: issue.acknowledgedAt,
     clientRequestId: issue.clientRequestId,
     reporter: issue.reporter ? { id: issue.reporter.id, name: issue.reporter.name } : null,
     departmentId: issue.departmentId,
@@ -53,6 +59,13 @@ export function adminIssueView(issue, location, photo) {
       checkedAt: issue.aiCheckedAt,
       embedded: Boolean(issue.embeddedAt),
     },
-    flags: (issue.flags ?? []).map((f) => ({ id: f.id, type: f.type, reason: f.reason, createdAt: f.createdAt })),
+    flags: (issue.flags ?? []).map((f) => ({
+      id: f.id,
+      type: f.type,
+      reason: f.reason,
+      createdAt: f.createdAt,
+      confirmed: f.confirmedAt ? { at: f.confirmedAt, reason: f.confirmReason } : null,
+    })),
+    ...extras,
   };
 }

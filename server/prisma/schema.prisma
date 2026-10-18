@@ -86,6 +86,7 @@ enum OtpPurpose {
 enum SupportSource {
   SUPPORT_BUTTON
   DUPLICATE_ACCEPTED
+  LINKED_BY_ADMIN // reporter/supporter of an issue the admin linked as a duplicate of this one
 }
 
 enum NotificationType {
@@ -98,6 +99,8 @@ enum NotificationType {
   ESCALATED
   DISPUTE_RAISED
   OFFICIAL_REPLY
+  REROUTED // admin moved the issue to another category/department
+  LINKED_DUPLICATE // admin linked the issue to an existing one; support still counts
 }
 
 // ---------- Organisation ----------
@@ -170,6 +173,7 @@ model User {
   hiddenComments      Comment[]            @relation("CommentHiddenBy")
   flagsRaised         IssueFlag[]          @relation("FlagRaisedBy")
   flagsCleared        IssueFlag[]          @relation("FlagClearedBy")
+  flagsConfirmed      IssueFlag[]          @relation("FlagConfirmedBy")
   contractorJobs      Assignment[]         @relation("AssignmentContractor")
   assignmentsMade     Assignment[]         @relation("AssignmentAssignedBy")
   submissions         RepairSubmission[]   @relation("SubmissionContractor")
@@ -314,19 +318,24 @@ model Issue {
 // Flags are independent of status and never block the workflow.
 // A flag is "active" while clearedAt is null.
 model IssueFlag {
-  id          String    @id @default(uuid()) @db.Uuid
-  issueId     String    @map("issue_id") @db.Uuid
-  type        FlagType
-  reason      String? // e.g. "validation pending", "GPS 800 m from pin (accuracy 10 m)"
-  raisedById  String?   @map("raised_by_id") @db.Uuid // null = system
-  clearedAt   DateTime? @map("cleared_at")
-  clearedById String?   @map("cleared_by_id") @db.Uuid
-  clearReason String?   @map("clear_reason")
-  createdAt   DateTime  @default(now()) @map("created_at")
+  id            String    @id @default(uuid()) @db.Uuid
+  issueId       String    @map("issue_id") @db.Uuid
+  type          FlagType
+  reason        String? // e.g. "validation pending", "GPS 800 m from pin (accuracy 10 m)"
+  raisedById    String?   @map("raised_by_id") @db.Uuid // null = system
+  clearedAt     DateTime? @map("cleared_at")
+  clearedById   String?   @map("cleared_by_id") @db.Uuid
+  clearReason   String?   @map("clear_reason")
+  // Admin looked at it and agrees ("confirmed"); the flag stays active as information.
+  confirmedAt   DateTime? @map("confirmed_at")
+  confirmedById String?   @map("confirmed_by_id") @db.Uuid
+  confirmReason String?   @map("confirm_reason")
+  createdAt     DateTime  @default(now()) @map("created_at")
 
-  issue     Issue @relation(fields: [issueId], references: [id])
-  raisedBy  User? @relation("FlagRaisedBy", fields: [raisedById], references: [id])
-  clearedBy User? @relation("FlagClearedBy", fields: [clearedById], references: [id])
+  issue       Issue @relation(fields: [issueId], references: [id])
+  raisedBy    User? @relation("FlagRaisedBy", fields: [raisedById], references: [id])
+  clearedBy   User? @relation("FlagClearedBy", fields: [clearedById], references: [id])
+  confirmedBy User? @relation("FlagConfirmedBy", fields: [confirmedById], references: [id])
 
   @@index([issueId, type])
   @@map("issue_flags")

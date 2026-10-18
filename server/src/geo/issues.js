@@ -42,3 +42,13 @@ export async function issueLocations(db, ids) {
     FROM issues WHERE id IN (${Prisma.join(ids.map((id) => Prisma.sql`${id}::uuid`))})`;
   return Object.fromEntries(rows.map((r) => [r.id, { lat: r.lat, lng: r.lng }]));
 }
+
+/** Metres from one issue to each of the others: { [otherId]: metres }. */
+export async function distancesFrom(db, issueId, otherIds) {
+  if (!otherIds.length) return {};
+  const rows = await db.$queryRaw`
+    SELECT o.id::text AS id, ST_Distance(o.location, i.location) AS m
+    FROM issues i JOIN issues o ON o.id IN (${Prisma.join(otherIds.map((id) => Prisma.sql`${id}::uuid`))})
+    WHERE i.id = ${issueId}::uuid`;
+  return Object.fromEntries(rows.map((r) => [r.id, Math.round(r.m)]));
+}

@@ -55,6 +55,13 @@ export const envSchema = z
   // possible duplicate. Starting value; tune with `npm run ai:similarity` (OD-4).
   DUPLICATE_SIMILARITY_THRESHOLD: z.coerce.number().min(0.3).max(0.99).default(0.8),
 
+  // Community signal (admin review): warn "low supporter diversity" when at least
+  // LOW_DIVERSITY_MIN_ACCOUNTS distinct accounts back an issue and at least LOW_DIVERSITY_NEW_SHARE
+  // of them were created in the last NEW_ACCOUNT_DAYS days. Starting values (D-018).
+  LOW_DIVERSITY_MIN_ACCOUNTS: z.coerce.number().int().min(1).default(5),
+  LOW_DIVERSITY_NEW_SHARE: z.coerce.number().min(0).max(1).default(0.5),
+  NEW_ACCOUNT_DAYS: z.coerce.number().int().min(1).max(365).default(7),
+
   // Uploads (local disk in development, behind the storage interface)
   UPLOAD_DIR: z.string().min(1).default("uploads"),
   MAX_UPLOAD_MB: z.coerce.number().positive().max(25).default(10),

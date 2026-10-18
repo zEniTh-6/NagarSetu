@@ -194,3 +194,40 @@ write the choice, the reason and the date, and move it under "Decisions taken".
   broken footpath within 15 m) may be offered as a possible duplicate.
 - **Revisit** if real reports show many wrong popups or missed duplicates; re-run
   `npm run ai:similarity` after adding those texts to `test/fixtures/texts.json`.
+
+### D-017 — Citizens can't change a complaint after submitting (2026-10-18)
+
+- **Decision (project owner):** once a complaint is submitted, the citizen cannot change it (no
+  category change, no edits). Only the department admin can reroute it to another category.
+- **Differs from the brief**, which says the citizen can change the AI's department suggestion.
+  The AI's suggested category is shown to the admin instead (review screen, `ai.suggestedCategory`).
+- **Still allowed** (decided earlier): retaking the photo when the AI asks for it (OD-3 / D-010),
+  and withdrawing before an admin accepts the report.
+
+### D-018 — Admin review rules (2026-10-18)
+
+- **Exits from REPORTED:** accept (→ ACKNOWLEDGED, priority optional in the same step), reject
+  (reason required; type NOT_VALID or OTHER), forward (REJECTED with type NOT_OUR_JURISDICTION;
+  the reason says where it went), link as duplicate, reroute. Two admins at once: the first wins,
+  the second gets 409.
+- **Reroute** only while REPORTED: the new department's admin then reviews it from the start. The
+  old category's priority and POSSIBLE_DUPLICATE flags are cleared and the duplicate check runs again
+  in the new category, using the stored embedding (no new AI call). After acceptance the category is
+  fixed (assignments start then).
+- **Link as duplicate:** only to an open issue of the same category in the same department (a link
+  to a duplicate follows to its open issue). The reporter, supporters and upvotes are added to the
+  open issue ("support still counts"); nothing is deleted.
+- **Final priority:** the AI risk level is the suggestion. Choosing a different level needs a reason,
+  which is stored and audited. With no AI result yet, the reason is optional.
+- **Flags:** SUSPICIOUS, POSSIBLE_DUPLICATE and PENDING_REVIEW can be cleared or confirmed, each with
+  a reason. Confirming keeps the flag as information; no flag blocks anything.
+- **Notifications:** accept, reject/forward, link and reroute notify the reporter **and the
+  supporters**. Notifications store a type plus data (the admin's reason as written), so the web app
+  shows them in the user's language.
+- **Community signal** (shown next to the AI risk, never mixed with it): upvotes, supporters,
+  distinct accounts (the reporter never counts) and how many of those are new. **Low supporter
+  diversity** = at least 5 distinct accounts and at least half of them created in the last 7 days.
+  Information only. Starting values, set in `.env` (`LOW_DIVERSITY_MIN_ACCOUNTS`,
+  `LOW_DIVERSITY_NEW_SHARE`, `NEW_ACCOUNT_DAYS`).
+- **Next (Phase 4):** contractor assignment with the admin's deadline, and the contractor's side.
+

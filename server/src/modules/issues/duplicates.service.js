@@ -6,7 +6,7 @@
 import { AppError } from "../../lib/AppError.js";
 import { env } from "../../config/env.js";
 import { getCategoryRules } from "../../rules/categories.js";
-import { findDuplicateCandidates, setIssueEmbedding, ACTIVE_STATUSES } from "../../geo/duplicates.js";
+import { findDuplicateCandidates, setIssueEmbedding, getIssueEmbedding, ACTIVE_STATUSES } from "../../geo/duplicates.js";
 import { issueLocations } from "../../geo/issues.js";
 import { addFlag } from "./flags.js";
 
@@ -95,11 +95,17 @@ export const duplicateReason = (ids, how) =>
 /**
  * Background job: embed the description, store it, then look for similar nearby reports and
  * flag POSSIBLE_DUPLICATE (once). Returns "retry" when the embedding service failed.
+ * `recheck` (after an admin reroute): an issue that is already embedded is searched again in its
+ * new category with the stored vector (no new embedding call).
  */
-export async function runIssueEmbedding(prisma, { issueId }, { embed, threshold = env.DUPLICATE_SIMILARITY_THRESHOLD, model, now = new Date() }) {
+export async function runIssueEmbedding(prisma, { issueId, recheck = false }, { embed, threshold = env.DUPLICATE_SIMILARITY_THRESHOLD, model, now = new Date() }) {
   const issue = await prisma.issue.findUnique({ where: { id: issueId }, include: { category: true } });
   if (!issue) return { outcome: "skipped", reason: "issue not found" };
-  if (issue.embeddedAt) return { outcome: "skipped", reason: "already embedded" };
+  if (issue.embeddedAt) {
+    if (!recheck) return { outcome: "skipped", reason: "already embedded" };
+    const stored = await getIssueEmbedding(prisma, issueId);
+    if (stored) return searchAndFlag(prisma, issue, stored, threshold);
+  }
 
   let vector;
   try {
@@ -115,6 +121,11 @@ export async function runIssueEmbedding(prisma, { issueId }, { embed, threshold 
   }
 
   await setIssueEmbedding(prisma, issueId, vector, model ?? env.GEMINI_EMBEDDING_MODEL, now);
+  return searchAndFlag(prisma, issue, vector, threshold);
+}
+
+async function searchAndFlag(prisma, issue, vector, threshold) {
+  const issueId = issue.id;
   if (!ACTIVE_STATUSES.includes(issue.status)) return { outcome: "done", candidates: [] };
 
   const location = (await issueLocations(prisma, [issueId]))[issueId];
