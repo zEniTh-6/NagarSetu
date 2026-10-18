@@ -29,7 +29,7 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 ### OD-5 — Default deadlines per priority
 - **Question:** default deadline for each priority (Low / Medium / High / Critical), offered to the admin as a starting point.
 - **Brief suggests:** nothing yet. The admin always sets the final deadline.
-- **Status:** undecided
+- **Status:** **decided** — Critical 2 days, High 7, Medium 14, Low 30 (D-019); starting values in `.env`
 
 ### OD-6 — Embedding model and where it runs
 - **Question:** run a small multilingual model inside Node (e.g. Transformers.js), as a separate small service, or use a hosted embedding API?
@@ -230,4 +230,30 @@ write the choice, the reason and the date, and move it under "Decisions taken".
   Information only. Starting values, set in `.env` (`LOW_DIVERSITY_MIN_ACCOUNTS`,
   `LOW_DIVERSITY_NEW_SHARE`, `NEW_ACCOUNT_DAYS`).
 - **Next (Phase 4):** contractor assignment with the admin's deadline, and the contractor's side.
+
+### D-019 — Assignment, repair evidence and review (2026-10-19)
+
+- **Default deadlines (closes OD-5):** offered on the review screen from the final priority:
+  Critical 2 days, High 7, Medium 14, Low 30 (`DEADLINE_DAYS_*` in `.env`). The admin always sets
+  the final deadline; changing it later needs a reason and tells the contractor.
+- **Assign** only an ACKNOWLEDGED issue that **has a final priority**, to an active contractor who
+  has accepted the invite. One active assignment per issue (database rule). The status stays
+  ACKNOWLEDGED until the contractor starts. The assigning department is logged.
+- **Reassign** ends the old assignment with a reason (history kept). Not while a repair waits for
+  review. A deactivated contractor's jobs are NOT moved automatically; the dashboard counts them as
+  "needs reassignment".
+- **Repair evidence:** only after starting, one submission waiting for review at a time; upload
+  retries with the same request ID return the first submission (capture time kept). The deadline
+  clock pauses while it waits and resumes when the admin rejects it.
+- **Location:** with good GPS accuracy (≤ 50 m), a repair photo taken more than accuracy + 100 m
+  (`REPAIR_GPS_EXTRA_M`) from the issue adds a SUSPICIOUS flag. No GPS or poor accuracy is only
+  recorded. Nothing is rejected automatically.
+- **AI repair check:** Gemini compares the citizen's photo with the repair photo using the
+  category's repair rules (VALID / INVALID / UNCERTAIN + reason). Retried on failure; after the last
+  attempt the admin decides without it. The contractor doesn't see the AI result.
+- **Approve** is the only way to RESOLVED: the submission is APPROVED, the assignment ends, and the
+  repair photo's public copy (EXIF/GPS removed) is published to the citizen next to the original.
+  An INVALID AI verdict doesn't block it: the admin decides. **Reject** needs a reason, keeps the
+  issue IN_PROGRESS and asks the contractor for rework.
+- **Next (Phase 5):** escalation when the effective deadline passes, citizen feedback and disputes.
 

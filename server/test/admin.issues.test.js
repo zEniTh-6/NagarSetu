@@ -101,6 +101,9 @@ describe("issues table", () => {
     expect(res.body).toEqual({
       waitingForReview: 1,
       needsPriority: 1,
+      needsAssignment: 1,
+      repairsToReview: 0,
+      needsReassignment: 0,
       byStatus: { REPORTED: 1, ACKNOWLEDGED: 1, REJECTED: 1 },
       activeFlags: {}, // b's SUSPICIOUS flag no longer counts: b is closed
     });

@@ -22,6 +22,12 @@ const similarBody = z
   .strict();
 const idParams = z.object({ id: z.string().uuid() });
 const deactivateBody = z.object({ reason: z.string().trim().min(3).max(1000) }).strict();
+const listQuery = z
+  .object({
+    search: z.string().trim().max(100).optional(),
+    includeInactive: z.enum(["true", "false"]).default("false").transform((v) => v === "true"),
+  })
+  .strict();
 const tokenParams = z.object({ token: z.string().regex(tokenFormat, "invalid link") });
 const acceptBody = z.object({ password: passwordSchema }).strict();
 
@@ -30,6 +36,7 @@ export function adminContractorsRouter({ prisma }) {
   const r = Router();
   const c = makeContractorsController(prisma);
   r.use(requireAuth(prisma), requireRole("ADMIN"));
+  r.get("/", validate({ query: listQuery }), c.list);
   r.post("/similar", validate({ body: similarBody }), c.similar);
   r.post("/", validate({ body: createBody }), c.create);
   r.post("/:id/invite", validate({ params: idParams }), c.reissueInvite);

@@ -1,6 +1,8 @@
 import * as review from "./review.service.js";
 import * as issues from "./adminIssues.service.js";
 import { getIssue } from "../issues/issues.service.js";
+import * as work from "../work/assignments.service.js";
+import * as repairs from "../work/repairs.service.js";
 
 export const makeAdminIssuesController = ({ prisma, jobs }) => {
   // After an action, answer with the fresh review view.
@@ -42,6 +44,26 @@ export const makeAdminIssuesController = ({ prisma, jobs }) => {
     async clearFlag(req, res) {
       await review.clearFlag(prisma, { ...ids(req), flagId: req.validated.params.flagId, reason: req.validated.body.reason });
       res.json(await fresh(req));
+    },
+    async assign(req, res) {
+      await work.assignContractor(prisma, { ...ids(req), ...req.validated.body });
+      res.json(await fresh(req));
+    },
+    async reassign(req, res) {
+      await work.reassignContractor(prisma, { ...ids(req), ...req.validated.body });
+      res.json(await fresh(req));
+    },
+    async deadline(req, res) {
+      await work.changeDeadline(prisma, { ...ids(req), ...req.validated.body });
+      res.json(await fresh(req));
+    },
+    async approveSubmission(req, res) {
+      const { issueId } = await repairs.approveSubmission(prisma, { user: req.user, submissionId: req.validated.params.id, note: req.validated.body.note });
+      res.json({ issue: await getIssue(prisma, { user: req.user, issueId }) });
+    },
+    async rejectSubmission(req, res) {
+      const { issueId } = await repairs.rejectSubmission(prisma, { user: req.user, submissionId: req.validated.params.id, reason: req.validated.body.reason });
+      res.json({ issue: await getIssue(prisma, { user: req.user, issueId }) });
     },
     async confirmFlag(req, res) {
       await review.confirmFlag(prisma, { ...ids(req), flagId: req.validated.params.flagId, reason: req.validated.body.reason });

@@ -3,12 +3,19 @@ import { env } from "./config/env.js";
 import { prisma } from "./db/prisma.js";
 import { createLocalDiskStorage } from "./storage/storage.js";
 import { createJobQueue, createMemoryQueue } from "./jobs/queue.js";
-import { validatePhotoWithGemini } from "./ai/gemini.js";
+import { validatePhotoWithGemini, validateRepairWithGemini } from "./ai/gemini.js";
 import { embed } from "./ai/embed.js";
 
 const storage = createLocalDiskStorage();
 const jobs = env.JOBS_ENABLED
-  ? createJobQueue({ connectionString: env.DATABASE_URL, prisma, storage, validatePhoto: validatePhotoWithGemini, embed })
+  ? createJobQueue({
+      connectionString: env.DATABASE_URL,
+      prisma,
+      storage,
+      validatePhoto: validatePhotoWithGemini,
+      validateRepair: validateRepairWithGemini,
+      embed,
+    })
   : createMemoryQueue();
 
 await jobs.start();

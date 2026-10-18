@@ -1,12 +1,13 @@
-// Background jobs on the existing Postgres (pg-boss). One queue so far: photo validation.
+// Background jobs on the existing Postgres (pg-boss): report photo check, embeddings, repair photo check.
 import { PgBoss } from "pg-boss";
 import { runPhotoValidation, MAX_ATTEMPTS } from "../modules/issues/validation.service.js";
 import { runIssueEmbedding, MAX_EMBEDDING_ATTEMPTS } from "../modules/issues/duplicates.service.js";
+import { runRepairValidation, MAX_REPAIR_CHECK_ATTEMPTS } from "../modules/work/repairs.service.js";
 
-export const QUEUE = Object.freeze({ VALIDATE_PHOTO: "validate-photo", EMBED_ISSUE: "embed-issue" });
+export const QUEUE = Object.freeze({ VALIDATE_PHOTO: "validate-photo", EMBED_ISSUE: "embed-issue", VALIDATE_REPAIR: "validate-repair" });
 
 /** Real queue (used by `npm run dev` / `npm start`). */
-export function createJobQueue({ connectionString, prisma, storage, validatePhoto, embed }) {
+export function createJobQueue({ connectionString, prisma, storage, validatePhoto, embed, validateRepair }) {
   const boss = new PgBoss({ connectionString, schema: "pgboss" });
   boss.on("error", (err) => console.error("pg-boss error:", err));
 
@@ -35,6 +36,17 @@ export function createJobQueue({ connectionString, prisma, storage, validatePhot
         if (result.outcome === "retry") throw new Error(`Embedding will be retried: ${result.reason}`);
         return result;
       });
+      await boss.createQueue(QUEUE.VALIDATE_REPAIR, {
+        retryLimit: MAX_REPAIR_CHECK_ATTEMPTS - 1,
+        retryDelay: 30,
+        retryBackoff: true,
+        retryDelayMax: 30 * 60,
+      });
+      await boss.work(QUEUE.VALIDATE_REPAIR, async ([job]) => {
+        const result = await runRepairValidation(prisma, job.data, { validateRepair, storage });
+        if (result.outcome === "retry") throw new Error(`Repair check will be retried: ${result.reason}`);
+        return result;
+      });
       await this.sweep();
     },
 
@@ -47,6 +59,10 @@ export function createJobQueue({ connectionString, prisma, storage, validatePhot
     enqueueEmbedding({ issueId, recheck = false }) {
       const data = recheck ? { issueId, recheck: true } : { issueId };
       return boss.send(QUEUE.EMBED_ISSUE, data, { singletonKey: `${recheck ? "recheck" : "embed"}:${issueId}` });
+    },
+
+    enqueueRepairValidation({ submissionId }) {
+      return boss.send(QUEUE.VALIDATE_REPAIR, { submissionId }, { singletonKey: `repair:${submissionId}` });
     },
 
     /** On start-up, queue checks that never got queued (e.g. the server stopped right after a report). */
@@ -67,6 +83,13 @@ export function createJobQueue({ connectionString, prisma, storage, validatePhot
       });
       for (const issue of unembedded) await this.enqueueEmbedding({ issueId: issue.id });
       if (unembedded.length) console.log(`Queued ${unembedded.length} pending embedding(s)`);
+
+      const repairs = await prisma.repairSubmission.findMany({
+        where: { status: "SUBMITTED", aiVerdict: null, aiAttempts: { lt: MAX_REPAIR_CHECK_ATTEMPTS } },
+        select: { id: true },
+      });
+      for (const s of repairs) await this.enqueueRepairValidation({ submissionId: s.id });
+      if (repairs.length) console.log(`Queued ${repairs.length} pending repair check(s)`);
     },
 
     stop: () => boss.stop({ graceful: true }),
@@ -85,6 +108,10 @@ export function createMemoryQueue() {
     },
     async enqueueEmbedding(data) {
       sent.push({ name: QUEUE.EMBED_ISSUE, data });
+      return `memory-${sent.length}`;
+    },
+    async enqueueRepairValidation(data) {
+      sent.push({ name: QUEUE.VALIDATE_REPAIR, data });
       return `memory-${sent.length}`;
     },
     async sweep() {},

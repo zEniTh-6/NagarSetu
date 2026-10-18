@@ -101,6 +101,8 @@ enum NotificationType {
   OFFICIAL_REPLY
   REROUTED // admin moved the issue to another category/department
   LINKED_DUPLICATE // admin linked the issue to an existing one; support still counts
+  DEADLINE_CHANGED // to the contractor: the admin changed the deadline
+  ASSIGNMENT_ENDED // to the contractor: the job was given to someone else
 }
 
 // ---------- Organisation ----------
@@ -430,8 +432,13 @@ model RepairSubmission {
   deviceLat       Float?           @map("device_lat")
   deviceLng       Float?           @map("device_lng")
   deviceAccuracyM Float?           @map("device_accuracy_m")
+  // Distance between the device GPS and the issue location (PostGIS), null when no device location
+  gpsDistanceM    Float?           @map("gps_distance_m")
+  // AI repair check (suggestion only; the admin decides)
   aiVerdict       AiVerdict?       @map("ai_verdict")
   aiVerdictReason String?          @map("ai_verdict_reason")
+  aiModel         String?          @map("ai_model")
+  aiAttempts      Int              @default(0) @map("ai_attempts")
   aiCheckedAt     DateTime?        @map("ai_checked_at")
   reviewedById    String?          @map("reviewed_by_id") @db.Uuid
   reviewedAt      DateTime?        @map("reviewed_at")
