@@ -16,7 +16,7 @@ describe("seed", () => {
 
     const admins = await prisma.user.findMany({ where: { role: "ADMIN" }, include: { department: true } });
     expect(admins).toHaveLength(3);
-    expect(new Set(admins.map((a) => a.department.code))).toEqual(new Set(["ROADS", "SANITATION", "ELECTRICAL"]));
+    expect(new Set(admins.map((a) => a.department.code))).toEqual(new Set(["CONSTRUCTION", "SOLID_WASTE", "ELECTRICAL"]));
     for (const a of admins) {
       expect(a.mustChangePassword).toBe(true);
       expect(a.status).toBe("ACTIVE");
@@ -32,11 +32,22 @@ describe("seed", () => {
     }
   });
 
+  it("uses the SMKC department names", async () => {
+    await seed(prisma);
+    const depts = await prisma.department.findMany();
+    const names = Object.fromEntries(depts.map((d) => [d.code, d.name]));
+    expect(names).toEqual({
+      CONSTRUCTION: "Municipal Construction Department (Buildings and Roads)",
+      SOLID_WASTE: "Municipal Solid Waste Management Department",
+      ELECTRICAL: "Municipal Electrical Department",
+    });
+  });
+
   it("maps categories to the right departments", async () => {
     await seed(prisma);
     const cats = await prisma.category.findMany({ include: { department: true } });
     const map = Object.fromEntries(cats.map((c) => [c.key, c.department.code]));
-    expect(map).toEqual({ ROADS: "ROADS", GARBAGE: "SANITATION", STREETLIGHT: "ELECTRICAL" });
+    expect(map).toEqual({ ROADS: "CONSTRUCTION", GARBAGE: "SOLID_WASTE", STREETLIGHT: "ELECTRICAL" });
   });
 
   it("writes an audit row for each admin account it creates", async () => {

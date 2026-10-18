@@ -3,7 +3,7 @@
   "categories": {
     "ROADS": {
       "name": "Roads",
-      "department": "ROADS",
+      "department": "CONSTRUCTION",
       "duplicateRadiusM": 15,
       "photoPrompt": "Decide whether this photo shows damage to a road or footpath: a visible hole, crack or broken surface. Selfies, screenshots, indoor photos and intact roads are not valid. If the photo clearly shows a different civic problem (garbage, streetlight), suggest that category instead of INVALID. If unsure, answer UNCERTAIN.",
       "valid": ["visible hole (pothole) on a road or footpath", "crack in the road surface", "broken or missing road surface"],
@@ -17,7 +17,7 @@
     },
     "GARBAGE": {
       "name": "Garbage",
-      "department": "SANITATION",
+      "department": "SOLID_WASTE",
       "duplicateRadiusM": 30,
       "photoPrompt": "Decide whether this photo shows uncollected waste, an overflowing bin or a dumping spot in a public area. Selfies, screenshots and indoor photos are not valid. If the photo clearly shows a different civic problem (road damage, streetlight), suggest that category instead of INVALID. If unsure, answer UNCERTAIN.",
       "valid": ["uncollected waste in a public area", "overflowing bin", "dumping spot"],

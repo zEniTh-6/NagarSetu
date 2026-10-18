@@ -5,10 +5,27 @@ import bcrypt from "bcrypt";
 import { categoryRules } from "../rules/categories.js";
 import { writeAudit, AuditAction, AuditTarget } from "../audit/audit.js";
 
+// Named after the matching Sangli-Miraj-Kupwad Municipal Corporation (SMKC) departments.
+// NagarSetu is a college prototype, not an official SMKC platform (see docs/brief.md).
 export const DEPARTMENTS = [
-  { code: "ROADS", name: "Roads", adminEmail: "admin.roads@nagarsetu.local" },
-  { code: "SANITATION", name: "Sanitation", adminEmail: "admin.sanitation@nagarsetu.local" },
-  { code: "ELECTRICAL", name: "Electrical", adminEmail: "admin.electrical@nagarsetu.local" },
+  {
+    code: "CONSTRUCTION",
+    name: "Municipal Construction Department (Buildings and Roads)",
+    adminName: "Construction Admin",
+    adminEmail: "admin.construction@nagarsetu.local",
+  },
+  {
+    code: "SOLID_WASTE",
+    name: "Municipal Solid Waste Management Department",
+    adminName: "Solid Waste Management Admin",
+    adminEmail: "admin.swm@nagarsetu.local",
+  },
+  {
+    code: "ELECTRICAL",
+    name: "Municipal Electrical Department",
+    adminName: "Electrical Admin",
+    adminEmail: "admin.electrical@nagarsetu.local",
+  },
 ];
 
 export const BCRYPT_COST = 12;
@@ -54,7 +71,7 @@ export async function seed(prisma) {
       const admin = await tx.user.create({
         data: {
           email: d.adminEmail,
-          name: `${d.name} Admin`,
+          name: d.adminName,
           role: "ADMIN",
           departmentId: departments[d.code].id,
           passwordHash,

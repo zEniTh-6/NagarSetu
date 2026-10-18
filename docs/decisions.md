@@ -76,8 +76,16 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 - **Exit statuses from REPORTED:** `REJECTED`, `DUPLICATE` (linked to another issue),
   `WITHDRAWN` (reporter, before acknowledgement).
 
-### D-004 — Three departments in the seed (2026-10-18)
+### D-004 — Three departments in the seed, named after SMKC departments (2026-10-18)
 
-- **Choice:** Roads, Sanitation, Electrical, one per prototype category (Roads, Garbage,
-  Streetlight). A department without a category would never receive issues. Adding one later =
+- **Choice:** one department per prototype category, using the real Sangli-Miraj-Kupwad
+  Municipal Corporation (SMKC) department names (names only; no SMKC collaboration, see brief):
+
+  | Category | Department (code) | Seeded admin |
+  |---|---|---|
+  | Roads | Municipal Construction Department (Buildings and Roads) (`CONSTRUCTION`) | admin.construction@nagarsetu.local |
+  | Garbage | Municipal Solid Waste Management Department (`SOLID_WASTE`) | admin.swm@nagarsetu.local |
+  | Streetlight | Municipal Electrical Department (`ELECTRICAL`) | admin.electrical@nagarsetu.local |
+
+- **Why three:** A department without a category would never receive issues. Adding one later =
   one entry in `DEPARTMENTS` (server/src/seed/seed.js) plus a category in categories.json.

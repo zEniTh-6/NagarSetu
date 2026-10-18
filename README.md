@@ -96,7 +96,8 @@ npm install                  # also generates the Prisma client
 # postgis/vector extensions from db/init.sql, and "migrate dev" would offer to reset it.
 npm run db:deploy
 
-# Departments, categories and one admin per department.
+# Departments (SMKC names), categories and one admin per department:
+#   admin.construction@ / admin.swm@ / admin.electrical@nagarsetu.local
 # The admin passwords are printed ONCE. Save them; each admin must change it on first login.
 npm run db:seed
 
