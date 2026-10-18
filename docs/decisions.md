@@ -24,7 +24,7 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 ### OD-4 — Duplicate distances and similarity threshold
 - **Question:** exact duplicate radius per category and the text-similarity threshold.
 - **Brief suggests:** starting values Roads ~15 m, Garbage ~30 m, Streetlight ~10 m; similarity ~0.7–0.8. Tune on real data.
-- **Status:** undecided
+- **Status:** **threshold decided: 0.80** (D-016). Radii: starting values in categories.json, to be tuned on real data
 
 ### OD-5 — Default deadlines per priority
 - **Question:** default deadline for each priority (Low / Medium / High / Critical), offered to the admin as a starting point.
@@ -153,3 +153,44 @@ write the choice, the reason and the date, and move it under "Decisions taken".
   The web app polls the issue for the result. Failures add "validation pending"; after the last
   attempt the issue is left for the admin with a PENDING_REVIEW flag.
 - The citizen's description is not sent with the photo check (untrusted text should not steer it).
+
+### D-015 — Duplicate check design (2026-10-18)
+
+- **Match rule:** same category + active (REPORTED / ACKNOWLEDGED / IN_PROGRESS) + within the
+  category's `duplicateRadiusM` (PostGIS `ST_DWithin`) + cosine similarity of the descriptions
+  ≥ `DUPLICATE_SIMILARITY_THRESHOLD` (pgvector; 0.80 since D-016). Never auto-merged.
+- **Popup:** `POST /api/issues/duplicate-check` before submitting shows up to 5 matches
+  (category, description, status, distance, supporters). Accept → `POST /api/issues/:id/support`
+  (supporter, no new issue). Deny → the report carries `duplicateCandidateIds` → POSSIBLE_DUPLICATE
+  flag naming them.
+- **Server re-check:** the background embedding job also looks for older matches and flags
+  POSSIBLE_DUPLICATE once, so a skipped popup still reaches the admin.
+- **Embedding failure:** the popup check answers `{ checked: false }` and the citizen continues;
+  the job retries (up to 6 attempts). Nothing is blocked.
+- **No photos in the popup yet:** other citizens' photos become visible with the public feed
+  (OD-1, undecided). Until then the popup shows text, distance and status only.
+- **Tuning:** `npm run ai:similarity` measures the real model on `test/fixtures/texts.json`
+  (English, Hindi, Marathi, Hindi/Marathi in English letters).
+
+### D-016 — Duplicate similarity threshold 0.80 (2026-10-18)
+
+- **Decision:** `DUPLICATE_SIMILARITY_THRESHOLD` = **0.80** (was the starting value 0.75). Closes the
+  threshold part of OD-4.
+- **Measured** with `npm run ai:similarity` (`gemini-embedding-001`, 768 dims, 26 texts in
+  English, Hindi, Marathi and Hindi/Marathi in English letters):
+
+  | Pairs | Similarity |
+  |---|---|
+  | Same problem, different language — weakest | 0.839 (garbage-market en ↔ mr-latn) |
+  | Different problem, same category — strongest | 0.828 (pothole ↔ broken footpath) |
+  | Different problem, other category — strongest | 0.837 (separated by the category filter) |
+
+- **Why 0.80 and not the midpoint (~0.83):** the midpoint leaves only 0.009 below the weakest
+  same-problem pair, and real citizen text is shorter and messier than the fixtures, so it would
+  start missing real duplicates. A wrong match is cheap: only same-category, active reports inside
+  the category radius are compared, nothing is merged, and the citizen just answers "mine is
+  different". Missing a duplicate costs more (two crews, split supporters).
+- **Accepted trade-off:** two different same-category problems at the same spot (e.g. pothole and
+  broken footpath within 15 m) may be offered as a possible duplicate.
+- **Revisit** if real reports show many wrong popups or missed duplicates; re-run
+  `npm run ai:similarity` after adding those texts to `test/fixtures/texts.json`.

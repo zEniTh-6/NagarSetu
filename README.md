@@ -158,6 +158,27 @@ Remove-Item cookies.txt
 The photo check runs in the background (watch the `npm run dev` window). Without `GEMINI_API_KEY`
 it stays "CHECKING" and the server log says the key is missing; that's expected.
 
+### Duplicate check by hand (Phase 2b)
+
+After reporting (above), wait a few seconds for the background job to embed the description, then
+ask as a *different* verified citizen:
+
+```powershell
+curl.exe -s -b cookies2.txt -H "Content-Type: application/json" "$api/issues/duplicate-check" `
+  -d '{\"categoryKey\":\"ROADS\",\"lat\":16.85241,\"lng\":74.5815,\"description\":\"bus stand ke paas bada gaddha hai\"}'
+```
+
+`candidates` lists similar active reports nearby. Accept one with
+`POST /api/issues/<id>/support` (body `{"fromDuplicatePopup":true}`), or file a new report with
+`-F "duplicateCandidateIds=<id>"` (it gets a POSSIBLE_DUPLICATE flag for the admin).
+
+### Multilingual similarity check
+
+`npm run ai:similarity` (in `server/`) embeds the texts in `server/test/fixtures/texts.json` (the same
+problems in English, Hindi, Marathi and Hindi/Marathi typed in English letters) with the real
+model and shows how similar they score, plus a suggested `DUPLICATE_SIMILARITY_THRESHOLD`.
+Embeddings are cached locally, so re-runs cost nothing.
+
 ### Live AI check with real photos
 
 Put your photos in `server/test/fixtures/photos/`, then run `npm run fixtures:prepare` (in `server/`).

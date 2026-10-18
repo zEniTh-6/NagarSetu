@@ -23,7 +23,7 @@ afterAll(() => prisma.$disconnect());
 async function newReport(fields) {
   const res = await report(agent, fields);
   expect(res.status).toBe(201);
-  return { issueId: res.body.issue.id, job: jobs.sent.at(-1).data };
+  return { issueId: res.body.issue.id, job: jobs.sent.findLast((j) => j.name === "validate-photo").data };
 }
 const run = (job, validatePhoto) => runPhotoValidation(prisma, job, { validatePhoto, storage });
 const citizenState = async (issueId) => (await agent.get(`/api/issues/${issueId}`)).body.issue.validation;

@@ -27,7 +27,7 @@ const otherCitizen = async () => loginAgent(app, (await makeUser(prisma, { email
 describe("retake after INVALID", () => {
   it("replaces the photo, keeps the old one, resets the check and queues it again", async () => {
     const issue = await newIssue();
-    await runPhotoValidation(prisma, jobs.sent[0].data, { validatePhoto: fakeValidator({ verdict: "INVALID", reason: "Screenshot" }), storage });
+    await runPhotoValidation(prisma, jobs.sent.find((j) => j.name === "validate-photo").data, { validatePhoto: fakeValidator({ verdict: "INVALID", reason: "Screenshot" }), storage });
 
     const res = await agent.post(`/api/issues/${issue.id}/photo`).attach("photo", await cameraJpeg(), "retake.jpg");
     expect(res.status).toBe(200);
@@ -38,7 +38,7 @@ describe("retake after INVALID", () => {
     expect(photos[0].replacedAt).not.toBeNull();
     expect(photos[1].replacedAt).toBeNull();
     expect(res.body.issue.photo.id).toBe(photos[1].id);
-    expect(jobs.sent.at(-1).data).toEqual({ issueId: issue.id, photoId: photos[1].id });
+    expect(jobs.sent.findLast((j) => j.name === "validate-photo").data).toEqual({ issueId: issue.id, photoId: photos[1].id });
     expect(await prisma.auditLog.count({ where: { action: "ISSUE_PHOTO_REPLACED" } })).toBe(1);
   });
 

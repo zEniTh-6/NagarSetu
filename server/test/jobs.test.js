@@ -5,6 +5,7 @@ import { createJobQueue } from "../src/jobs/queue.js";
 import { resetDb } from "./helpers/db.js";
 import { makeTestApp, tempStorage } from "./helpers/app.js";
 import { citizenSetup, report, fakeValidator } from "./helpers/issues.js";
+import { fakeEmbed } from "./helpers/embed.js";
 
 let queue;
 beforeEach(() => resetDb(prisma));
@@ -21,6 +22,7 @@ describe("pg-boss photo check queue", () => {
       prisma,
       storage,
       validatePhoto: fakeValidator({ verdict: "VALID" }),
+      embed: fakeEmbed,
     });
     await queue.start();
     const app = makeTestApp({ storage, jobs: queue });

@@ -44,7 +44,10 @@ describe("creating a report", () => {
     const photo = await prisma.photo.findFirst({ where: { issueId: issue.id } });
     expect(await storage.exists(photo.originalKey)).toBe(true);
     expect(await storage.exists(photo.publicKey)).toBe(true);
-    expect(jobs.sent).toEqual([{ name: "validate-photo", data: { issueId: issue.id, photoId: photo.id } }]);
+    expect(jobs.sent).toEqual([
+      { name: "validate-photo", data: { issueId: issue.id, photoId: photo.id } },
+      { name: "embed-issue", data: { issueId: issue.id } },
+    ]);
     expect(await prisma.auditLog.count({ where: { action: "ISSUE_CREATED", targetId: issue.id, actorId: citizen.id } })).toBe(1);
   });
 
@@ -79,7 +82,7 @@ describe("idempotency (client request ID)", () => {
     expect(retry.body.issue.id).toBe(first.body.issue.id);
     expect(await prisma.issue.count()).toBe(1);
     expect(await prisma.photo.count()).toBe(1);
-    expect(jobs.sent).toHaveLength(1);
+    expect(jobs.sent.map((j) => j.name)).toEqual(["validate-photo", "embed-issue"]); // queued once, not per retry
   });
 
   it("network loss mid-report: two identical requests at once still make exactly one issue", async () => {

@@ -48,6 +48,12 @@ export const envSchema = z
   GEMINI_API_KEY: z.string().optional(),
   GEMINI_MODEL: z.string().min(1).default("gemini-3.8-flash"),
   GEMINI_TIMEOUT_MS: z.coerce.number().int().min(1000).max(120_000).default(45_000),
+  // Text embeddings for the duplicate check (D-011). Changing the model means re-embedding everything.
+  GEMINI_EMBEDDING_MODEL: z.string().min(1).default("gemini-embedding-001"),
+  EMBED_TIMEOUT_MS: z.coerce.number().int().min(1000).max(60_000).default(15_000),
+  // Text similarity (cosine, 0–1) at or above which a nearby same-category report counts as a
+  // possible duplicate. Starting value; tune with `npm run ai:similarity` (OD-4).
+  DUPLICATE_SIMILARITY_THRESHOLD: z.coerce.number().min(0.3).max(0.99).default(0.8),
 
   // Uploads (local disk in development, behind the storage interface)
   UPLOAD_DIR: z.string().min(1).default("uploads"),

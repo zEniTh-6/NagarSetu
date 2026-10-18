@@ -4,16 +4,17 @@ import { prisma } from "./db/prisma.js";
 import { createLocalDiskStorage } from "./storage/storage.js";
 import { createJobQueue, createMemoryQueue } from "./jobs/queue.js";
 import { validatePhotoWithGemini } from "./ai/gemini.js";
+import { embed } from "./ai/embed.js";
 
 const storage = createLocalDiskStorage();
 const jobs = env.JOBS_ENABLED
-  ? createJobQueue({ connectionString: env.DATABASE_URL, prisma, storage, validatePhoto: validatePhotoWithGemini })
+  ? createJobQueue({ connectionString: env.DATABASE_URL, prisma, storage, validatePhoto: validatePhotoWithGemini, embed })
   : createMemoryQueue();
 
 await jobs.start();
 if (!env.GEMINI_API_KEY) console.warn("GEMINI_API_KEY is not set: photo checks will stay 'pending' until it is.");
 
-const app = createApp({ prisma, storage, jobs });
+const app = createApp({ prisma, storage, jobs, embed });
 const server = app.listen(env.PORT, () => {
   console.log(`NagarSetu API listening on http://localhost:${env.PORT}`);
 });

@@ -271,6 +271,13 @@ model Issue {
   aiAttempts            Int        @default(0) @map("ai_attempts")
   aiCheckedAt           DateTime?  @map("ai_checked_at")
 
+  // Text embedding of the description (pgvector, raw SQL only, see src/geo/duplicates.js).
+  // Used for the duplicate check; null until the background job has embedded it.
+  embedding         Unsupported("vector(768)")?
+  embeddingModel    String?                     @map("embedding_model")
+  embeddingAttempts Int                         @default(0) @map("embedding_attempts")
+  embeddedAt        DateTime?                   @map("embedded_at")
+
   // Admin decisions
   priority       Level?  @map("priority") // final priority, admin only
   priorityReason String? @map("priority_reason") // required when it differs from the suggestion

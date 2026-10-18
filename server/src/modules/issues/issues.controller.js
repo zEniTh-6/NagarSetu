@@ -1,6 +1,16 @@
 import * as svc from "./issues.service.js";
+import * as dup from "./duplicates.service.js";
 
-export const makeIssuesController = ({ prisma, storage, jobs }) => ({
+export const makeIssuesController = ({ prisma, storage, jobs, embed }) => ({
+  async duplicateCheck(req, res) {
+    res.json(await dup.checkForDuplicates(prisma, { input: req.validated.body, embed }));
+  },
+
+  async support(req, res) {
+    const source = req.validated.body.fromDuplicatePopup ? "DUPLICATE_ACCEPTED" : "SUPPORT_BUTTON";
+    res.json(await dup.supportIssue(prisma, { user: req.user, issueId: req.validated.params.id, source }));
+  },
+
   async create(req, res) {
     const { created, issue } = await svc.createIssue(prisma, {
       user: req.user,
