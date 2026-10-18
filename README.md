@@ -5,7 +5,7 @@ assigns it to a contractor, and the resolution is verified before it is closed.
 
 > **This is a student project. It is NOT an official government platform.**
 
-Project rules: [CLAUDE.md](CLAUDE.md) · Decisions: [docs/decisions.md](docs/decisions.md) ·
+Product brief: [docs/brief.md](docs/brief.md) · Project rules: [CLAUDE.md](CLAUDE.md) · Decisions: [docs/decisions.md](docs/decisions.md) ·
 Future scope: [docs/future-scope.md](docs/future-scope.md)
 
 ## Prerequisites
