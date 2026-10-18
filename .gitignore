@@ -15,6 +15,7 @@ server/uploads/
 
 # Local results of the live AI photo check
 server/test/fixtures/photos/.ai-results.local.json
+server/test/fixtures/.embeddings.local.json
 
 # Generated Prisma client (rebuilt by `npm install` / `npx prisma generate`)
 server/src/generated/

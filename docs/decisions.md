@@ -24,7 +24,7 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 ### OD-4 — Duplicate distances and similarity threshold
 - **Question:** exact duplicate radius per category and the text-similarity threshold.
 - **Brief suggests:** starting values Roads ~15 m, Garbage ~30 m, Streetlight ~10 m; similarity ~0.7–0.8. Tune on real data.
-- **Status:** undecided
+- **Status:** **starting values in use** (radii in categories.json, threshold 0.75 — D-015); final values still to be tuned on real data
 
 ### OD-5 — Default deadlines per priority
 - **Question:** default deadline for each priority (Low / Medium / High / Critical), offered to the admin as a starting point.
@@ -153,3 +153,21 @@ write the choice, the reason and the date, and move it under "Decisions taken".
   The web app polls the issue for the result. Failures add "validation pending"; after the last
   attempt the issue is left for the admin with a PENDING_REVIEW flag.
 - The citizen's description is not sent with the photo check (untrusted text should not steer it).
+
+### D-015 — Duplicate check design (2026-10-18)
+
+- **Match rule:** same category + active (REPORTED / ACKNOWLEDGED / IN_PROGRESS) + within the
+  category's `duplicateRadiusM` (PostGIS `ST_DWithin`) + cosine similarity of the descriptions
+  ≥ `DUPLICATE_SIMILARITY_THRESHOLD` (pgvector, starting value 0.75). Never auto-merged.
+- **Popup:** `POST /api/issues/duplicate-check` before submitting shows up to 5 matches
+  (category, description, status, distance, supporters). Accept → `POST /api/issues/:id/support`
+  (supporter, no new issue). Deny → the report carries `duplicateCandidateIds` → POSSIBLE_DUPLICATE
+  flag naming them.
+- **Server re-check:** the background embedding job also looks for older matches and flags
+  POSSIBLE_DUPLICATE once, so a skipped popup still reaches the admin.
+- **Embedding failure:** the popup check answers `{ checked: false }` and the citizen continues;
+  the job retries (up to 6 attempts). Nothing is blocked.
+- **No photos in the popup yet:** other citizens' photos become visible with the public feed
+  (OD-1, undecided). Until then the popup shows text, distance and status only.
+- **Tuning:** `npm run ai:similarity` measures the real model on `test/fixtures/texts.json`
+  (English, Hindi, Marathi, Hindi/Marathi in English letters).

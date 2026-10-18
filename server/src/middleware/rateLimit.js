@@ -9,8 +9,9 @@ export const DEFAULT_LIMITS = Object.freeze({
   otpResend: { windowMs: 15 * MINUTE, limit: 3 }, // per user
   forgotPassword: { windowMs: HOUR, limit: 5 }, // per IP
   inviteAccept: { windowMs: 15 * MINUTE, limit: 10 }, // per IP
-  // Attached in later phases:
   report: { windowMs: HOUR, limit: 10 }, // per user
+  duplicateCheck: { windowMs: HOUR, limit: 60 }, // per user (one per report form, plus edits)
+  // Attached in later phases:
   upvote: { windowMs: HOUR, limit: 100 }, // per user
   comment: { windowMs: HOUR, limit: 30 }, // per user
 });
@@ -27,6 +28,7 @@ const KEYS = {
   forgotPassword: byIp,
   inviteAccept: byIp,
   report: byUser,
+  duplicateCheck: byUser,
   upvote: byUser,
   comment: byUser,
 };

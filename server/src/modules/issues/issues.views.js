@@ -51,6 +51,7 @@ export function adminIssueView(issue, location, photo) {
       model: issue.aiModel,
       attempts: issue.aiAttempts,
       checkedAt: issue.aiCheckedAt,
+      embedded: Boolean(issue.embeddedAt),
     },
     flags: (issue.flags ?? []).map((f) => ({ id: f.id, type: f.type, reason: f.reason, createdAt: f.createdAt })),
   };

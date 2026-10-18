@@ -12,12 +12,14 @@ import { adminContractorsRouter, invitesRouter } from "./modules/contractors/con
 import { issuesRouter, photosRouter, categoriesRouter } from "./modules/issues/issues.routes.js";
 import { createLocalDiskStorage } from "./storage/storage.js";
 import { createMemoryQueue } from "./jobs/queue.js";
+import { embed as geminiEmbed } from "./ai/embed.js";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler.js";
 
 /**
  * @param {object} [options]
  * @param {object} [options.storage] photo storage (default: local disk)
  * @param {object} [options.jobs] background job queue (default: in-memory recorder; server.js passes pg-boss)
+ * @param {(text: string) => Promise<number[]>} [options.embed] text embedding function (default: Gemini)
  * @param {object} [options.rateLimits] per-limiter overrides, e.g. { login: { limit: 3 } } (tests)
  * @param {(deps) => import("express").Router} [options.extraRoutes] mounted before the 404 handler (tests only)
  */
@@ -26,6 +28,7 @@ export function createApp({
   config = env,
   storage = createLocalDiskStorage(),
   jobs = createMemoryQueue(),
+  embed = geminiEmbed,
   rateLimits,
   extraRoutes,
 } = {}) {
@@ -42,7 +45,7 @@ export function createApp({
   app.use(cookieParser());
 
   const limiters = createRateLimiters(rateLimits);
-  const deps = { prisma, limiters, storage, jobs };
+  const deps = { prisma, limiters, storage, jobs, embed };
 
   app.use("/api/health", healthRouter(deps));
   app.use("/api/auth", authRouter(deps));

@@ -20,11 +20,11 @@ export class AiUnavailableError extends Error {
 }
 
 /** Turns an SDK error into a short, readable AiUnavailableError. */
-function describeFailure(err, timedOut) {
-  if (timedOut) return new AiUnavailableError(`Gemini timed out after ${env.GEMINI_TIMEOUT_MS / 1000} s`, err, { kind: "timeout" });
+export function describeFailure(err, timedOut, { model = env.GEMINI_MODEL, timeoutMs = env.GEMINI_TIMEOUT_MS } = {}) {
+  if (timedOut) return new AiUnavailableError(`Gemini timed out after ${timeoutMs / 1000} s`, err, { kind: "timeout" });
   const status = err?.status;
   if (status === 429 && /PerDay/i.test(err.message ?? "")) {
-    return new AiUnavailableError(`Gemini daily free quota used up for ${env.GEMINI_MODEL}`, err, { kind: "daily_quota" });
+    return new AiUnavailableError(`Gemini daily free quota used up for ${model}`, err, { kind: "daily_quota" });
   }
   if (status === 503 || status === 500 || status === 502 || status === 504) {
     return new AiUnavailableError(`Gemini is overloaded or unavailable (HTTP ${status})`, err, { kind: "unavailable" });
@@ -33,7 +33,7 @@ function describeFailure(err, timedOut) {
     const match = /retry in ([\d.]+)s/i.exec(err.message ?? "");
     const retryAfterSeconds = match ? Math.ceil(Number(match[1])) : undefined;
     return new AiUnavailableError(
-      `Gemini rate limit reached (quota for ${env.GEMINI_MODEL})${retryAfterSeconds ? `, retry in ${retryAfterSeconds} s` : ""}`,
+      `Gemini rate limit reached (quota for ${model})${retryAfterSeconds ? `, retry in ${retryAfterSeconds} s` : ""}`,
       err,
       { kind: "rate_limited", retryAfterSeconds },
     );
@@ -43,7 +43,7 @@ function describeFailure(err, timedOut) {
 }
 
 let client;
-const getClient = () => (client ??= new GoogleGenAI({ apiKey: env.GEMINI_API_KEY }));
+export const getClient = () => (client ??= new GoogleGenAI({ apiKey: env.GEMINI_API_KEY }));
 
 /**
  * @param {{ image: Buffer, mimeType: string, categoryKey: string }} input
@@ -87,4 +87,4 @@ export async function validatePhotoWithGemini({ image, mimeType, categoryKey }) 
   }
   return { ...parsed, model: env.GEMINI_MODEL };
 }
-export const describeFailureForTest = describeFailure;
+export const describeFailureForTest = describeFailure; // kept for tests

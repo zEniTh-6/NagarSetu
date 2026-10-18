@@ -8,6 +8,7 @@ import { env } from "../../config/env.js";
 import { addFlag, FLAG_REASON } from "./flags.js";
 import { assertInServiceArea, classifyGps } from "./location.js";
 import { citizenIssueView, adminIssueView } from "./issues.views.js";
+import { validCandidateIds, duplicateReason } from "./duplicates.service.js";
 
 const notFound = () => new AppError(404, "NOT_FOUND", "Not found");
 const actorOf = (u) => ({ id: u.id, role: u.role });
@@ -102,6 +103,12 @@ export async function createIssue(prisma, { user, input, file, storage, jobs, se
       metadata: { category: category.key, departmentId: category.departmentId, status: "REPORTED" },
     });
 
+    // The citizen saw similar reports in the duplicate popup and still chose to file a new one.
+    const declined = await validCandidateIds(tx, { ids: input.duplicateCandidateIds, categoryId: category.id });
+    if (declined.length) {
+      await addFlag(tx, { issueId, type: "POSSIBLE_DUPLICATE", reason: duplicateReason(declined, "declined") });
+    }
+
     const gps = classifyGps({ distanceM: row.gpsDistanceM, accuracyM: input.deviceAccuracyM });
     if (gps === "SUSPICIOUS") {
       await addFlag(tx, {
@@ -114,7 +121,10 @@ export async function createIssue(prisma, { user, input, file, storage, jobs, se
     return { created: true, id: issueId };
   });
 
-  if (result.created) await queueCheck(jobs, { issueId, photoId });
+  if (result.created) {
+    await queueCheck(jobs, { issueId, photoId });
+    await queueEmbedding(jobs, issueId);
+  }
   return { created: result.created, issue: await citizenView(prisma, result.id) };
 }
 
@@ -124,6 +134,14 @@ async function queueCheck(jobs, data) {
   } catch (err) {
     // The start-up sweep queues it later; the report itself is safe.
     console.error("Could not queue the photo check:", err);
+  }
+}
+
+async function queueEmbedding(jobs, issueId) {
+  try {
+    await jobs.enqueueEmbedding({ issueId });
+  } catch (err) {
+    console.error("Could not queue the embedding:", err);
   }
 }
 

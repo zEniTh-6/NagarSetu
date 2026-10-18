@@ -1,0 +1,67 @@
+{
+  "_note": "The same problem written in English, Hindi, Marathi, and Hindi/Marathi typed in English letters. Used by `npm run ai:similarity` to see how similar the real embedding model finds them and to tune DUPLICATE_SIMILARITY_THRESHOLD (OD-4). Texts in one group describe the SAME problem; different groups are different problems. Add real descriptions from users when you have them.",
+  "groups": [
+    {
+      "id": "pothole-bus-stand",
+      "category": "ROADS",
+      "texts": {
+        "en": "There is a big pothole on the road near the bus stand.",
+        "hi": "बस स्टैंड के पास सड़क पर बड़ा गड्ढा है।",
+        "mr": "बस स्टँडजवळ रस्त्यावर मोठा खड्डा आहे.",
+        "hi-latn": "bus stand ke paas road pe bada gaddha hai",
+        "mr-latn": "bus stand jawal rastyavar motha khadda aahe"
+      }
+    },
+    {
+      "id": "footpath-hospital",
+      "category": "ROADS",
+      "texts": {
+        "en": "Footpath tiles are broken in front of the hospital.",
+        "hi": "अस्पताल के सामने फुटपाथ की टाइलें टूटी हुई हैं।",
+        "mr": "रुग्णालयासमोर पदपथाच्या फरशा तुटलेल्या आहेत.",
+        "hi-latn": "hospital ke saamne footpath ki tiles tooti hui hain"
+      }
+    },
+    {
+      "id": "garbage-market",
+      "category": "GARBAGE",
+      "texts": {
+        "en": "Garbage has not been collected near the vegetable market for a week.",
+        "hi": "सब्ज़ी मंडी के पास एक हफ़्ते से कचरा नहीं उठाया गया है।",
+        "mr": "भाजी मंडईजवळ आठवडाभर कचरा उचलला गेला नाही.",
+        "hi-latn": "sabzi mandi ke paas ek hafte se kachra nahi uthaya",
+        "mr-latn": "bhaji mandai jawal aathavdabhar kachra uchalla nahi"
+      }
+    },
+    {
+      "id": "garbage-drain",
+      "category": "GARBAGE",
+      "texts": {
+        "en": "Plastic waste is blocking the drain behind the temple.",
+        "hi": "मंदिर के पीछे नाली में प्लास्टिक कचरा फँसा है।",
+        "mr": "मंदिराच्या मागे गटारात प्लास्टिक कचरा अडकला आहे.",
+        "hi-latn": "mandir ke peeche naali mein plastic kachra phasa hai"
+      }
+    },
+    {
+      "id": "streetlight-school",
+      "category": "STREETLIGHT",
+      "texts": {
+        "en": "The streetlight outside the school is not working at night.",
+        "hi": "स्कूल के बाहर की स्ट्रीट लाइट रात में नहीं जलती।",
+        "mr": "शाळेबाहेरचा पथदिवा रात्री बंद असतो.",
+        "hi-latn": "school ke bahar street light raat ko nahi jalti",
+        "mr-latn": "shalebahercha streetlight ratri band asto"
+      }
+    },
+    {
+      "id": "water-leak",
+      "category": null,
+      "texts": {
+        "en": "Drinking water pipe is leaking on the main road.",
+        "hi": "मुख्य सड़क पर पीने के पानी की पाइप लीक हो रही है।",
+        "hi-latn": "main road pe paani ki pipe leak ho rahi hai"
+      }
+    }
+  ]
+}
