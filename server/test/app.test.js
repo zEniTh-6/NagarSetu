@@ -13,7 +13,7 @@ afterAll(() => prisma.$disconnect());
 function appWith(routes) {
   const r = Router();
   routes(r);
-  return createApp({ extraRoutes: r });
+  return createApp({ extraRoutes: () => r });
 }
 
 describe("health", () => {

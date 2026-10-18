@@ -14,7 +14,7 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 ### OD-2 — Who can deactivate a contractor
 - **Question:** which admins may deactivate a contractor account?
 - **Brief suggests:** any admin, with the reason logged in the audit log.
-- **Status:** undecided
+- **Status:** **decided** — see D-005
 
 ### OD-3 — Where INVALID photos go
 - **Question:** does an INVALID photo result go straight back to the citizen (retake request), or to the admin first until the AI is trusted?
@@ -89,3 +89,32 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 
 - **Why three:** A department without a category would never receive issues. Adding one later =
   one entry in `DEPARTMENTS` (server/src/seed/seed.js) plus a category in categories.json.
+
+### D-005 — Any admin can deactivate a contractor (closes OD-2) (2026-10-18)
+
+- **Choice:** any admin, from any department, can deactivate a contractor. A reason is mandatory
+  and stored in the audit log with the admin and their department. Deactivate, never delete; a
+  pending invite link stops working. Reassigning the contractor's active jobs comes with assignments.
+
+### D-006 — Session token in an httpOnly cookie (2026-10-18)
+
+- **Choice:** the JWT is sent as an `httpOnly`, `SameSite=Strict` cookie (`nagarsetu_session`,
+  path `/api`, `Secure` in production). Page scripts can't read it, so an XSS bug can't steal it;
+  SameSite=Strict blocks cross-site requests (CSRF). The login response carries user info only.
+- **Lifetime:** admins 2 h, citizens and contractors 24 h; no refresh tokens. The user is loaded
+  from the database on every request, so deactivation and password changes apply immediately.
+
+### D-007 — Signup with a registered email answers 409 EMAIL_TAKEN (2026-10-18)
+
+- **Choice:** simpler for citizens; accepted trade-off that signup reveals whether an email is
+  registered. Login and forgot-password stay generic. Signup is rate-limited per IP.
+
+### D-008 — Contractor details (2026-10-18)
+
+- **Required:** name, phone, email (login is by email). **Optional:** work type, licence number.
+- The invite link is shown once to the admin to share (e.g. WhatsApp); it is not emailed.
+
+### D-009 — Email used for signup OTP and password reset only (2026-10-18)
+
+- CLAUDE.md and the brief said "email only for signup OTP"; forgot-password needs email too, so
+  both now say "signup OTP and password reset links". All other notifications stay in-app.
