@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter,+'Noto+Sans+Devanagari',+sans-serif:wght@100..900&display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary-container":"#285347","secondary-fixed-dim":"#b2ccc7","surface":"#fcf9f0","error":"#ba1a1a","on-surface":"#1c1c17","secondary-fixed":"#cee8e3","surface-container":"#f1eee5","primary-fixed-dim":"#a2d0c0","tertiary-container":"#5d491f","primary":"#0e3c31","on-surface-variant":"#414845","surface-container-highest":"#e5e2da","secondary":"#4b635f","on-error":"#ffffff","on-tertiary-fixed":"#261900","on-background":"#1c1c17","on-primary":"#ffffff","on-primary-container":"#98c5b6","on-secondary-fixed-variant":"#344b48","on-secondary-fixed":"#071f1c","on-tertiary-fixed-variant":"#57441a","on-error-container":"#93000a","outline":"#717975","surface-bright":"#fcf9f0","on-tertiary-container":"#d4b984","secondary-container":"#cee8e3","primary-fixed":"#beecdc","surface-dim":"#dddad1","inverse-surface":"#31312b","background":"#fcf9f0","surface-container-high":"#ebe8df","surface-tint":"#3c665a","inverse-on-surface":"#f4f1e8","on-secondary-container":"#516965","surface-container-low":"#f6f3ea","inverse-primary":"#a2d0c0","error-container":"#ffdad6","tertiary-fixed":"#fddfa7","outline-variant":"#c0c8c4","on-tertiary":"#ffffff","on-primary-fixed-variant":"#234e42","tertiary":"#443209","on-secondary":"#ffffff","on-primary-fixed":"#002019","surface-container-lowest":"#ffffff","surface-variant":"#e5e2da","tertiary-fixed-dim":"#dfc38e"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"margin-desktop":"3rem","margin-tablet":"2rem",gutter:"1rem","space-lg":"1.5rem","space-xs":"0.25rem","gutter-desktop":"1.5rem","space-sm":"0.5rem",margin:"1rem","space-xl":"2.5rem","space-md":"1rem"},fontFamily:{"headline-md":["\"Inter, 'Noto Sans Devanagari', sans-serif\""],"body-sm":["\"Inter, 'Noto Sans Devanagari', sans-serif\""],"label-sm":["\"Inter, 'Noto Sans Devanagari', sans-serif\""],"headline-sm":["\"Inter, 'Noto Sans Devanagari', sans-serif\""],"body-lg":["\"Inter, 'Noto Sans Devanagari', sans-serif\""],"body-md":["\"Inter, 'Noto Sans Devanagari', sans-serif\""],"headline-lg-mobile":["\"Inter, 'Noto Sans Devanagari', sans-serif\""],"headline-lg":["\"Inter, 'Noto Sans Devanagari', sans-serif\""],"label-lg":["\"Inter, 'Noto Sans Devanagari', sans-serif\""],"label-md":["\"Inter, 'Noto Sans Devanagari', sans-serif\""]},fontSize:{"headline-md":["22px",{lineHeight:"30px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-sm":["13px",{lineHeight:"18px",fontWeight:"400"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"700"}],"headline-sm":["18px",{lineHeight:"26px",fontWeight:"600"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"body-md":["15px",{lineHeight:"22px",fontWeight:"400"}],"headline-lg-mobile":["26px",{lineHeight:"34px",letterSpacing:"-0.015em",fontWeight:"700"}],"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.02em",fontWeight:"700"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.01em",fontWeight:"600"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between pt-6 pb-6"><div class="flex flex-col"><div class="px-6 mb-8"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center"><span class="material-symbols-outlined text-on-primary-container text-[24px]">account_balance</span></div><div class="flex flex-col"><span class="font-label-lg text-label-lg text-on-surface uppercase tracking-wide">SMKC CivicAdmin</span><span class="font-body-sm text-body-sm text-on-surface-variant">Sangli Miraj Kupwad</span></div></div></div><div class="px-6 mb-3"><span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Operations Panel</span></div><nav class="flex flex-col gap-1 px-4" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-lg"><a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-label-lg text-label-lg">Dashboard</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="issues" href="#"><span class="material-symbols-outlined text-[20px]">construction</span><span class="font-label-lg text-label-lg">Issues</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="disputes" href="#"><span class="material-symbols-outlined text-[20px]">gavel</span><span class="font-label-lg text-label-lg">Disputes</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="contractors" href="#"><span class="material-symbols-outlined text-[20px]">engineering</span><span class="font-label-lg text-label-lg">Contractors</span></a><a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="comments" href="#"><span class="material-symbols-outlined text-[20px]">chat_bubble</span><span class="font-label-lg text-label-lg">Comments</span></a><a aria-current="page" class="flex items-center gap-3 px-4 py-3 transition-colors bg-primary-container text-on-primary-container font-semibold rounded-lg" data-path="audit-log" href="#"><span class="material-symbols-outlined text-[20px]">history_edu</span><span class="font-label-lg text-label-lg">Audit Log</span></a></nav></div><div class="px-6"><div class="bg-surface-container p-3 rounded-lg flex items-center justify-between"><div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-primary-container"></div><span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">GovCloud Active</span></div><span class="font-label-sm text-label-sm text-on-surface-variant">MH-W-02</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-8"><div class="flex items-center gap-4"><div class="flex items-center gap-2"><span class="font-headline-sm text-headline-sm text-on-surface">SMKC CivicAdmin Portal</span><span class="text-on-surface-variant text-[16px]">·</span><span class="font-headline-sm text-headline-sm text-on-surface-variant">Roads & Asphalt Cell</span></div><div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container"><div class="w-2 h-2 rounded-full bg-primary-container"></div><span class="font-label-sm text-label-sm text-on-secondary-container">Active Cell</span></div></div><div class="flex items-center gap-6"><div class="inline-flex items-center gap-1 p-1 bg-surface-container rounded-lg text-on-surface-variant font-label-sm text-label-sm"><button class="px-2 py-1 rounded bg-surface-container-lowest text-on-surface font-bold shadow-[0_1px_4px_rgba(0,0,0,0.04)]" type="button">English</button><button class="px-2 py-1 rounded hover:text-on-surface transition-colors" type="button">मराठी</button><button class="px-2 py-1 rounded hover:text-on-surface transition-colors" type="button">हिंदी</button></div><button aria-label="Notifications" class="relative flex items-center justify-center w-10 h-10 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-error text-on-error font-label-sm text-[10px] leading-tight flex items-center justify-center font-bold">3</span></button><div class="flex items-center gap-3 pl-2"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface leading-tight">Er. Nilesh Shinde</span><span class="font-label-sm text-label-sm text-on-surface-variant leading-tight">Executive Engineer, Roads</span></div></div></div></header><main class="relative w-full pt-16 bg-surface min-h-screen px-8 py-6"><div class="flex flex-col w-full">
+<!-- Top Statutory Breadcrumb & Realtime Integrity Ribbon -->
+<div class="flex flex-col gap-4 mb-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md">
+<span>SMKC CivicAdmin</span>
+<span class="text-outline-variant font-normal">/</span>
+<span>Roads & Asphalt Cell</span>
+<span class="text-outline-variant font-normal">/</span>
+<span class="text-primary font-semibold">Statutory Compliance</span>
+<span class="text-outline-variant font-normal">/</span>
+<span class="bg-surface-container px-2.5 py-0.5 rounded-full text-primary font-label-sm text-label-sm uppercase tracking-wider font-bold">Immutable Ledger</span>
+</div>
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-primary uppercase font-bold tracking-wide">Ledger Sync: Active</span>
+<span class="text-outline-variant text-label-sm">·</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Node ID: SMKC-VAL-03</span>
+</div>
+</div>
+<!-- Page Title & Authority Descriptor -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div class="max-w-4xl">
+<div class="flex items-center gap-3 mb-1">
+<span class="material-symbols-outlined text-primary text-[28px]">verified_user</span>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">Municipal Audit & Regulatory Ledger</h1>
+<span class="font-headline-md text-headline-md text-tertiary-container font-medium">(वैधानिक लेखापरीक्षण नोंदवही)</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+          Cryptographically signed, tamper-evident audit trail of all departmental decisions, status transitions, priority overrides, and contractor assignments enforced under the Maharashtra Municipal Corporations Act (MMCA, 1949).
+        </p>
+</div>
+<!-- Export & Seal Trigger -->
+<div class="flex items-center gap-2.5 shrink-0">
+<button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg shadow-sm transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">download</span>
+<span>CSV Export</span>
+</button>
+<button class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-lg text-label-lg shadow-md transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">workspace_premium</span>
+<span>Export Audit Certificate (PDF)</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Ledger Health & Telemetry Bento Strip -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+<!-- Card 1: Total Events Logged -->
+<div class="p-4 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Total Events Recorded</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[18px]">receipt_long</span>
+</div>
+</div>
+<div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">1,482</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">↑ 8.4%</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Archived during current 30-day billing cycle</span>
+</div>
+</div>
+<!-- Card 2: Integrity & Cryptographic State -->
+<div class="p-4 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Cryptographic Integrity</span>
+<div class="w-8 h-8 rounded-lg bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container text-[18px]">lock</span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">SHA-256 Validated</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Block Height:</span>
+<span class="font-label-sm text-label-sm font-semibold text-primary">#SMKC-8921</span>
+<span class="text-outline-variant">·</span>
+<span class="font-label-sm text-label-sm text-secondary-fixed-dim bg-primary-container px-1.5 py-0.2 rounded font-bold">0 Anomalies</span>
+</div>
+</div>
+</div>
+<!-- Card 3: Today's Intake -->
+<div class="p-4 rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Actions Today (IST)</span>
+<div class="w-8 h-8 rounded-lg bg-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-[18px]">bolt</span>
+</div>
+</div>
+<div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">47</span>
+<span class="font-label-sm text-label-sm text-tertiary-container font-semibold">12 Automated AI</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 68%;"></div>
+</div>
+</div>
+</div>
+<!-- Card 4: Statutory Authority Seal -->
+<div class="p-4 rounded-xl bg-surface-container-low shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="absolute -right-4 -bottom-4 w-20 h-20 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-[90px] text-primary">shield</span>
+</div>
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Legal Mandate</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">SEC 44(C) MMCA</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">
+          Non-repudiation framework under Maharashtra Civic Digital Rules 2021. Logged actions carry legal evidentiary admissibility.
+        </p>
+</div>
+</div>
+</div>
+<!-- Read-Only Compliance Banner -->
+<div class="flex items-center justify-between px-4 py-3 rounded-lg bg-secondary-container mb-6 shadow-sm">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-container text-[20px]">policy</span>
+<div class="flex items-baseline gap-2">
+<span class="font-label-sm text-label-sm text-primary font-bold uppercase tracking-wider">Statutory Notice:</span>
+<span class="font-body-sm text-body-sm text-on-secondary-container">Under Sec 44(C) MMCA, records cannot be altered, purged, or backdated by administrative personnel. Every mutation writes directly to state archive.</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-on-secondary-container font-label-sm text-label-sm shrink-0">
+<span class="material-symbols-outlined text-[16px]">fingerprint</span>
+<span class="font-mono">e-Seal ID: SMKC-GEO-2026</span>
+</div>
+</div>
+<!-- Multi-Filter & Search Bar -->
+<div class="p-4 rounded-xl bg-surface-container-lowest shadow-sm mb-6 flex flex-col gap-4">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+<!-- Search Input -->
+<div class="md:col-span-4 relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full pl-9 pr-4 py-2.5 rounded-lg bg-surface-container-low font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:bg-surface-container transition-all" placeholder="Search by Issue Ref, Grievance ID, or Contractor..." type="text" value="#NS-2026-001"/>
+</div>
+<!-- Filter by Actor -->
+<div class="md:col-span-3 relative">
+<select class="w-full appearance-none pl-3 pr-8 py-2.5 rounded-lg bg-surface-container-low font-body-sm text-body-sm text-on-surface focus:outline-none focus:bg-surface-container transition-all">
+<option>All Actors & Authorities</option>
+<option selected="">Er. Nilesh Shinde (Executive Engineer)</option>
+<option>CivicVision AI v4.2 (Automated AI Heuristic)</option>
+<option>Er. S. Patil (Junior Engineer, Ward 04)</option>
+<option>Chief Engineer V. Deshmukh (Municipal Admin)</option>
+<option>Ward Nodal Officer (Ward 02 Sangli City)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+</div>
+<!-- Filter by Action Type -->
+<div class="md:col-span-3 relative">
+<select class="w-full appearance-none pl-3 pr-8 py-2.5 rounded-lg bg-surface-container-low font-body-sm text-body-sm text-on-surface focus:outline-none focus:bg-surface-container transition-all">
+<option selected="">All Action Types</option>
+<option>Priority Override</option>
+<option>Contractor Assigned</option>
+<option>Evidence Approved</option>
+<option>Grievance Rejected</option>
+<option>Contractor Deactivated</option>
+<option>Flag Confirmed</option>
+<option>Account Invited</option>
+<option>Status Change</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+</div>
+<!-- Date Range Selector -->
+<div class="md:col-span-2 relative">
+<select class="w-full appearance-none pl-3 pr-8 py-2.5 rounded-lg bg-surface-container-low font-body-sm text-body-sm text-on-surface focus:outline-none focus:bg-surface-container transition-all">
+<option selected="">Last 7 Days</option>
+<option>Last 24 Hours</option>
+<option>Month to Date</option>
+<option>Custom Fiscal Quarter</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">calendar_today</span>
+</div>
+</div>
+<!-- Active Filter Tags Ribbon -->
+<div class="flex items-center gap-2 pt-2 text-on-surface-variant font-label-sm text-label-sm">
+<span class="font-bold uppercase tracking-wider text-on-surface">Active Ledger Filters:</span>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-on-surface">
+<span>Actor: Er. Nilesh Shinde</span>
+<button class="material-symbols-outlined text-[14px] hover:text-error" type="button">close</button>
+</div>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-on-surface">
+<span>Search: #NS-2026-001</span>
+<button class="material-symbols-outlined text-[14px] hover:text-error" type="button">close</button>
+</div>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-on-surface">
+<span>Window: Last 7 Days</span>
+<button class="material-symbols-outlined text-[14px] hover:text-error" type="button">close</button>
+</div>
+<button class="ml-2 text-primary font-bold hover:underline" type="button">Clear All</button>
+</div>
+</div>
+<!-- Immutable Audit Ledger Table Surface -->
+<div class="rounded-xl bg-surface-container-lowest shadow-sm overflow-hidden mb-6">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
+<th class="py-3.5 px-4 font-bold">Timestamp & Event ID</th>
+<th class="py-3.5 px-4 font-bold">Actor / Identity</th>
+<th class="py-3.5 px-4 font-bold">Departmental Action</th>
+<th class="py-3.5 px-4 font-bold">Target Ref / Entity</th>
+<th class="py-3.5 px-4 font-bold w-1/3">Statutory Remarks & Rule Citation</th>
+<th class="py-3.5 px-4 font-bold text-right">Verification Hash</th>
+</tr>
+</thead>
+<tbody class="divide-y-0 text-on-surface font-body-sm text-body-sm">
+<!-- Row 1: Priority Override -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">23 Oct 2026, 11:42 AM</span>
+<span class="font-mono text-label-sm text-on-surface-variant">#LOG-98124</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Er. Nilesh Shinde</span>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-primary-container text-on-primary-container font-bold">EE-ROADS</span>
+<span class="text-on-surface-variant text-[11px]">Roads Cell</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-error-container text-on-error-container font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[14px]">low_priority</span>
+<span>Priority Override</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<a class="font-mono text-primary font-bold hover:underline" href="#">#NS-2026-00119</a>
+<span class="text-on-surface-variant text-[11px] truncate max-w-[150px]">Ganpati Peth Main Rd</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="bg-surface-container-low p-2.5 rounded-lg text-on-surface leading-snug">
+<p class="font-body-sm text-body-sm">
+                  Heavy rainfall alert issued by IMD for next 12 hours prevents immediate hot-mix bitumen compaction. Adjusted from P1 to P2 for safety barricading and dry gravel bed stabilization. <span class="text-primary font-semibold">Rule 14 MMCA (Emergency Protocols).</span>
+</p>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top text-right">
+<div class="flex flex-col items-end">
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container text-primary font-mono text-[11px] font-bold">
+<span>0x8f9a...c4b7</span>
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+</div>
+<span class="text-[10px] text-on-surface-variant mt-0.5">Key: SMKC-GOV-R01</span>
+</div>
+</td>
+</tr>
+<!-- Row 2: Contractor Assigned -->
+<tr class="bg-surface-container-lowest hover:bg-surface-container-low transition-colors">
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">23 Oct 2026, 10:15 AM</span>
+<span class="font-mono text-label-sm text-on-surface-variant">#LOG-98121</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Er. Nilesh Shinde</span>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-primary-container text-on-primary-container font-bold">EE-ROADS</span>
+<span class="text-on-surface-variant text-[11px]">Roads Cell</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[14px]">engineering</span>
+<span>Contractor Assigned</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<a class="font-mono text-primary font-bold hover:underline" href="#">#CTR-4412</a>
+<span class="text-on-surface-variant text-[11px] truncate max-w-[150px]">M/s Kulkarni Infra Ltd</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="bg-surface-container-low p-2.5 rounded-lg text-on-surface leading-snug">
+<p class="font-body-sm text-body-sm">
+                  Issued work order under Annual Rate Contract (ARC-2025-26). Target repair turnaround 48 hours for arterial trenching restoration. <span class="text-primary font-semibold">Tender Ref: SMKC/W-ROADS/902.</span>
+</p>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top text-right">
+<div class="flex flex-col items-end">
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container text-primary font-mono text-[11px] font-bold">
+<span>0x12a0...e74d</span>
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+</div>
+<span class="text-[10px] text-on-surface-variant mt-0.5">Key: SMKC-GOV-R01</span>
+</div>
+</td>
+</tr>
+<!-- Row 3: Evidence Approved -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">22 Oct 2026, 04:30 PM</span>
+<span class="font-mono text-label-sm text-on-surface-variant">#LOG-98089</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Er. S. Patil</span>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-surface-container-highest text-on-surface font-bold">JE-WARD 04</span>
+<span class="text-on-surface-variant text-[11px]">Field Inspector</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[14px]">task_alt</span>
+<span>Evidence Approved</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<a class="font-mono text-primary font-bold hover:underline" href="#">#NS-2026-00105</a>
+<span class="text-on-surface-variant text-[11px] truncate max-w-[150px]">Khanbhag Main Road</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="bg-surface-container-low p-2.5 rounded-lg text-on-surface leading-snug">
+<p class="font-body-sm text-body-sm">
+                  Physical on-site photo telemetry matched citizen report within 4.2m GPS tolerance; roller compaction and bitumen density certified complete. Ticket marked Ready for Citizen Sign-off.
+                </p>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top text-right">
+<div class="flex flex-col items-end">
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container text-primary font-mono text-[11px] font-bold">
+<span>0x78df...5102</span>
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+</div>
+<span class="text-[10px] text-on-surface-variant mt-0.5">Key: SMKC-FLD-W04</span>
+</div>
+</td>
+</tr>
+<!-- Row 4: Grievance Rejected / Transferred -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">22 Oct 2026, 01:10 PM</span>
+<span class="font-mono text-label-sm text-on-surface-variant">#LOG-98044</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Er. Nilesh Shinde</span>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-primary-container text-on-primary-container font-bold">EE-ROADS</span>
+<span class="text-on-surface-variant text-[11px]">Roads Cell</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-highest text-on-surface font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[14px]">cancel</span>
+<span>Grievance Forwarded</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<a class="font-mono text-primary font-bold hover:underline" href="#">#NS-2026-00088</a>
+<span class="text-on-surface-variant text-[11px] truncate max-w-[150px]">Miraj Bypass Bypass Link</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="bg-surface-container-low p-2.5 rounded-lg text-on-surface leading-snug">
+<p class="font-body-sm text-body-sm">
+                  Outside municipal ward maintenance boundary (State Highway NH-166 link road). Formal transfer issued to Executive Engineer, Maharashtra PWD Division Sangli under <span class="text-primary font-semibold">Sec 42 MMCA.</span>
+</p>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top text-right">
+<div class="flex flex-col items-end">
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container text-primary font-mono text-[11px] font-bold">
+<span>0x33b1...889c</span>
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+</div>
+<span class="text-[10px] text-on-surface-variant mt-0.5">Key: SMKC-GOV-R01</span>
+</div>
+</td>
+</tr>
+<!-- Row 5: AI Heuristic Flag Confirmed -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">21 Oct 2026, 09:12 AM</span>
+<span class="font-mono text-label-sm text-on-surface-variant">#LOG-97992</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">CivicVision AI v4.2</span>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-tertiary-fixed text-on-tertiary font-bold">AI HEURISTIC</span>
+<span class="text-on-surface-variant text-[11px]">GovCloud Engine</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-container text-on-tertiary-container font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[14px]">hub</span>
+<span>Flag Confirmed</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<a class="font-mono text-primary font-bold hover:underline" href="#">#NS-CLUSTER-49</a>
+<span class="text-on-surface-variant text-[11px] truncate max-w-[150px]">Kupwad MIDC Cross</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="bg-surface-container-low p-2.5 rounded-lg text-on-surface leading-snug">
+<p class="font-body-sm text-body-sm">
+                  Spatial deduplication algorithm consolidated 5 separate citizen photo submissions into unified pothole crater cluster #49. Confidence score 98.2%.
+                </p>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top text-right">
+<div class="flex flex-col items-end">
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container text-primary font-mono text-[11px] font-bold">
+<span>0x00f1...aa34</span>
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+</div>
+<span class="text-[10px] text-on-surface-variant mt-0.5">Key: SMKC-SYS-AUTO</span>
+</div>
+</td>
+</tr>
+<!-- Row 6: Contractor Deactivated -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">20 Oct 2026, 05:45 PM</span>
+<span class="font-mono text-label-sm text-on-surface-variant">#LOG-97810</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Chief Eng. V. Deshmukh</span>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-primary-container text-on-primary-container font-bold">CHIEF-ADMIN</span>
+<span class="text-on-surface-variant text-[11px]">Commissioner Cell</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-error text-on-error font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[14px]">block</span>
+<span>Contractor Suspended</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<a class="font-mono text-error font-bold hover:underline" href="#">#CTR-1904</a>
+<span class="text-on-surface-variant text-[11px] truncate max-w-[150px]">Apex Surfacing Corp</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="bg-surface-container-low p-2.5 rounded-lg text-on-surface leading-snug">
+<p class="font-body-sm text-body-sm">
+                  Sub-standard bitumen core samples failed laboratory penetration test (IRC:15 standards). Immediate deactivation and forfeiture of bank guarantee under <span class="text-primary font-semibold">Sec 19(B) MMCA.</span>
+</p>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top text-right">
+<div class="flex flex-col items-end">
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container text-primary font-mono text-[11px] font-bold">
+<span>0x99e2...03cc</span>
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+</div>
+<span class="text-[10px] text-on-surface-variant mt-0.5">Key: SMKC-COMM-01</span>
+</div>
+</td>
+</tr>
+<!-- Row 7: Account Invited -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">19 Oct 2026, 02:18 PM</span>
+<span class="font-mono text-label-sm text-on-surface-variant">#LOG-97745</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Er. Nilesh Shinde</span>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-primary-container text-on-primary-container font-bold">EE-ROADS</span>
+<span class="text-on-surface-variant text-[11px]">Roads Cell</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-on-surface font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[14px]">person_add</span>
+<span>Account Invited</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<a class="font-mono text-primary font-bold hover:underline" href="#">#USER-9822</a>
+<span class="text-on-surface-variant text-[11px] truncate max-w-[150px]">Ramesh Patil (Junior Eng)</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="bg-surface-container-low p-2.5 rounded-lg text-on-surface leading-snug">
+<p class="font-body-sm text-body-sm">
+                  Issued field verification role credentials with biometrically linked cryptographic key under Ward 04 jurisdiction.
+                </p>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top text-right">
+<div class="flex flex-col items-end">
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container text-primary font-mono text-[11px] font-bold">
+<span>0x21cc...1b09</span>
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+</div>
+<span class="text-[10px] text-on-surface-variant mt-0.5">Key: SMKC-GOV-R01</span>
+</div>
+</td>
+</tr>
+<!-- Row 8: Status Transition -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">19 Oct 2026, 11:05 AM</span>
+<span class="font-mono text-label-sm text-on-surface-variant">#LOG-97690</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Er. S. Patil</span>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="px-1.5 py-0.5 rounded text-[10px] bg-surface-container-highest text-on-surface font-bold">JE-WARD 04</span>
+<span class="text-on-surface-variant text-[11px]">Field Inspector</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[14px]">sync</span>
+<span>Status: In Progress</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="flex flex-col">
+<a class="font-mono text-primary font-bold hover:underline" href="#">#NS-2026-00101</a>
+<span class="text-on-surface-variant text-[11px] truncate max-w-[150px]">Vishrambag Circle</span>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top">
+<div class="bg-surface-container-low p-2.5 rounded-lg text-on-surface leading-snug">
+<p class="font-body-sm text-body-sm">
+                  Field work commenced. Surface milling machinery deployed on site. Live geotagged timestamp established for 48-hr SLA counter.
+                </p>
+</div>
+</td>
+<td class="py-3.5 px-4 align-top text-right">
+<div class="flex flex-col items-end">
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container text-primary font-mono text-[11px] font-bold">
+<span>0x44d3...e051</span>
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+</div>
+<span class="text-[10px] text-on-surface-variant mt-0.5">Key: SMKC-FLD-W04</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination & Audit Footer -->
+<div class="flex flex-col sm:flex-row items-center justify-between px-6 py-4 bg-surface-container-low border-t-0 gap-4">
+<div class="flex items-center gap-4 text-on-surface-variant font-body-sm text-body-sm">
+<span>Showing <strong class="text-on-surface font-semibold">1–8</strong> of <strong class="text-on-surface font-semibold">1,482</strong> statutory records</span>
+<div class="flex items-center gap-2">
+<span>Rows per page:</span>
+<select class="bg-surface-container-lowest px-2 py-1 rounded text-on-surface text-label-sm font-semibold focus:outline-none shadow-sm">
+<option selected="">8</option>
+<option>15</option>
+<option>50</option>
+<option>100</option>
+</select>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-lg bg-surface-container text-outline-variant cursor-not-allowed flex items-center justify-center" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-bold flex items-center justify-center shadow-sm" type="button">1</button>
+<button class="w-8 h-8 rounded-lg hover:bg-surface-container text-on-surface font-label-md text-label-md flex items-center justify-center transition-colors" type="button">2</button>
+<button class="w-8 h-8 rounded-lg hover:bg-surface-container text-on-surface font-label-md text-label-md flex items-center justify-center transition-colors" type="button">3</button>
+<span class="px-1 text-on-surface-variant">...</span>
+<button class="w-8 h-8 rounded-lg hover:bg-surface-container text-on-surface font-label-md text-label-md flex items-center justify-center transition-colors" type="button">186</button>
+</div>
+<button class="p-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center justify-center transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Physical Audit Seal & Statutory Sign-off Panel -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="p-5 rounded-xl bg-surface-container-lowest shadow-sm flex items-start gap-4">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[26px]">gavel</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface font-bold mb-1">State Audit Admissibility</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          Certified under the Information Technology Act 2000 (Sec 65B) and MMCA Section 44 for legal proceedings and state oversight audits.
+        </p>
+</div>
+</div>
+<div class="p-5 rounded-xl bg-surface-container-lowest shadow-sm flex items-start gap-4">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[26px]">security</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface font-bold mb-1">Hardware Security Module</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          Ledger roots are signed by SMKC Root HSM-01 with hourly public checkpointing to Maharashtra State Data Centre (MahaGov SDC).
+        </p>
+</div>
+</div>
+<div class="p-5 rounded-xl bg-surface-container-lowest shadow-sm flex items-start gap-4">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[26px]">shield_person</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface font-bold mb-1">Supervisory Attestation</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          Signed off on 23 Oct 2026 by Er. Nilesh Shinde, EE (Roads) · SMKC. No pending integrity challenge tickets registered.
+        </p>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

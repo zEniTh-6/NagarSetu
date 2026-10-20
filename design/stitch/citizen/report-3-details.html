@@ -1,0 +1,293 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Report Civic Issue - Step 3: Issue Details</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Devanagari:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-fixed": "#071f1c",
+            "error-container": "#ffdad6",
+            "surface": "#fcf9f0",
+            "on-surface-variant": "#414845",
+            "on-background": "#1c1c17",
+            "on-secondary": "#ffffff",
+            "on-primary-container": "#98c5b6",
+            "on-error": "#ffffff",
+            "surface-tint": "#3c665a",
+            "surface-container-high": "#ebe8df",
+            "inverse-primary": "#a2d0c0",
+            "on-primary-fixed": "#002019",
+            "surface-variant": "#e5e2da",
+            "on-secondary-fixed-variant": "#344b48",
+            "inverse-surface": "#31312b",
+            "on-secondary-container": "#516965",
+            "primary-fixed": "#beecdc",
+            "on-tertiary-fixed-variant": "#57441a",
+            "primary-fixed-dim": "#a2d0c0",
+            "secondary": "#4b635f",
+            "on-error-container": "#93000a",
+            "tertiary-fixed": "#fddfa7",
+            "secondary-container": "#cee8e3",
+            "surface-container-low": "#f6f3ea",
+            "inverse-on-surface": "#f4f1e8",
+            "surface-bright": "#fcf9f0",
+            "background": "#fcf9f0",
+            "tertiary-container": "#5d491f",
+            "on-tertiary-container": "#d4b984",
+            "primary-container": "#285347",
+            "surface-dim": "#dddad1",
+            "error": "#ba1a1a",
+            "on-tertiary-fixed": "#261900",
+            "tertiary-fixed-dim": "#dfc38e",
+            "outline-variant": "#c0c8c4",
+            "on-tertiary": "#ffffff",
+            "secondary-fixed-dim": "#b2ccc7",
+            "surface-container-lowest": "#ffffff",
+            "on-primary": "#ffffff",
+            "on-primary-fixed-variant": "#234e42",
+            "tertiary": "#443209",
+            "outline": "#717975",
+            "primary": "#0e3c31",
+            "surface-container": "#f1eee5",
+            "on-surface": "#1c1c17",
+            "secondary-fixed": "#cee8e3",
+            "surface-container-highest": "#e5e2da"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline-md": ["Inter", "'Noto Sans Devanagari'", "sans-serif"],
+            "label-lg": ["Inter", "'Noto Sans Devanagari'", "sans-serif"],
+            "headline-lg": ["Inter", "'Noto Sans Devanagari'", "sans-serif"],
+            "headline-lg-mobile": ["Inter", "'Noto Sans Devanagari'", "sans-serif"],
+            "label-sm": ["Inter", "'Noto Sans Devanagari'", "sans-serif"],
+            "body-md": ["Inter", "'Noto Sans Devanagari'", "sans-serif"],
+            "body-sm": ["Inter", "'Noto Sans Devanagari'", "sans-serif"],
+            "body-lg": ["Inter", "'Noto Sans Devanagari'", "sans-serif"],
+            "label-md": ["Inter", "'Noto Sans Devanagari'", "sans-serif"],
+            "headline-sm": ["Inter", "'Noto Sans Devanagari'", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body {
+      font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex justify-center selection:bg-secondary-container selection:text-on-secondary-fixed">
+<!-- Mobile Container / Max-width constraint -->
+<main class="w-full max-w-lg min-h-screen flex flex-col bg-background pb-12 shadow-sm">
+<!-- Top Bar Component with English Active Switch -->
+<header class="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b border-surface-container-highest px-4 py-3 flex items-center justify-between">
+<button aria-label="Go back" class="p-2 -ml-2 rounded-full text-on-surface hover:bg-surface-container transition-colors flex items-center justify-center" type="button">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="flex-1 px-3">
+<h2 class="text-on-surface font-headline-sm text-base leading-tight font-bold">Report Civic Issue</h2>
+<span class="text-xs text-on-surface-variant font-medium">नागरी तक्रार नोंदणी</span>
+</div>
+<!-- Bilingual Language Toggle (EN set to active) -->
+<div class="inline-flex items-center p-0.5 rounded-full bg-surface-container-high border border-outline-variant">
+<button class="px-2.5 py-1 rounded-full text-xs font-bold bg-primary text-on-primary shadow-xs transition-all" type="button">
+          EN
+        </button>
+<button class="px-2.5 py-1 rounded-full text-xs font-medium text-on-surface-variant hover:text-on-surface transition-colors" type="button">
+          मराठी
+        </button>
+</div>
+</header>
+<!-- Stepper & Progress Section -->
+<section class="px-4 pt-4 pb-2">
+<div class="flex justify-between items-baseline mb-2">
+<p class="text-sm font-semibold text-primary">Step 3 of 4 • Details (75% Complete)</p>
+<span class="text-xs text-on-surface-variant font-normal">टप्पा ३ / ४</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container-highest overflow-hidden">
+<div class="h-full rounded-full bg-primary-container transition-all duration-300" style="width: 75%;"></div>
+</div>
+</section>
+<!-- Main Title & Bilingual Header -->
+<section class="px-4 pt-4 pb-3">
+<h1 class="text-headline-lg-mobile sm:text-headline-lg font-bold text-on-surface tracking-tight leading-tight">
+        Issue Details
+      </h1>
+<p class="text-headline-sm font-semibold text-secondary mt-0.5 tracking-tight">
+        तक्रारीचा तपशील
+      </p>
+<p class="text-body-md text-on-surface-variant mt-2 leading-relaxed">
+        Select municipal department and describe the issue for prompt triage.
+      </p>
+</section>
+<!-- Department / Category Selection -->
+<section class="px-4 pt-3 pb-4">
+<label class="block text-label-md uppercase tracking-wider text-on-surface-variant font-bold mb-3">
+        Department &amp; Category <span class="text-xs normal-case font-normal text-on-surface-variant">/ विभाग निवडा</span>
+</label>
+<div class="grid grid-cols-1 gap-2.5">
+<!-- Option 1: Selected -->
+<label class="relative flex items-center p-3.5 rounded-xl border-2 border-primary bg-surface-container-low cursor-pointer shadow-xs transition-all">
+<input checked="" class="sr-only" name="issue_category" type="radio" value="roads">
+<div class="size-11 rounded-lg bg-primary-fixed text-primary flex items-center justify-center shrink-0 mr-3.5">
+<span class="material-symbols-outlined text-2xl" data-icon="alt_route">alt_route</span>
+</div>
+<div class="flex-1 min-w-0 pr-2">
+<p class="text-sm font-bold text-on-surface leading-snug">Roads &amp; Pavements</p>
+<p class="text-xs text-on-surface-variant truncate">रस्ते, खड्डे व पदपथ</p>
+</div>
+<span class="material-symbols-outlined text-primary text-xl" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</label>
+<!-- Option 2 -->
+<label class="relative flex items-center p-3.5 rounded-xl border border-outline-variant bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all">
+<input class="sr-only" name="issue_category" type="radio" value="sanitation">
+<div class="size-11 rounded-lg bg-surface-container-high text-on-surface-variant flex items-center justify-center shrink-0 mr-3.5">
+<span class="material-symbols-outlined text-2xl" data-icon="delete">delete</span>
+</div>
+<div class="flex-1 min-w-0 pr-2">
+<p class="text-sm font-semibold text-on-surface leading-snug">Garbage &amp; Sanitation</p>
+<p class="text-xs text-on-surface-variant truncate">कचरा व स्वच्छता</p>
+</div>
+<div class="size-5 rounded-full border-2 border-outline-variant"></div>
+</label>
+<!-- Option 3 -->
+<label class="relative flex items-center p-3.5 rounded-xl border border-outline-variant bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all">
+<input class="sr-only" name="issue_category" type="radio" value="electrical">
+<div class="size-11 rounded-lg bg-surface-container-high text-on-surface-variant flex items-center justify-center shrink-0 mr-3.5">
+<span class="material-symbols-outlined text-2xl" data-icon="lightbulb">lightbulb</span>
+</div>
+<div class="flex-1 min-w-0 pr-2">
+<p class="text-sm font-semibold text-on-surface leading-snug">Streetlights &amp; Electrical</p>
+<p class="text-xs text-on-surface-variant truncate">पथदिवे व वीज समस्या</p>
+</div>
+<div class="size-5 rounded-full border-2 border-outline-variant"></div>
+</label>
+<!-- Option 4: Other civic issue -->
+<label class="relative flex items-center p-3.5 rounded-xl border border-dashed border-outline-variant bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all">
+<input class="sr-only" name="issue_category" type="radio" value="other">
+<div class="size-11 rounded-lg bg-surface-container text-on-surface-variant flex items-center justify-center shrink-0 mr-3.5">
+<span class="material-symbols-outlined text-2xl" data-icon="add_circle">add_circle</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-semibold text-on-surface leading-snug">+ Other civic issue</p>
+<p class="text-xs text-on-surface-variant">इतर नागरी समस्या (पाणी पुरवठा, उद्यान, इत्यादी)</p>
+</div>
+</label>
+</div>
+</section>
+<!-- Severity Level Selection -->
+<section class="px-4 py-3">
+<div class="flex items-center justify-between mb-2.5">
+<label class="text-label-md uppercase tracking-wider text-on-surface-variant font-bold">
+          Severity Level <span class="text-xs normal-case font-normal text-on-surface-variant">/ तीव्रतेची पातळी</span>
+</label>
+<span class="text-xs font-semibold text-secondary">Required</span>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<!-- Low -->
+<label class="relative flex flex-col items-center justify-center p-3 rounded-xl border border-outline-variant bg-surface-container-lowest cursor-pointer text-center hover:bg-surface-container-low transition-colors">
+<input class="sr-only" name="severity" type="radio" value="low">
+<span class="size-2 rounded-full bg-secondary mb-1.5"></span>
+<span class="text-sm font-semibold text-on-surface">Low</span>
+<span class="text-[11px] text-on-surface-variant mt-0.5">साधारण</span>
+</label>
+<!-- Moderate (Selected) -->
+<label class="relative flex flex-col items-center justify-center p-3 rounded-xl border-2 border-primary bg-secondary-container/30 cursor-pointer text-center transition-colors shadow-xs">
+<input checked="" class="sr-only" name="severity" type="radio" value="moderate">
+<span class="size-2 rounded-full bg-primary mb-1.5"></span>
+<span class="text-sm font-bold text-on-surface">Moderate</span>
+<span class="text-[11px] text-on-secondary-container mt-0.5">मध्यम</span>
+</label>
+<!-- High Risk -->
+<label class="relative flex flex-col items-center justify-center p-3 rounded-xl border border-outline-variant bg-surface-container-lowest cursor-pointer text-center hover:bg-surface-container-low transition-colors">
+<input class="sr-only" name="severity" type="radio" value="high">
+<span class="size-2 rounded-full bg-error mb-1.5"></span>
+<span class="text-sm font-semibold text-error">High Risk</span>
+<span class="text-[11px] text-on-surface-variant mt-0.5">अति गंभीर</span>
+</label>
+</div>
+</section>
+<!-- Issue Description Area with Voice Input -->
+<section class="px-4 py-3">
+<div class="flex items-center justify-between mb-1.5">
+<label class="text-label-md uppercase tracking-wider text-on-surface-variant font-bold" for="issue-description">
+          Issue Description <span class="text-xs normal-case font-normal text-on-surface-variant">/ वर्णन</span>
+</label>
+<!-- Voice Assistant Button -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container text-on-secondary-fixed text-xs font-semibold hover:bg-secondary-fixed-dim transition-colors" type="button">
+<span class="material-symbols-outlined text-base" data-icon="mic">mic</span>
+          Voice
+        </button>
+</div>
+<p class="text-xs text-on-surface-variant mb-2">
+        You can write in English, हिंदी or मराठी
+      </p>
+<div class="relative rounded-xl border border-outline bg-surface-container-lowest focus-within:border-primary focus-within:ring-1 focus-within:ring-primary overflow-hidden transition-all">
+<textarea class="w-full border-0 bg-transparent p-3 text-sm text-on-surface placeholder:text-outline focus:ring-0 resize-none font-body-md" id="issue-description" placeholder="Describe the location, nearby landmarks, and specific civic hazards observed..." rows="4"></textarea>
+<div class="px-3 py-2 bg-surface-container-low/70 border-t border-surface-container-highest flex items-center justify-between">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-lg" data-icon="edit_note">edit_note</span>
+<span class="text-xs">Landmark &amp; details help fast resolution</span>
+</div>
+<span class="text-xs font-medium text-on-surface-variant">136 / 500 characters</span>
+</div>
+</div>
+</section>
+<!-- Citizen SLA Promise Card (English First) -->
+<section class="px-4 py-2">
+<div class="rounded-xl border border-outline-variant bg-surface-container-low p-4 flex gap-3.5 items-start">
+<div class="size-9 rounded-lg bg-primary-fixed text-primary flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-xl" data-icon="verified">verified</span>
+</div>
+<div class="flex-1">
+<div class="flex items-baseline justify-between">
+<h3 class="text-sm font-bold text-on-surface">Citizen SLA Promise</h3>
+<span class="text-[11px] font-semibold text-primary uppercase tracking-wide">48 Hrs Target</span>
+</div>
+<p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+            Standard turnaround time for road potholes is 48 working hours. Direct tracking link sent via SMS/WhatsApp.
+          </p>
+<p class="text-[11px] text-secondary mt-1 font-medium">
+            नागरी सनद: रस्ते व खड्ड्यांची तक्रार ४८ तासांत निवारण केली जाईल.
+          </p>
+</div>
+</div>
+</section>
+<!-- Sticky Bottom Navigation / Primary CTA -->
+<div class="sticky bottom-0 z-30 mt-auto bg-background/95 backdrop-blur-md border-t border-surface-container-highest p-4">
+<div class="flex items-center gap-3">
+<button class="px-4 py-3.5 rounded-xl border border-outline text-on-surface font-semibold text-sm hover:bg-surface-container transition-colors shrink-0" type="button">
+          Save Draft
+        </button>
+<button class="flex-1 py-3.5 px-5 rounded-xl bg-primary text-on-primary font-bold text-sm flex flex-col items-center justify-center shadow-md hover:bg-primary-container active:scale-[0.99] transition-all" type="submit">
+<span class="flex items-center gap-1.5 text-sm leading-tight">
+            Continue to Review <span class="material-symbols-outlined text-base" data-icon="arrow_forward">arrow_forward</span>
+</span>
+<span class="text-[11px] font-normal text-on-primary/80 leading-tight mt-0.5">पुनरावलोकन करा</span>
+</button>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,526 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>NagarSetu - Citizen Issue Map</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Devanagari:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-surface-variant": "#414845",
+            "on-error": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container": "#f1eee5",
+            "secondary": "#4b635f",
+            "surface-container-highest": "#e5e2da",
+            "primary-container": "#285347",
+            "inverse-primary": "#a2d0c0",
+            "on-background": "#1c1c17",
+            "on-secondary-fixed-variant": "#344b48",
+            "on-tertiary-container": "#d4b984",
+            "surface-container-low": "#f6f3ea",
+            "tertiary-container": "#5d491f",
+            "secondary-container": "#cee8e3",
+            "tertiary-fixed": "#fddfa7",
+            "primary-fixed": "#beecdc",
+            "surface-container-high": "#ebe8df",
+            "error": "#ba1a1a",
+            "secondary-fixed-dim": "#b2ccc7",
+            "error-container": "#ffdad6",
+            "on-tertiary": "#ffffff",
+            "inverse-surface": "#31312b",
+            "on-primary-fixed": "#002019",
+            "on-surface": "#1c1c17",
+            "surface-tint": "#3c665a",
+            "on-primary": "#ffffff",
+            "primary": "#0e3c31",
+            "on-secondary": "#ffffff",
+            "on-secondary-container": "#516965",
+            "surface-bright": "#fcf9f0",
+            "on-primary-fixed-variant": "#234e42",
+            "on-error-container": "#93000a",
+            "on-tertiary-fixed": "#261900",
+            "surface": "#fcf9f0",
+            "on-tertiary-fixed-variant": "#57441a",
+            "background": "#fcf9f0",
+            "secondary-fixed": "#cee8e3",
+            "on-primary-container": "#98c5b6",
+            "tertiary": "#443209",
+            "surface-dim": "#dddad1",
+            "outline": "#717975",
+            "surface-variant": "#e5e2da",
+            "inverse-on-surface": "#f4f1e8",
+            "tertiary-fixed-dim": "#dfc38e",
+            "primary-fixed-dim": "#a2d0c0",
+            "outline-variant": "#c0c8c4",
+            "on-secondary-fixed": "#071f1c"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            sans: ["Inter", "Noto Sans Devanagari", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .map-canvas-grid {
+      background-color: #f3efe6;
+      background-image: 
+        radial-gradient(#d5d0c3 0.85px, transparent 0.85px),
+        radial-gradient(#d5d0c3 0.85px, #f3efe6 0.85px);
+      background-size: 28px 28px;
+      background-position: 0 0, 14px 14px;
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 0.2; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .pulse-animation {
+      animation: pulse-ring 2.4s infinite ease-in-out;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col font-sans select-none overflow-hidden">
+<!-- Mobile View Container -->
+<div class="relative w-full h-screen max-w-md mx-auto flex flex-col bg-surface overflow-hidden shadow-2xl border-x border-outline-variant/30">
+<!-- MAP CANVAS INTERFACE (Sangli-Miraj-Kupwad Municipal Vector Simulation) -->
+<div class="relative flex-1 w-full h-full overflow-hidden map-canvas-grid cursor-grab active:cursor-grabbing" id="interactiveMap">
+<!-- Vector Map Graphics -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" fill="none" viewBox="0 0 420 740" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="riverGrad" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#9fc8db" stop-opacity="0.75"></stop>
+<stop offset="100%" stop-color="#73a9c2" stop-opacity="0.85"></stop>
+</linearGradient>
+<pattern height="16" id="urbanZone" patternUnits="userSpaceOnUse" width="16">
+<path d="M0 16L16 0ZM8 24L24 8ZM-8 8L8 -8Z" stroke="#e0dcce" stroke-width="0.8"></path>
+</pattern>
+</defs>
+<!-- Urban Ward Enclosures / Land Use Boundaries -->
+<path d="M30 180 Q80 140 180 150 T360 210 L380 430 L220 530 L70 470 Z" fill="url(#urbanZone)" opacity="0.65"></path>
+<path d="M40 210 C100 200 170 230 240 210 C310 190 350 240 370 340 L350 490 L180 500 L60 410 Z" fill="none" stroke="#dfdbcd" stroke-dasharray="4 3" stroke-width="1.5"></path>
+<!-- Krishna River Outline meandering Sangli & Miraj border -->
+<path d="M-20 420 C60 410, 100 480, 160 520 C230 570, 270 540, 310 610 C340 660, 390 690, 440 700" stroke="url(#riverGrad)" stroke-linecap="round" stroke-linejoin="round" stroke-width="26"></path>
+<path d="M-20 420 C60 410, 100 480, 160 520 C230 570, 270 540, 310 610 C340 660, 390 690, 440 700" opacity="0.45" stroke="#5b95b0" stroke-dasharray="12 8" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<!-- Major Arterial Highways & Ward Linkages -->
+<!-- Sangli-Miraj Road -->
+<path d="M70 190 L160 310 L255 420 L350 490" stroke="#d5d0c2" stroke-linecap="round" stroke-linejoin="round" stroke-width="14"></path>
+<path d="M70 190 L160 310 L255 420 L350 490" stroke="#fcf9f0" stroke-linecap="round" stroke-linejoin="round" stroke-width="7"></path>
+<path d="M70 190 L160 310 L255 420 L350 490" stroke="#a2d0c0" stroke-dasharray="8 6" stroke-linecap="round" stroke-width="2"></path>
+<!-- Vishrambag Bypass -->
+<path d="M20 310 Q140 330 220 280 T390 260" stroke="#dcd7ca" stroke-linecap="round" stroke-width="9"></path>
+<path d="M20 310 Q140 330 220 280 T390 260" stroke="#fcf9f0" stroke-linecap="round" stroke-width="4.5"></path>
+<!-- Ganpati Mandir Old City Street Grid -->
+<path d="M90 250 L190 270 M100 290 L180 320 M140 240 L120 340 M170 240 L160 350" stroke="#e0dbcc" stroke-linecap="round" stroke-width="3"></path>
+<!-- Miraj Railway Junction Tracks -->
+<path d="M280 620 L370 480 L420 410" stroke="#686d6a" stroke-dasharray="3 3" stroke-linecap="round" stroke-width="3.5"></path>
+<path d="M290 640 L380 500" stroke="#717975" stroke-linecap="round" stroke-width="1.5"></path>
+<!-- Ward Boundaries & Water body label -->
+<text class="opacity-70 rotate-[-12deg]" fill="#42748a" font-size="11" font-weight="600" letter-spacing="1.5" x="210" y="585">KRISHNA RIVER • कृष्णा नदी</text>
+<text fill="#888f8b" font-size="10" font-weight="700" letter-spacing="0.5" x="55" y="235">WARD 04 GANPATI PETH</text>
+<text fill="#888f8b" font-size="10" font-weight="700" letter-spacing="0.5" x="180" y="270">VISHRAMBAG EXT.</text>
+<text fill="#888f8b" font-size="10" font-weight="700" letter-spacing="0.5" x="280" y="460">MIRAJ GATE ZONE</text>
+</svg>
+<!-- Sangli Key Landmarks Watermarks -->
+<div class="absolute top-[260px] left-[78px] flex items-center gap-1 opacity-75 pointer-events-none">
+<span class="material-symbols-outlined text-secondary text-[16px]">temple_hindu</span>
+<span class="text-[11px] font-semibold text-secondary">Ganpati Mandir</span>
+</div>
+<div class="absolute top-[345px] left-[175px] flex items-center gap-1 opacity-75 pointer-events-none">
+<span class="material-symbols-outlined text-secondary text-[16px]">local_hospital</span>
+<span class="text-[11px] font-semibold text-secondary">Civil Hospital</span>
+</div>
+<div class="absolute top-[440px] right-[40px] flex items-center gap-1 opacity-75 pointer-events-none">
+<span class="material-symbols-outlined text-secondary text-[16px]">train</span>
+<span class="text-[11px] font-semibold text-secondary">Miraj Junction</span>
+</div>
+<!-- User Live Geolocation Pulse -->
+<div class="absolute top-[315px] left-[135px] -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
+<div class="relative flex items-center justify-center">
+<div class="absolute w-12 h-12 rounded-full bg-primary/20 pulse-animation"></div>
+<div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-lg border-2 border-surface-bright">
+<div class="w-2 h-2 rounded-full bg-white"></div>
+</div>
+</div>
+</div>
+<!-- MAP PINS & CLUSTERS -->
+<!-- Cluster 1: Ganpati Peth (Cluster badge 12) -->
+<button class="cluster-pin absolute top-[280px] left-[110px] z-20 flex items-center justify-center -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-transform active:scale-95 group focus:outline-none" onclick="selectCluster('Ganpati Peth', 12, '8 Roads, 3 Garbage, 1 Streetlight')">
+<div class="relative flex items-center justify-center">
+<span class="absolute w-10 h-10 rounded-full bg-primary-container/20 group-hover:scale-110 transition-transform"></span>
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary font-bold text-xs flex items-center justify-center shadow-md border-2 border-surface-bright">
+            12
+          </div>
+</div>
+</button>
+<!-- Cluster 2: Vishrambag (Cluster badge 8) -->
+<button class="cluster-pin absolute top-[230px] left-[230px] z-20 flex items-center justify-center -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-transform active:scale-95 group focus:outline-none" onclick="selectCluster('Vishrambag Zone', 8, '4 Garbage, 3 Roads, 1 Streetlight')">
+<div class="relative flex items-center justify-center">
+<span class="absolute w-9 h-9 rounded-full bg-tertiary-container/20 group-hover:scale-110 transition-transform"></span>
+<div class="w-7 h-7 rounded-full bg-tertiary-container text-on-tertiary-container font-bold text-[11px] flex items-center justify-center shadow-md border-2 border-surface-bright">
+            8
+          </div>
+</div>
+</button>
+<!-- Cluster 3: Miraj Gate (Cluster badge 5) -->
+<button class="cluster-pin absolute top-[470px] left-[290px] z-20 flex items-center justify-center -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-transform active:scale-95 group focus:outline-none" onclick="selectCluster('Miraj Gate Ward', 5, '3 Streetlights, 2 Garbage')">
+<div class="relative flex items-center justify-center">
+<span class="absolute w-8 h-8 rounded-full bg-[#3d4d80]/20 group-hover:scale-110 transition-transform"></span>
+<div class="w-6 h-6 rounded-full bg-[#344473] text-white font-bold text-[10px] flex items-center justify-center shadow-md border-2 border-surface-bright">
+            5
+          </div>
+</div>
+</button>
+<!-- Interactive Pin 1: Active Focus Pothole Pin (Emerald/Deep Teal - Roads) -->
+<button class="issue-pin absolute top-[270px] left-[155px] z-30 -translate-x-1/2 -translate-y-full cursor-pointer focus:outline-none transition-all duration-300" id="potholePin" onclick="openBottomSheet()">
+<div class="relative flex flex-col items-center">
+<!-- Selection Glow Ring -->
+<div class="absolute -top-1 w-11 h-11 rounded-full bg-primary/25 pulse-animation" id="pinGlow"></div>
+<!-- Marker Body -->
+<div class="relative z-10 w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg border-2 border-surface-bright transition-transform hover:scale-110">
+<span class="material-symbols-outlined text-[19px]">traffic</span>
+</div>
+<!-- Pointer Tip -->
+<div class="w-2.5 h-2.5 bg-primary rotate-45 -mt-1.5 shadow-sm border-r border-b border-surface-bright/50"></div>
+</div>
+</button>
+<!-- Pin 2: Garbage (Amber / Gold Pin) near Civil Hospital -->
+<button class="issue-pin absolute top-[365px] left-[220px] z-20 -translate-x-1/2 -translate-y-full cursor-pointer focus:outline-none transition-all duration-300" onclick="selectAlternateIssue('Garbage Overflow Near Clinic', 'Civil Hospital Corner, Ward 07', 'Garbage &amp; Sanitation', 'amber')">
+<div class="relative flex flex-col items-center group">
+<div class="w-8 h-8 rounded-full bg-[#916b12] text-[#fff6e6] flex items-center justify-center shadow-md border-2 border-surface-bright group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[17px]">delete</span>
+</div>
+<div class="w-2 h-2 bg-[#916b12] rotate-45 -mt-1"></div>
+</div>
+</button>
+<!-- Pin 3: Streetlight (Purple/Indigo Blue Pin) near Station Road -->
+<button class="issue-pin absolute top-[225px] left-[95px] z-20 -translate-x-1/2 -translate-y-full cursor-pointer focus:outline-none transition-all duration-300" onclick="selectAlternateIssue('Flickering Pole Light #B-14', 'Station Road, Ward 02', 'Streetlights &amp; Electrical', 'indigo')">
+<div class="relative flex flex-col items-center group">
+<div class="w-8 h-8 rounded-full bg-[#424d80] text-[#e8ebff] flex items-center justify-center shadow-md border-2 border-surface-bright group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[17px]">lightbulb</span>
+</div>
+<div class="w-2 h-2 bg-[#424d80] rotate-45 -mt-1"></div>
+</div>
+</button>
+<!-- Pin 4: Secondary Road Defect Pin -->
+<button class="issue-pin absolute top-[385px] left-[110px] z-20 -translate-x-1/2 -translate-y-full cursor-pointer focus:outline-none transition-all duration-300" onclick="selectAlternateIssue('Broken Paver Blocks at Ghat', 'Krishna Ghat Road', 'Roads &amp; Pavements', 'teal')">
+<div class="relative flex flex-col items-center group">
+<div class="w-7 h-7 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md border-2 border-surface-bright group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[15px]">minor_crash</span>
+</div>
+<div class="w-2 h-2 bg-primary rotate-45 -mt-1"></div>
+</div>
+</button>
+<!-- Map Overlay Floating Controls -->
+<!-- Top Overlay Stack: Search & Category Filter Chips -->
+<div class="absolute top-0 inset-x-0 z-30 pt-4 px-4 pb-2 bg-gradient-to-b from-surface/95 via-surface/85 to-transparent backdrop-blur-[2px]">
+<!-- Search bar -->
+<div class="flex items-center gap-2 bg-surface-container-low/95 rounded-xl px-3 py-2.5 shadow-md border border-outline-variant/50 focus-within:ring-2 focus-within:ring-primary focus-within:bg-surface-bright transition-all">
+<span class="material-symbols-outlined text-secondary text-[22px]">search</span>
+<input class="flex-1 bg-transparent border-0 p-0 text-sm font-medium text-on-surface placeholder:text-outline focus:outline-none focus:ring-0 leading-tight" placeholder="Search ward, landmark, or issue..." type="text">
+<button class="w-7 h-7 rounded-lg hover:bg-surface-container-high flex items-center justify-center text-secondary transition-colors" title="Voice Search">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+<div class="h-4 w-[1px] bg-outline-variant"></div>
+<button class="w-7 h-7 rounded-lg hover:bg-surface-container-high flex items-center justify-center text-primary font-bold" title="Map Layers">
+<span class="material-symbols-outlined text-[20px]">layers</span>
+</button>
+</div>
+<!-- Horizontal Scrolling Category Filter Chips -->
+<div class="flex items-center gap-2 mt-2.5 overflow-x-auto no-scrollbar py-1">
+<!-- All Chip -->
+<button class="filter-chip active shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary text-on-primary text-xs font-semibold shadow-sm transition-all">
+<span class="">All (25)</span>
+</button>
+<!-- Roads Chip (Deep Teal / Emerald) -->
+<button class="filter-chip shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest/95 hover:bg-secondary-container text-on-surface border border-outline-variant/60 text-xs font-medium shadow-sm transition-colors">
+<span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
+<span class="">Roads (12)</span>
+</button>
+<!-- Garbage Chip (Amber) -->
+<button class="filter-chip shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest/95 hover:bg-[#ffeed4] text-on-surface border border-outline-variant/60 text-xs font-medium shadow-sm transition-colors">
+<span class="w-2 h-2 rounded-full bg-[#b88514] inline-block"></span>
+<span class="">Garbage (8)</span>
+</button>
+<!-- Streetlights Chip (Indigo/Purple) -->
+<button class="filter-chip shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest/95 hover:bg-[#e8ebff] text-on-surface border border-outline-variant/60 text-xs font-medium shadow-sm transition-colors">
+<span class="w-2 h-2 rounded-full bg-[#424d80] inline-block"></span>
+<span class="">Streetlights (5)</span>
+</button>
+<!-- Resolved Chip -->
+<button class="filter-chip shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest/95 hover:bg-surface-container text-outline border border-outline-variant/60 text-xs font-medium shadow-sm transition-colors">
+<span class="material-symbols-outlined text-[13px] text-[#2e7d32]">check_circle</span>
+<span class="">Resolved</span>
+</button>
+</div>
+</div>
+<!-- Right Floating Action Buttons (GPS Re-center & Zoom) -->
+<div class="absolute right-4 bottom-72 z-30 flex flex-col gap-2.5">
+<!-- Re-center to my location GPS button -->
+<button class="w-11 h-11 rounded-full bg-surface-container-lowest text-primary shadow-lg border border-outline-variant/50 flex items-center justify-center hover:bg-secondary-container active:scale-90 transition-transform group" id="recenterBtn" onclick="recenterMap()" title="Re-center to my location">
+<span class="material-symbols-outlined text-[22px] group-hover:rotate-45 transition-transform text-primary">my_location</span>
+</button>
+<!-- Quick Zoom Controls -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant/50 overflow-hidden divide-y divide-outline-variant/40">
+<button class="w-10 h-9 flex items-center justify-center text-on-surface-variant hover:bg-surface-container active:bg-surface-container-high transition-colors" onclick="toast('Zoom in')">
+<span class="material-symbols-outlined text-[19px]">add</span>
+</button>
+<button class="w-10 h-9 flex items-center justify-center text-on-surface-variant hover:bg-surface-container active:bg-surface-container-high transition-colors" onclick="toast('Zoom out')">
+<span class="material-symbols-outlined text-[19px]">remove</span>
+</button>
+</div>
+</div>
+<!-- INTERACTIVE BOTTOM SHEET PREVIEW -->
+<div class="absolute inset-x-0 bottom-0 z-40 transform transition-transform duration-300 ease-out translate-y-0" id="issueBottomSheet">
+<!-- Drag Handle Indicator -->
+<div class="flex justify-center -mb-2 relative z-50">
+<button class="w-12 h-1.5 bg-outline/40 rounded-full cursor-pointer hover:bg-outline transition-colors py-0.5 my-1.5" onclick="toggleBottomSheet()"></button>
+</div>
+<!-- Preview Card Surface -->
+<div class="bg-surface-container-lowest rounded-t-2xl shadow-[0_-8px_25px_rgba(0,0,0,0.12)] border-t border-outline-variant/60 px-4 pt-3 pb-3">
+<!-- Category & Status Bar -->
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1 text-[11px] font-semibold tracking-wide uppercase px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container" id="sheetCategoryBadge">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span id="sheetCategoryText" class="">Roads &amp; Pavements</span>
+</span>
+<span class="text-[11px] text-outline font-medium">• Ward 04</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-semibold border border-tertiary-fixed-dim">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-ping"></span>
+                In Progress / काम सुरू
+              </span>
+</div>
+</div>
+<!-- Main Issue Header with Media Preview -->
+<div class="flex items-start gap-3.5 mb-2.5">
+<!-- Issue Thumbnail Photo -->
+<div class="relative shrink-0 w-20 h-20 rounded-xl overflow-hidden border border-outline-variant/60 shadow-sm bg-surface-container">
+<img alt="Pothole Issue Photo" class="w-full h-full object-cover" data-alt="A wide street pothole defect on asphalt road in Indian municipal ward, high detail civic documentation photograph taken during daylight with street curbs and yellow ward demarcations visible under crisp natural lighting." id="sheetImage" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIdALkcslsf6-iAqJeFcgu4NgEOxi0EzH1I2q9nysrZxn5QhhhKgwUVkTS1Ptzjl2hQn3YEpLNJnyYd6OcSuEwMy6nJL5Hz9RhR6G_1dGgVwgiD79BJk1m1z3IJm4u8wf4G_OBrE1QEZ00HTZLM865DhVgZyyidztttPL76_V1yXN0CejWjheSZXtiBFOC_yzvSW3I408T3Wso2w82JKRYFPhVAaVD1tcjX6bMomNA9SQJr4b8X7zQYg">
+<span class="absolute bottom-1 right-1 bg-inverse-surface/80 text-inverse-on-surface text-[9px] font-bold px-1 rounded flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[10px]">photo_camera</span> 3
+              </span>
+</div>
+<!-- Titles and Proximity -->
+<div class="flex-1 min-w-0">
+<h3 class="text-base font-bold text-on-surface leading-tight truncate" id="sheetTitle">Severe Asphalt Pothole</h3>
+<p class="text-xs font-semibold text-secondary leading-snug mt-0.5">तीव्र खड्डा • Sangli High School Rd</p>
+<div class="flex items-center gap-1 text-xs text-on-surface-variant mt-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary">near_me</span>
+<span class="truncate font-medium" id="sheetLocation">Ganpati Peth, Ward 04 <strong class="text-primary font-bold">(15m from you)</strong></span>
+</div>
+<!-- Community Backing & Timestamp -->
+<div class="flex items-center gap-2 text-[12px] text-outline mt-1 font-medium">
+<span class="flex items-center gap-1 text-primary font-semibold">
+<span class="material-symbols-outlined text-[14px]">thumb_up</span>
+<span id="sheetSupporters" class="">42</span> supporters
+                </span>
+<span class="">•</span>
+<span class="">3 hours ago</span>
+</div>
+</div>
+</div>
+<!-- Quick Action Controls -->
+<div class="flex items-center gap-2 pt-1">
+<!-- Add Support Button -->
+<button class="flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-outline-variant bg-surface-container-low hover:bg-secondary-container text-on-surface text-xs font-bold transition-all active:scale-95 shadow-sm" id="supportBtn" onclick="toggleSupport()">
+<span class="material-symbols-outlined text-[17px] text-primary" id="supportIcon">thumb_up</span>
+<span id="supportLabel" class="">Support (42)</span>
+</button>
+<!-- CTA: View Full Issue Details -->
+<button class="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary-container text-on-primary text-xs font-bold transition-all active:scale-[0.98] shadow-md" onclick="toast('Opening Complaint #NS-4091 Full Timeline')">
+<span class="">View Full Issue Details</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- SHARED BOTTOM NAVIGATION BAR (Strict Immutable Inclusion - Destination Screen: Map Active) -->
+<nav class="relative w-full shrink-0 border-t border-outline-variant/40 bg-surface-container-lowest/95 px-2 pb-2 pt-1.5 z-50 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
+  <div class="flex items-end justify-between relative max-w-md mx-auto">
+    <!-- Tab 1: Home -->
+    <a href="#" class="flex flex-1 flex-col items-center justify-center py-1 gap-1 text-secondary hover:text-primary transition-colors min-w-[56px]">
+      <div class="flex h-7 w-7 items-center justify-center text-secondary">
+        <span class="material-symbols-outlined text-[24px]">home</span>
+      </div>
+      <span class="text-[11px] font-medium leading-none text-secondary">Home</span>
+    </a>
+
+    <!-- Tab 2: Map (Active) -->
+    <a href="#" class="flex flex-1 flex-col items-center justify-center py-1 gap-1 text-primary-container transition-colors min-w-[56px]">
+      <div class="flex h-7 w-7 items-center justify-center text-primary-container">
+        <span class="material-symbols-outlined text-[24px] font-bold">location_on</span>
+      </div>
+      <span class="text-[11px] font-bold leading-none text-primary-container">Map</span>
+    </a>
+
+    <!-- Tab 3: Prominent Elevated Report Button -->
+    <div class="flex flex-1 flex-col items-center relative -top-4">
+      <button onclick="toast('Opening Camera Report Camera')" class="w-12 h-12 rounded-full bg-[#285347] text-white flex items-center justify-center shadow-lg border-2 border-surface-bright active:scale-95 transition-transform group cursor-pointer" title="Report civic issue">
+        <span class="material-symbols-outlined text-[24px] text-white">photo_camera</span>
+      </button>
+      <span class="text-[11px] font-semibold leading-none text-primary-container mt-1">Report</span>
+    </div>
+
+    <!-- Tab 4: Complaints -->
+    <a href="#" class="flex flex-1 flex-col items-center justify-center py-1 gap-1 text-secondary hover:text-primary transition-colors min-w-[56px]">
+      <div class="flex h-7 w-7 items-center justify-center text-secondary">
+        <span class="material-symbols-outlined text-[24px]">assignment</span>
+      </div>
+      <span class="text-[11px] font-medium leading-none text-secondary">Complaints</span>
+    </a>
+
+    <!-- Tab 5: Alerts (With Notification Dot) -->
+    <a href="#" class="flex flex-1 flex-col items-center justify-center py-1 gap-1 text-secondary hover:text-primary transition-colors min-w-[56px]">
+      <div class="relative flex h-7 w-7 items-center justify-center text-secondary">
+        <span class="material-symbols-outlined text-[24px]">notifications</span>
+        <span class="absolute top-0.5 right-0.5 w-2 h-2 rounded-full bg-error ring-1 ring-white"></span>
+      </div>
+      <span class="text-[11px] font-medium leading-none text-secondary">Alerts</span>
+    </a>
+  </div>
+</nav>
+<!-- Notification Toast Element -->
+<div class="absolute top-20 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-4 py-2 rounded-full text-xs font-semibold shadow-xl opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-1.5" id="toastMessage">
+<span class="material-symbols-outlined text-[16px] text-inverse-primary">info</span>
+<span id="toastText" class="">Action completed</span>
+</div>
+</div>
+<!-- Interactive JavaScript Logic -->
+<script>
+    let isSheetCollapsed = false;
+    let supported = false;
+    let supportCount = 42;
+
+    function toggleBottomSheet() {
+      const sheet = document.getElementById('issueBottomSheet');
+      isSheetCollapsed = !isSheetCollapsed;
+      if (isSheetCollapsed) {
+        sheet.style.transform = 'translateY(calc(100% - 38px))';
+      } else {
+        sheet.style.transform = 'translateY(0)';
+      }
+    }
+
+    function openBottomSheet() {
+      const sheet = document.getElementById('issueBottomSheet');
+      isSheetCollapsed = false;
+      sheet.style.transform = 'translateY(0)';
+      document.getElementById('pinGlow').classList.add('pulse-animation');
+      toast('Selected: Severe Asphalt Pothole');
+    }
+
+    function toggleSupport() {
+      supported = !supported;
+      const btn = document.getElementById('supportBtn');
+      const label = document.getElementById('supportLabel');
+      const countEl = document.getElementById('sheetSupporters');
+      const icon = document.getElementById('supportIcon');
+
+      if (supported) {
+        supportCount++;
+        btn.classList.add('bg-primary', 'text-white', 'border-primary');
+        btn.classList.remove('bg-surface-container-low', 'text-on-surface');
+        icon.classList.remove('text-primary');
+        icon.classList.add('text-white');
+        label.innerText = `Supported (${supportCount})`;
+        countEl.innerText = supportCount;
+        toast('Support added! Ward engineer alerted.');
+      } else {
+        supportCount--;
+        btn.classList.remove('bg-primary', 'text-white', 'border-primary');
+        btn.classList.add('bg-surface-container-low', 'text-on-surface');
+        icon.classList.add('text-primary');
+        icon.classList.remove('text-white');
+        label.innerText = `Support (${supportCount})`;
+        countEl.innerText = supportCount;
+      }
+    }
+
+    function recenterMap() {
+      toast('GPS centered: Ganpati Peth, Sangli');
+      const btn = document.getElementById('recenterBtn');
+      btn.classList.add('rotate-180');
+      setTimeout(() => btn.classList.remove('rotate-180'), 400);
+    }
+
+    function selectCluster(name, count, breakdown) {
+      toast(`${name}: ${count} total issues (${breakdown})`);
+    }
+
+    function selectAlternateIssue(title, location, category, type) {
+      openBottomSheet();
+      document.getElementById('sheetTitle').innerText = title;
+      document.getElementById('sheetLocation').innerHTML = `${location} <strong class="text-primary font-bold">(Within 150m)</strong>`;
+      document.getElementById('sheetCategoryText').innerText = category;
+      
+      const badge = document.getElementById('sheetCategoryBadge');
+      if (type === 'amber') {
+        badge.className = 'inline-flex items-center gap-1 text-[11px] font-semibold tracking-wide uppercase px-2.5 py-0.5 rounded-full bg-[#fcedd2] text-[#6d4d03]';
+      } else if (type === 'indigo') {
+        badge.className = 'inline-flex items-center gap-1 text-[11px] font-semibold tracking-wide uppercase px-2.5 py-0.5 rounded-full bg-[#e3e7fc] text-[#222b59]';
+      } else {
+        badge.className = 'inline-flex items-center gap-1 text-[11px] font-semibold tracking-wide uppercase px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container';
+      }
+    }
+
+    function toast(text) {
+      const toastEl = document.getElementById('toastMessage');
+      const toastText = document.getElementById('toastText');
+      toastText.innerText = text;
+      toastEl.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-2');
+      toastEl.classList.add('opacity-100', 'translate-y-0');
+      
+      setTimeout(() => {
+        toastEl.classList.add('opacity-0', 'pointer-events-none', '-translate-y-2');
+        toastEl.classList.remove('opacity-100', 'translate-y-0');
+      }, 2400);
+    }
+  </script>
+
+
+</body></html>
