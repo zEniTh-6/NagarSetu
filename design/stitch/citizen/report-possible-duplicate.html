@@ -1,0 +1,264 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>NagarSetu SMKC - Duplicate Report Detection</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Inter & Noto Sans Devanagari fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Devanagari:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-fixed": "#261900",
+            "outline": "#717975",
+            "tertiary-fixed-dim": "#dfc38e",
+            "surface-variant": "#e5e2da",
+            "on-tertiary-fixed-variant": "#57441a",
+            "error": "#ba1a1a",
+            "tertiary-container": "#5d491f",
+            "on-primary-container": "#98c5b6",
+            "on-error-container": "#93000a",
+            "tertiary-fixed": "#fddfa7",
+            "on-secondary": "#ffffff",
+            "secondary-fixed-dim": "#b2ccc7",
+            "surface-tint": "#3c665a",
+            "primary": "#0e3c31",
+            "primary-fixed": "#beecdc",
+            "surface-container-high": "#ebe8df",
+            "surface-container-low": "#f6f3ea",
+            "on-secondary-fixed": "#071f1c",
+            "primary-fixed-dim": "#a2d0c0",
+            "on-background": "#1c1c17",
+            "secondary": "#4b635f",
+            "surface-container": "#f1eee5",
+            "surface-bright": "#fcf9f0",
+            "background": "#fcf9f0",
+            "error-container": "#ffdad6",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed": "#cee8e3",
+            "surface-dim": "#dddad1",
+            "surface": "#fcf9f0",
+            "inverse-surface": "#31312b",
+            "inverse-on-surface": "#f4f1e8",
+            "secondary-container": "#cee8e3",
+            "on-tertiary-container": "#d4b984",
+            "on-error": "#ffffff",
+            "on-primary-fixed": "#002019",
+            "on-primary-fixed-variant": "#234e42",
+            "on-surface": "#1c1c17",
+            "inverse-primary": "#a2d0c0",
+            "on-tertiary": "#ffffff",
+            "primary-container": "#285347",
+            "on-secondary-fixed-variant": "#344b48",
+            "outline-variant": "#c0c8c4",
+            "surface-container-highest": "#e5e2da",
+            "on-surface-variant": "#414845",
+            "on-primary": "#ffffff",
+            "tertiary": "#443209",
+            "on-secondary-container": "#516965"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "3xl": "1.5rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "sans": ["Inter", "Noto Sans Devanagari", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex justify-center items-center p-0 sm:p-4 selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- Mobile Viewport Container simulating live NagarSetu civic reporting app -->
+<div class="relative w-full max-w-md h-[884px] sm:h-[844px] bg-surface overflow-hidden shadow-2xl sm:rounded-3xl flex flex-col border border-outline-variant/30">
+<!-- BACKGROUND MAP / CAMERA CAPTURE STEP (Underneath backdrop) -->
+<div class="absolute inset-0 z-0 flex flex-col bg-surface-container-high">
+<!-- Top Bar of Background Reporting Flow -->
+<header class="flex items-center justify-between px-4 py-3 bg-surface/90 backdrop-blur-md border-b border-outline-variant/40 z-10">
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant text-on-surface">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div>
+<h1 class="text-xs font-bold uppercase tracking-wider text-secondary">NagarSetu • नगरसेतू</h1>
+<p class="text-sm font-semibold text-primary">SMKC Ward 04 Report</p>
+</div>
+</div>
+<div class="w-9 h-9 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-xs">
+          SMKC
+        </div>
+</header>
+<!-- Blurred Map Simulation in Background -->
+<div class="relative flex-1 w-full overflow-hidden bg-surface-dim">
+<img class="w-full h-full object-cover opacity-60 filter blur-[1px]" data-alt="Detailed satellite and vector hybrid municipal cartography map view of an Indian city district with asphalt streets, temple squares, and civic boundaries illuminated under warm golden daytime daylight. The view is stylized for urban planning in deep teal and heritage ivory tones with marked GPS coordinate rings." data-location="Sangli" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbZZN69ajcRoEfb5QDXI04B2QyxSCJYZGaYPwjULos2yeYRk_a8FvOwRXuQSx4jDa6EaRZpNuNfht_MgCBubm_4K-O6VjEaBTn0jXDAmK5_pfUJ7F7NNghedCSX2QTHt54uSmrxKkQQYi3hGHvbUyHtElRDiB_mfo19hnMgt4uU-1UsxZfzPeMXzdXGT2ZsV87FLYyHE3JZa8nGJOTh3pOiJZCYrbkHNFYEv8r82jmlNUiLtFonvOl_A">
+<!-- Pinned Location Pin in Background -->
+<div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+<div class="w-12 h-12 rounded-full bg-primary/20 animate-ping absolute -top-1"></div>
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg relative z-10">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+<span class="mt-1 bg-surface-container-lowest text-primary text-[10px] font-bold px-2 py-0.5 rounded shadow border border-outline-variant">
+            Ganpati Mandir Rd
+          </span>
+</div>
+</div>
+</div>
+<!-- BACKDROP OVERLAY -->
+<div class="absolute inset-0 z-20 bg-inverse-surface/60 backdrop-blur-[3px] transition-opacity"></div>
+<!-- ELEVATED BOTTOM SHEET MODAL -->
+<section class="absolute bottom-0 inset-x-0 z-30 flex flex-col max-h-[92%] bg-surface-bright rounded-t-3xl shadow-2xl border-t border-outline-variant/30 overflow-hidden animate-in slide-in-from-bottom duration-300">
+<!-- Drag Handle Header -->
+<div class="pt-3 pb-2 flex flex-col items-center shrink-0">
+<div class="w-12 h-1.5 rounded-full bg-outline-variant"></div>
+</div>
+<!-- Scrollable Sheet Content -->
+<div class="overflow-y-auto px-5 pb-6 space-y-4">
+<!-- Alert & Status Chips Header Row -->
+<div class="flex flex-wrap items-center gap-2 pt-1">
+<div class="inline-flex items-center gap-1.5 bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
+<span class="material-symbols-outlined text-[15px] fill">bolt</span>
+<span>⚡ Proximity Alert • ~12 m away (१२ मीटर अंतरावर)</span>
+</div>
+<div class="inline-flex items-center gap-1.5 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-medium border border-outline-variant/40">
+<span class="material-symbols-outlined text-[14px]">fact_check</span>
+<span>Docket #NS-2026-00119</span>
+</div>
+</div>
+<!-- Sheet Title & Intro -->
+<div>
+<div class="flex items-center gap-2">
+<h2 class="text-xl font-bold text-primary tracking-tight">Possible Duplicate Found</h2>
+<span class="text-xs bg-surface-container-highest text-on-surface-variant font-medium px-2 py-0.5 rounded">स्मार्ट शोध</span>
+</div>
+<p class="text-xs text-on-surface-variant mt-0.5 font-medium">
+            एकसारखी तक्रार आधीच नोंदवली गेली आहे का ते तपासा (Verify if this matches your issue)
+          </p>
+</div>
+<!-- Existing Issue Dossier Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-3.5 border border-outline-variant/50 shadow-sm space-y-3">
+<div class="flex gap-3.5">
+<!-- Pothole Evidence Photo Thumbnail -->
+<div class="relative w-24 h-24 rounded-xl overflow-hidden shrink-0 border border-outline-variant/30 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A close-up photograph of a deep asphalt road pothole filled with rainwater on an Indian municipal street during daylight. Wet asphalt textures, loose gravel, and road edges are clearly visible in natural daylight with civic realism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBB9lLZKOcZ54FYwlQkLJX6SdXi4EkoM0_Hopq_gXDeEcCBrVxT10Uz5wVPA4AO5xZLjZB7Ar_Y4VKbquklaOoL69JAxQ1vDCBUB0RoakxB_ALoWgudaYWAaw6qT3xSsIqmFFtGkpUq7AMrGL5xd-Z44cYx7Tvdd6mjBVJeuBG3FVU5YOe_MtQHRiVz7D696v_zvuGrHruWnwTdqH4hQh3IMYslAGBtR8WRqtUnQms1i5-EHAISHiaSJw">
+<span class="absolute bottom-1 right-1 bg-inverse-surface/80 text-inverse-on-surface text-[9px] font-bold px-1.5 py-0.5 rounded">
+                Verified
+              </span>
+</div>
+<!-- Issue Specifics -->
+<div class="flex-1 flex flex-col justify-between py-0.5">
+<div>
+<div class="flex items-start justify-between gap-1">
+<h3 class="text-sm font-bold text-on-surface leading-snug">
+                    Severe Road Pothole &amp; Waterlogging
+                  </h3>
+</div>
+<div class="flex items-center gap-1 text-xs text-secondary font-medium mt-1">
+<span class="material-symbols-outlined text-sm text-secondary">distance</span>
+<span class="line-clamp-2">Near Ganpati Mandir Chowk, Mahatma Gandhi Road, Ward 04</span>
+</div>
+</div>
+<!-- Status Badge -->
+<div class="mt-2 flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary bg-primary-fixed/40 px-2.5 py-0.5 rounded-md border border-primary-fixed">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                  Under Review • प्रभाग पाहणी सुरू
+                </span>
+</div>
+</div>
+</div>
+<!-- Timeline & Community Backing Stats -->
+<div class="pt-2 border-t border-surface-container-high flex items-center justify-between text-xs text-on-surface-variant font-medium">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-outline">schedule</span>
+<span>Reported 3 hours ago</span>
+</div>
+<div class="flex items-center gap-1 text-primary-container font-semibold">
+<span class="material-symbols-outlined text-[15px] fill text-primary">groups</span>
+<span>14 Citizens supported</span>
+</div>
+<div class="flex items-center gap-1 text-error font-semibold">
+<span class="material-symbols-outlined text-[15px]">priority_high</span>
+<span>High Priority</span>
+</div>
+</div>
+</div>
+<!-- Civic Impact Explanation Card (Why support instead of new ticket?) -->
+<div class="bg-surface-container-low rounded-2xl p-3.5 border border-outline-variant/30 text-on-surface">
+<div class="flex items-center gap-2 mb-1.5">
+<div class="w-6 h-6 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed shrink-0">
+<span class="material-symbols-outlined text-sm">handshake</span>
+</div>
+<h4 class="text-xs font-bold uppercase tracking-wider text-on-secondary-fixed">Why add support? • पाठिंबा का द्यावा?</h4>
+</div>
+<p class="text-xs leading-relaxed text-on-surface-variant">
+            Supporting an existing issue consolidates civic reports into a single high-priority ward docket, fast-tracks contractor dispatch, and guarantees you receive live SMS &amp; WhatsApp progress tracking.
+          </p>
+<div class="mt-2.5 grid grid-cols-2 gap-2 pt-2 border-t border-outline-variant/20">
+<div class="flex items-center gap-1.5 text-[11px] text-secondary font-medium">
+<span class="material-symbols-outlined text-sm text-primary">bolt</span>
+<span>Prevents duplicate work</span>
+</div>
+<div class="flex items-center gap-1.5 text-[11px] text-secondary font-medium">
+<span class="material-symbols-outlined text-sm text-primary">notifications_active</span>
+<span>Instant repair updates</span>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="space-y-2.5 pt-1">
+<!-- Primary: Yes, Merge & Support -->
+<button class="w-full py-3.5 px-4 bg-primary-container hover:bg-primary active:scale-[0.99] text-on-primary font-semibold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 group" type="button">
+<span class="material-symbols-outlined text-lg fill group-hover:scale-110 transition-transform">thumb_up</span>
+<div class="text-left flex flex-col leading-tight">
+<span class="text-xs sm:text-sm font-bold">Yes, this is the same — add my support</span>
+<span class="text-[11px] text-on-primary-container font-normal">होय, ही तीच समस्या आहे • सहकार्य नोंदवा</span>
+</div>
+</button>
+<!-- Secondary: No, Mine is Different -->
+<button class="w-full py-3 px-4 bg-surface-container-lowest hover:bg-surface-container active:scale-[0.99] text-on-surface font-semibold text-xs sm:text-sm rounded-xl border border-outline-variant transition-all flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined text-base text-secondary">add_location_alt</span>
+<div class="text-center leading-tight">
+<span>No, mine is different — report separately</span>
+<span class="block text-[11px] text-on-surface-variant font-normal">नाही, माझी समस्या स्वतंत्र आहे</span>
+</div>
+</button>
+</div>
+<!-- Civic Footer Note -->
+<div class="text-center pt-1 pb-1">
+<p class="text-[11px] text-outline font-medium">
+            SMKC Citizen Helpline: 1800-233-1200 • Sangli Miraj Kupwad Mahanagarpalika
+          </p>
+</div>
+</div>
+</section>
+</div>
+</body></html>

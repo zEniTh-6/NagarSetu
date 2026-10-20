@@ -1,0 +1,304 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>NagarSetu Sangli - Create Citizen Account</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Google Fonts: Inter & Noto Sans Devanagari -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Devanagari:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "inverse-surface": "#31312b",
+            "on-primary-fixed": "#002019",
+            "surface-container-highest": "#e5e2da",
+            "tertiary-fixed": "#fddfa7",
+            "surface-bright": "#fcf9f0",
+            "on-primary-container": "#98c5b6",
+            "surface-variant": "#e5e2da",
+            "on-surface": "#1c1c17",
+            "background": "#fcf9f0",
+            "on-error": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "inverse-primary": "#a2d0c0",
+            "tertiary-fixed-dim": "#dfc38e",
+            "inverse-on-surface": "#f4f1e8",
+            "on-surface-variant": "#414845",
+            "outline-variant": "#c0c8c4",
+            "surface-container-lowest": "#ffffff",
+            "tertiary": "#443209",
+            "primary-fixed": "#beecdc",
+            "on-secondary": "#ffffff",
+            "surface-container": "#f1eee5",
+            "on-tertiary-container": "#d4b984",
+            "on-tertiary-fixed": "#261900",
+            "secondary": "#4b635f",
+            "on-secondary-fixed": "#071f1c",
+            "surface-dim": "#dddad1",
+            "primary-fixed-dim": "#a2d0c0",
+            "on-primary": "#ffffff",
+            "surface": "#fcf9f0",
+            "surface-tint": "#3c665a",
+            "primary-container": "#285347",
+            "outline": "#717975",
+            "surface-container-high": "#ebe8df",
+            "error": "#ba1a1a",
+            "on-background": "#1c1c17",
+            "error-container": "#ffdad6",
+            "surface-container-low": "#f6f3ea",
+            "secondary-fixed": "#cee8e3",
+            "on-error-container": "#93000a",
+            "primary": "#0e3c31",
+            "on-secondary-container": "#516965",
+            "tertiary-container": "#5d491f",
+            "on-primary-fixed-variant": "#234e42",
+            "on-tertiary-fixed-variant": "#57441a",
+            "secondary-fixed-dim": "#b2ccc7",
+            "secondary-container": "#cee8e3",
+            "on-secondary-fixed-variant": "#344b48"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "label-lg": ["\"Inter, 'Noto Sans Devanagari', sans-serif\""],
+            "body-lg": ["\"Inter, 'Noto Sans Devanagari', sans-serif\""],
+            "label-md": ["\"Inter, 'Noto Sans Devanagari', sans-serif\""],
+            "headline-lg-mobile": ["\"Inter, 'Noto Sans Devanagari', sans-serif\""],
+            "body-sm": ["\"Inter, 'Noto Sans Devanagari', sans-serif\""],
+            "headline-sm": ["\"Inter, 'Noto Sans Devanagari', sans-serif\""],
+            "headline-md": ["\"Inter, 'Noto Sans Devanagari', sans-serif\""],
+            "headline-lg": ["\"Inter, 'Noto Sans Devanagari', sans-serif\""],
+            "label-sm": ["\"Inter, 'Noto Sans Devanagari', sans-serif\""],
+            "body-md": ["\"Inter, 'Noto Sans Devanagari', sans-serif\""]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-low text-on-surface antialiased min-h-screen flex justify-center selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- Mobile Screen Container -->
+<div class="w-full max-w-[440px] min-h-screen flex flex-col bg-surface-container-low border-x border-outline-variant/30 shadow-sm relative">
+<!-- Top Branding & Back Header -->
+<header class="sticky top-0 z-30 bg-surface-container-low/95 backdrop-blur-md px-4 pt-3 pb-3 border-b border-surface-container-highest">
+<div class="flex items-center justify-between min-h-[44px]">
+<a class="inline-flex items-center gap-1.5 text-primary-container font-semibold text-sm hover:underline py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container rounded" href="#login">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+<span class="">Back to Login</span>
+</a>
+<div class="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded bg-secondary-container text-on-secondary-container">
+<span class="material-symbols-outlined text-sm">location_city</span>
+<span class="">SMKC Sangli</span>
+</div>
+</div>
+<div class="mt-2">
+<h1 class="text-on-surface font-bold text-[22px] leading-tight tracking-tight">Create Citizen Account</h1>
+<p class="text-on-surface-variant text-[13px] font-normal mt-0.5 font-['Noto_Sans_Devanagari',sans-serif]">नागरिक खाते तयार करा</p>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 px-4 py-4 space-y-4">
+<!-- Critical Role Notice Banner -->
+<section aria-label="Official Registration Policy" class="rounded-lg border border-[#B8D4EF] bg-[#EBF2FA] p-3.5 shadow-sm">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[#285A91] text-[22px] shrink-0 mt-0.5" style="font-variation-settings: 'FILL' 1;">info</span>
+<div class="flex-1">
+<h2 class="text-xs font-bold uppercase tracking-wider text-[#285A91]">Official Citizen Portal Notice</h2>
+<p class="text-xs text-[#285A91] leading-relaxed mt-0.5">
+              Only citizens can sign up. Officials and contractors receive their accounts separately from the Sangli Municipal Corporation administration.
+            </p>
+</div>
+</div>
+</section>
+<!-- Main Registration Form Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-sm p-4 sm:p-5">
+<form class="space-y-4" onsubmit="event.preventDefault();">
+<!-- Full Name Field -->
+<div>
+<label class="block text-sm font-medium text-on-surface mb-1.5" for="fullName">
+              Full Name (नाव) <span class="text-error">*</span>
+</label>
+<div class="relative">
+<input class="w-full min-h-[44px] px-3.5 py-2.5 rounded-lg border border-outline focus:border-primary-container focus:ring-1 focus:ring-primary-container bg-surface-container-lowest text-on-surface text-sm transition-colors" id="fullName" name="fullName" placeholder="Enter full legal name" required="" type="text" value="Rohit Shinde">
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-secondary text-[20px] pointer-events-none">badge</span>
+</div>
+</div>
+<!-- Email Address Field -->
+<div>
+<div class="flex justify-between items-baseline mb-1.5">
+<label class="block text-sm font-medium text-on-surface" for="email">
+                Email Address (ईमेल) <span class="text-error">*</span>
+</label>
+</div>
+<div class="relative">
+<input class="w-full min-h-[44px] px-3.5 py-2.5 rounded-lg border border-outline focus:border-primary-container focus:ring-1 focus:ring-primary-container bg-surface-container-lowest text-on-surface text-sm transition-colors" id="email" name="email" placeholder="citizen@domain.com" required="" type="email" value="rohit.shinde@sangli.in">
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-secondary text-[20px] pointer-events-none">mail</span>
+</div>
+<p class="text-[12px] text-on-surface-variant mt-1.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-secondary">mark_email_read</span>
+              We will send a 6-digit verification code
+            </p>
+</div>
+<!-- Ward / Area Selection Dropdown -->
+<div>
+<div class="flex justify-between items-baseline mb-1.5">
+<label class="block text-sm font-medium text-on-surface" for="wardSelect">
+                Ward / Electoral Area (प्रभाग निवड)
+              </label>
+<span class="text-[11px] text-on-surface-variant font-medium">Optional</span>
+</div>
+<div class="relative">
+<select class="w-full min-h-[44px] pl-3.5 pr-10 py-2.5 rounded-lg border border-outline focus:border-primary-container focus:ring-1 focus:ring-primary-container bg-surface-container-lowest text-on-surface text-sm appearance-none transition-colors" id="wardSelect" name="wardSelect">
+<option selected="" value="ward-04">Ward 04 • Sangli Miraj Kupwad (SMKC)</option>
+<option value="ward-01">Ward 01 • Ganpati Peth, Sangli</option>
+<option value="ward-02">Ward 02 • Gaonbhag, Sangli</option>
+<option value="ward-03">Ward 03 • Vishrambag North</option>
+<option value="ward-05">Ward 05 • Market Yard, Sangli</option>
+<option value="ward-06">Ward 06 • Miraj Station Road</option>
+<option value="ward-07">Ward 07 • Kupwad MIDC Industrial</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-on-surface-variant text-[20px] pointer-events-none">expand_more</span>
+</div>
+<p class="text-[11px] text-on-surface-variant mt-1">Helps automatically route civic complaints to your local ward engineer.</p>
+</div>
+<!-- Password Field with Segmented Strength Meter -->
+<div>
+<label class="block text-sm font-medium text-on-surface mb-1.5" for="passwordField">
+              Create Password <span class="text-error">*</span>
+</label>
+<div class="relative">
+<input class="w-full min-h-[44px] pl-3.5 pr-11 py-2.5 rounded-lg border border-outline focus:border-primary-container focus:ring-1 focus:ring-primary-container bg-surface-container-lowest text-on-surface text-sm tracking-wider transition-colors" id="passwordField" name="password" placeholder="Enter safe password" required="" type="password" value="SangliCivic#2024">
+<button aria-label="Toggle password visibility" class="absolute right-1 top-1 bottom-1 w-10 flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors focus:outline-none" onclick="togglePasswordVisibility()" type="button">
+<span class="material-symbols-outlined text-[20px]" id="pwdToggleIcon">visibility</span>
+</button>
+</div>
+<!-- Segmented Password Strength Bar (3 of 4 active: Strong) -->
+<div class="mt-2.5">
+<div class="flex items-center justify-between text-xs mb-1">
+<span class="text-on-surface-variant text-[11px]">Security Assessment:</span>
+<span class="font-semibold text-primary text-[11px] flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">shield</span> Strong
+                </span>
+</div>
+<div class="grid grid-cols-4 gap-1.5 h-1.5">
+<div class="bg-primary rounded-full h-full"></div>
+<div class="bg-primary rounded-full h-full"></div>
+<div class="bg-primary rounded-full h-full"></div>
+<div class="bg-surface-variant rounded-full h-full"></div>
+</div>
+<p class="text-[11px] text-on-surface-variant mt-1.5 leading-normal">
+                Use 8+ characters with at least one number and special symbol.
+              </p>
+</div>
+</div>
+<!-- Consent & Verification Checkbox -->
+<div class="pt-1">
+<label class="flex items-start gap-3 cursor-pointer group">
+<div class="relative flex items-center justify-center min-w-[24px] min-h-[24px] mt-0.5">
+<input checked="" class="peer sr-only" id="consentCheckbox" required="" type="checkbox">
+<div class="w-6 h-6 rounded border-2 border-outline peer-checked:border-primary-container peer-checked:bg-primary-container transition-all flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[18px] scale-0 peer-checked:scale-100 transition-transform font-bold" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+</div>
+<span class="text-[12.5px] leading-relaxed text-on-surface select-none group-hover:text-on-surface">
+                I agree to the <a class="font-semibold text-primary underline underline-offset-2" href="#terms">Civic Participation Terms</a> and consent to share my verified phone/email for civic grievance resolution.
+              </span>
+</label>
+</div>
+<!-- Primary Submit Button -->
+<div class="pt-2">
+<button class="w-full min-h-[48px] rounded-lg bg-primary-container text-on-primary hover:bg-primary active:bg-on-primary-fixed-variant transition-colors font-semibold text-sm sm:text-base flex items-center justify-center gap-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-container" type="submit">
+<span class="">Continue to Email Verification</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+<!-- Login Link -->
+<div class="text-center pt-1 pb-1">
+<p class="text-xs text-on-surface-variant">
+              Already registered? 
+              <a class="text-primary-container font-bold hover:underline ml-1" href="#login">Log in</a>
+</p>
+</div>
+</form>
+</div>
+<!-- Trust Badges & Municipal Authentication Note -->
+<div class="rounded-lg bg-surface-container px-3.5 py-3 border border-surface-container-highest flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-2xl" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<div class="text-[11px] text-on-surface-variant leading-tight">
+<strong class="text-on-surface block font-semibold mb-0.5">Sangli Miraj Kupwad Municipal Corporation (SMKC)</strong>
+          Citizen grievance records are protected under Maharashtra Right to Public Services Act.
+        </div>
+</div>
+</main>
+<!-- Trilingual Language Switcher Footer -->
+<footer class="mt-auto px-4 py-4 border-t border-surface-container-highest bg-surface-container-low text-center">
+<div class="inline-flex items-center justify-center p-1 rounded-full bg-surface-container border border-outline-variant/50 max-w-xs mx-auto shadow-inner">
+<button class="min-h-[34px] px-3.5 rounded-full text-xs font-semibold bg-primary-container text-on-primary shadow-sm transition-all focus:outline-none" id="lang-en" onclick="setLanguage('en')" type="button">
+          English
+        </button>
+<button class="min-h-[34px] px-3.5 rounded-full text-xs font-medium text-on-surface-variant hover:text-on-surface transition-all focus:outline-none font-['Noto_Sans_Devanagari',sans-serif]" id="lang-hi" onclick="setLanguage('hi')" type="button">
+          हिंदी
+        </button>
+<button class="min-h-[34px] px-3.5 rounded-full text-xs font-medium text-on-surface-variant hover:text-on-surface transition-all focus:outline-none font-['Noto_Sans_Devanagari',sans-serif]" id="lang-mr" onclick="setLanguage('mr')" type="button">
+          मराठी
+        </button>
+</div>
+<p class="text-[11px] text-outline mt-2.5">
+        NagarSetu Sangli v2.4 • Smart Civic Governance Platform
+      </p>
+</footer>
+</div>
+<!-- Interactive script for password toggle & language tabs -->
+<script>
+    function togglePasswordVisibility() {
+      const pwdInput = document.getElementById('passwordField');
+      const icon = document.getElementById('pwdToggleIcon');
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        icon.innerText = 'visibility_off';
+      } else {
+        pwdInput.type = 'password';
+        icon.innerText = 'visibility';
+      }
+    }
+
+    function setLanguage(lang) {
+      const langs = ['en', 'hi', 'mr'];
+      langs.forEach(l => {
+        const btn = document.getElementById('lang-' + l);
+        if (l === lang) {
+          btn.className = "min-h-[34px] px-3.5 rounded-full text-xs font-semibold bg-primary-container text-on-primary shadow-sm transition-all focus:outline-none";
+        } else {
+          btn.className = "min-h-[34px] px-3.5 rounded-full text-xs font-medium text-on-surface-variant hover:text-on-surface transition-all focus:outline-none font-['Noto_Sans_Devanagari',sans-serif]";
+        }
+      });
+    }
+  </script>
+
+
+</body></html>

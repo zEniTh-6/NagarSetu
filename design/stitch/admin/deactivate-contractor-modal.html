@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Deactivate Contractor Modal - SMKC Municipal Works Portal</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=Noto+Sans+Devanagari:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed": "#002019",
+            "surface-variant": "#e5e2da",
+            "on-tertiary": "#ffffff",
+            "on-primary-fixed-variant": "#234e42",
+            "on-secondary": "#ffffff",
+            "secondary-container": "#cee8e3",
+            "on-surface-variant": "#414845",
+            "primary": "#0e3c31",
+            "secondary-fixed-dim": "#b2ccc7",
+            "secondary-fixed": "#cee8e3",
+            "on-error-container": "#93000a",
+            "tertiary-fixed-dim": "#dfc38e",
+            "on-primary-container": "#98c5b6",
+            "primary-fixed": "#beecdc",
+            "outline": "#717975",
+            "on-surface": "#1c1c17",
+            "surface-bright": "#fcf9f0",
+            "inverse-on-surface": "#f4f1e8",
+            "on-error": "#ffffff",
+            "surface": "#fcf9f0",
+            "tertiary": "#443209",
+            "on-secondary-fixed-variant": "#344b48",
+            "on-secondary-container": "#516965",
+            "outline-variant": "#c0c8c4",
+            "secondary": "#4b635f",
+            "surface-container-highest": "#e5e2da",
+            "on-tertiary-fixed": "#261900",
+            "on-secondary-fixed": "#071f1c",
+            "inverse-primary": "#a2d0c0",
+            "surface-dim": "#dddad1",
+            "tertiary-container": "#5d491f",
+            "error": "#ba1a1a",
+            "primary-container": "#285347",
+            "surface-container-high": "#ebe8df",
+            "surface-container-low": "#f6f3ea",
+            "on-primary": "#ffffff",
+            "surface-tint": "#3c665a",
+            "inverse-surface": "#31312b",
+            "error-container": "#ffdad6",
+            "tertiary-fixed": "#fddfa7",
+            "surface-container": "#f1eee5",
+            "on-tertiary-fixed-variant": "#57441a",
+            "on-background": "#1c1c17",
+            "background": "#fcf9f0",
+            "on-tertiary-container": "#d4b984",
+            "surface-container-lowest": "#ffffff",
+            "primary-fixed-dim": "#a2d0c0"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "sans": ["Inter", "'Noto Sans Devanagari'", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1eee5;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #c0c8c4;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased font-sans min-h-screen relative overflow-x-hidden">
+<!-- Underlying Screen: Contractors Directory with Active Route 'Contractors' -->
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-[#f9fbfa] group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-6 lg:px-20 xl:px-40 flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1">
+<!-- Shared Header Anchor (Strict component logic preserved) -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#ebf0ee] px-6 lg:px-10 py-3 bg-surface-container-lowest rounded-t-lg shadow-sm">
+<div class="flex items-center gap-4 text-[#121716]">
+<div class="size-4 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-[#121716] text-lg font-bold leading-tight tracking-[-0.015em]">SMKC Municipal Works Portal</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-[#121716] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-[#121716] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Work Orders</a>
+<a class="text-primary font-bold text-sm leading-normal border-b-2 border-primary pb-0.5" href="#">Contractors</a>
+<a class="text-[#121716] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Laboratories</a>
+<a class="text-[#121716] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Audits</a>
+</div>
+<div class="flex gap-2">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#ebf0ee] text-[#121716] text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Emergency Desk</span>
+</button>
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#ebf0ee] text-[#121716] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+<div class="text-[#121716]" data-icon="Bell" data-size="20px" data-weight="regular">
+<svg fill="currentColor" height="20px" viewbox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg">
+<path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"></path>
+</svg>
+</div>
+</button>
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#ebf0ee] text-[#121716] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+<div class="text-[#121716]" data-icon="ShieldCheck" data-size="20px" data-weight="regular">
+<svg fill="currentColor" height="20px" viewbox="0 0 256 256" width="20px" xmlns="http://www.w3.org/2000/svg">
+<path d="M208,40H48A16,16,0,0,0,32,56v58.78c0,89.61,75.82,119.34,91,124.39a15.53,15.53,0,0,0,10,0c15.2-5.05,91-34.78,91-124.39V56A16,16,0,0,0,208,40Zm0,74.79c0,78.42-66.35,104.62-80,109.18-13.53-4.51-80-30.69-80-109.18V56H208ZM82.34,141.66a8,8,0,0,1,11.32-11.32L112,148.68l50.34-50.34a8,8,0,0,1,11.32,11.32l-56,56a8,8,0,0,1-11.32,0Z"></path>
+</svg>
+</div>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="Official municipal civil engineer profile portrait with neutral civic background and standard lighting." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBEcnjI-shkOa9DwckwPvxfGpMIA6bYjfK1FEL0XIT8riSQJPaOkCm48fOMClnXDaqo42_pH_8kvUap5C6rWeKMCaEKfgaatL43WOaREf3tPFuZr8rziGXbNsr1lVy8G4_S_b9OdoZuMYH7WCrjJKGoevs2hdi4rO0Kt6hrTAedqKivuggdvX59hnF8OXy1OeI559f12M7Pvn9TCHYjtilGuWs2qxvkt64JdBqG8G_VHJILaj9GGO7-Jg");'></div>
+</div>
+</header>
+<!-- Breadcrumbs & Directory Header -->
+<div class="flex flex-wrap gap-2 p-4 pt-6">
+<a class="text-[#63837a] text-sm font-medium leading-normal" href="#">PWD Administrative Portal</a>
+<span class="text-[#63837a] text-sm font-medium leading-normal">/</span>
+<a class="text-[#63837a] text-sm font-medium leading-normal" href="#">Roads &amp; Asphalt Division</a>
+<span class="text-[#63837a] text-sm font-medium leading-normal">/</span>
+<span class="text-[#121716] text-sm font-medium leading-normal">Registered Contractors Registry</span>
+</div>
+<div class="px-4 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="text-2xl font-black text-[#121716]">Municipal Civil Contractors Roster</h1>
+<p class="text-sm text-secondary">Sangli Miraj Kupwad Municipal Corporation (SMKC) • Class A &amp; B Authorized Registry</p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-surface-container border border-outline-variant rounded-lg text-sm font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">filter_list</span> Filter List
+              </button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-semibold flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span> Register Contractor
+              </button>
+</div>
+</div>
+<!-- Background Table representation -->
+<div class="mx-4 bg-surface-container-lowest border border-outline-variant rounded-lg shadow-sm overflow-hidden mb-8">
+<table class="w-full text-left text-sm border-collapse">
+<thead>
+<tr class="bg-surface-container border-b border-outline-variant text-on-surface-variant font-semibold text-xs tracking-wider uppercase">
+<th class="p-3.5 pl-4">Contractor Name &amp; ID</th>
+<th class="p-3.5">Class / Cell</th>
+<th class="p-3.5">Active Projects</th>
+<th class="p-3.5">Compliance SLA</th>
+<th class="p-3.5">Status</th>
+<th class="p-3.5 pr-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="bg-error-container/30 border-l-4 border-l-error">
+<td class="p-3.5 pl-4 font-semibold text-on-surface">
+                    M/s Kulkarni Infrastructure &amp; Co.
+                    <div class="text-xs font-normal text-secondary">#SMKC-PWD-CTR-4412</div>
+</td>
+<td class="p-3.5 text-on-surface">Class B • Asphalt Cell</td>
+<td class="p-3.5 font-bold text-error">3 Jobs Pending</td>
+<td class="p-3.5">
+<span class="px-2 py-0.5 rounded text-xs font-bold bg-error text-on-error">Critical Breaches</span>
+</td>
+<td class="p-3.5">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-tertiary-fixed text-on-tertiary-fixed">
+<span class="size-1.5 rounded-full bg-tertiary"></span> Pending Revocation
+                    </span>
+</td>
+<td class="p-3.5 pr-4 text-right">
+<button class="text-xs font-bold text-error px-2.5 py-1 border border-error rounded hover:bg-error hover:text-white transition-colors">
+                      Deactivate
+                    </button>
+</td>
+</tr>
+<tr class="opacity-70">
+<td class="p-3.5 pl-4 font-medium">
+                    Venkateshwara Civil Works
+                    <div class="text-xs text-secondary">#SMKC-PWD-CTR-2901</div>
+</td>
+<td class="p-3.5">Class A • Bitumen &amp; Concrete</td>
+<td class="p-3.5">5 Active</td>
+<td class="p-3.5"><span class="px-2 py-0.5 rounded text-xs font-bold bg-secondary-container text-on-secondary-container">98.4% On-Time</span></td>
+<td class="p-3.5"><span class="inline-flex items-center gap-1 text-xs font-semibold text-primary"><span class="size-1.5 rounded-full bg-primary"></span> Accredited</span></td>
+<td class="p-3.5 pr-4 text-right"><span class="text-xs text-secondary">Manage</span></td>
+</tr>
+<tr class="opacity-70">
+<td class="p-3.5 pl-4 font-medium">
+                    Sangli Earthmovers &amp; Bitumen
+                    <div class="text-xs text-secondary">#SMKC-PWD-CTR-3882</div>
+</td>
+<td class="p-3.5">Class B • Heavy Grading</td>
+<td class="p-3.5">2 Active</td>
+<td class="p-3.5"><span class="px-2 py-0.5 rounded text-xs font-bold bg-secondary-container text-on-secondary-container">96.0% On-Time</span></td>
+<td class="p-3.5"><span class="inline-flex items-center gap-1 text-xs font-semibold text-primary"><span class="size-1.5 rounded-full bg-primary"></span> Accredited</span></td>
+<td class="p-3.5 pr-4 text-right"><span class="text-xs text-secondary">Manage</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- High-Contrast Modal Backdrop -->
+<div aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-50 bg-[#121716]/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto" role="dialog">
+<!-- Centered High-Impact Administrative Governance Modal Window -->
+<div class="w-full max-w-[840px] bg-surface-container-lowest rounded-xl shadow-2xl border border-outline-variant flex flex-col my-auto overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+<!-- Modal Header -->
+<div class="px-6 py-5 bg-surface-container border-b border-outline-variant flex items-start justify-between gap-4">
+<div class="flex items-start gap-4">
+<div class="size-11 rounded-lg bg-error-container text-on-error-container flex items-center justify-center shrink-0 border border-error/20 shadow-sm mt-0.5">
+<span class="material-symbols-outlined text-[26px]">warning</span>
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider bg-error text-white">
+                Administrative Action Required
+              </span>
+<span class="text-xs font-medium text-secondary">Maharashtra Municipal Corporation Act §19</span>
+</div>
+<h2 class="text-xl sm:text-2xl font-black text-on-surface tracking-[-0.02em] mt-1" id="modal-title">
+              Deactivate Municipal Contractor: M/s Kulkarni Infrastructure &amp; Co.
+            </h2>
+<p class="text-xs sm:text-sm text-secondary font-medium mt-0.5">
+              Licence #SMKC-PWD-CTR-4412 • Class B Registered • Roads &amp; Asphalt Cell
+            </p>
+</div>
+</div>
+<button aria-label="Close modal" class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Scrollable Modal Body Container -->
+<div class="p-6 overflow-y-auto max-h-[768px] space-y-6 custom-scrollbar bg-surface-container-lowest">
+<!-- Crucial Warning Card: Active Work Orders Alert -->
+<div class="bg-error-container/30 border-l-4 border-error rounded-lg p-4 sm:p-5">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-error text-[22px] shrink-0 mt-0.5">assignment_late</span>
+<div>
+<h3 class="text-sm font-bold text-on-surface tracking-tight uppercase">
+                ATTENTION: 3 Active Road Repair Jobs Require Immediate Mandatory Reassignment
+              </h3>
+<p class="text-xs sm:text-body-sm text-on-surface-variant mt-1 leading-relaxed">
+                Under Maharashtra Municipal Corporation Act statutory rules, deactivation cannot proceed until all 3 ongoing road repair jobs are formally reassigned to certified municipal contractors. SLA timers remain active during reassignment.
+              </p>
+</div>
+</div>
+</div>
+<!-- Section: Active Jobs Pending Mandatory Reassignment (3) -->
+<div class="space-y-3">
+<div class="flex items-center justify-between pb-1">
+<h3 class="text-sm font-bold uppercase tracking-wider text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">swap_horiz</span>
+              Active Jobs to Reassign (3 Mandated)
+            </h3>
+<span class="text-xs font-semibold text-secondary">All transfers subject to Municipal Chief Engineer review</span>
+</div>
+<!-- Job Item 1 -->
+<div class="p-4 bg-surface-container-low border border-outline-variant rounded-lg hover:border-primary/50 transition-colors space-y-3">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant/60 pb-2.5">
+<div class="flex items-center gap-2.5">
+<span class="px-2 py-0.5 text-xs font-mono font-bold bg-surface-container-highest text-on-surface rounded border border-outline-variant">
+                  #NS-2026-00105
+                </span>
+<span class="text-sm font-bold text-on-surface">Khanbhag Main Road Pothole Patching</span>
+</div>
+<div class="flex items-center gap-1.5 self-start sm:self-auto">
+<span class="material-symbols-outlined text-error text-[16px]">timer</span>
+<span class="text-xs font-bold text-error bg-error-container px-2 py-0.5 rounded-full">
+                  SLA: 18h remaining
+                </span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+<div class="md:col-span-5 text-xs text-secondary flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                Ward 14 • Heavy traffic artery (Bus corridor)
+              </div>
+<div class="md:col-span-7 flex flex-col sm:flex-row sm:items-center gap-2">
+<label class="text-xs font-semibold text-on-surface-variant whitespace-nowrap" for="reassign-job-1">
+                  Reassign to:
+                </label>
+<div class="relative w-full">
+<select class="w-full bg-surface-container-lowest border border-outline text-on-surface text-xs font-medium rounded-md py-2 px-3 pr-8 focus:ring-2 focus:ring-primary focus:border-primary" id="reassign-job-1">
+<option selected="">Sangli Earthmovers &amp; Bitumen (Capacity: 84%)</option>
+<option>Venkateshwara Civil Works (Capacity: 92%)</option>
+<option>Miraj PWD Direct In-House Squad (Emergency)</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<!-- Job Item 2 -->
+<div class="p-4 bg-surface-container-low border border-outline-variant rounded-lg hover:border-primary/50 transition-colors space-y-3">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant/60 pb-2.5">
+<div class="flex items-center gap-2.5">
+<span class="px-2 py-0.5 text-xs font-mono font-bold bg-surface-container-highest text-on-surface rounded border border-outline-variant">
+                  #NS-2026-00119
+                </span>
+<span class="text-sm font-bold text-on-surface">Ganpati Peth Market Road Cavity Restoration</span>
+</div>
+<div class="flex items-center gap-1.5 self-start sm:self-auto">
+<span class="material-symbols-outlined text-tertiary text-[16px]">schedule</span>
+<span class="text-xs font-bold text-tertiary bg-tertiary-fixed px-2 py-0.5 rounded-full">
+                  SLA: 24h remaining
+                </span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+<div class="md:col-span-5 text-xs text-secondary flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                Ward 09 • Commercial dense pedestrian bazaar
+              </div>
+<div class="md:col-span-7 flex flex-col sm:flex-row sm:items-center gap-2">
+<label class="text-xs font-semibold text-on-surface-variant whitespace-nowrap" for="reassign-job-2">
+                  Reassign to:
+                </label>
+<div class="relative w-full">
+<select class="w-full bg-surface-container-lowest border border-outline text-on-surface text-xs font-medium rounded-md py-2 px-3 pr-8 focus:ring-2 focus:ring-primary focus:border-primary" id="reassign-job-2">
+<option>Sangli Earthmovers &amp; Bitumen (Capacity: 84%)</option>
+<option selected="">Venkateshwara Civil Works (Capacity: 92%)</option>
+<option>Miraj PWD Direct In-House Squad (Emergency)</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<!-- Job Item 3 -->
+<div class="p-4 bg-surface-container-low border border-outline-variant rounded-lg hover:border-primary/50 transition-colors space-y-3">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant/60 pb-2.5">
+<div class="flex items-center gap-2.5">
+<span class="px-2 py-0.5 text-xs font-mono font-bold bg-surface-container-highest text-on-surface rounded border border-outline-variant">
+                  #NS-2026-00142
+                </span>
+<span class="text-sm font-bold text-on-surface">Station Road Extension Pavers Relaying</span>
+</div>
+<div class="flex items-center gap-1.5 self-start sm:self-auto">
+<span class="material-symbols-outlined text-secondary text-[16px]">schedule</span>
+<span class="text-xs font-bold text-secondary bg-surface-container-highest px-2 py-0.5 rounded-full">
+                  SLA: 48h remaining
+                </span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+<div class="md:col-span-5 text-xs text-secondary flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                Ward 22 • Railway approach walkway
+              </div>
+<div class="md:col-span-7 flex flex-col sm:flex-row sm:items-center gap-2">
+<label class="text-xs font-semibold text-on-surface-variant whitespace-nowrap" for="reassign-job-3">
+                  Reassign to:
+                </label>
+<div class="relative w-full">
+<select class="w-full bg-surface-container-lowest border border-outline text-on-surface text-xs font-medium rounded-md py-2 px-3 pr-8 focus:ring-2 focus:ring-primary focus:border-primary" id="reassign-job-3">
+<option>Sangli Earthmovers &amp; Bitumen (Capacity: 84%)</option>
+<option selected="">Venkateshwara Civil Works (Capacity: 92%)</option>
+<option>Miraj PWD Direct In-House Squad (Emergency)</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Section: Mandatory Reason for Deactivation (Required) -->
+<div class="border-t border-outline-variant/80 pt-5 space-y-4">
+<div>
+<div class="flex items-center justify-between">
+<label class="text-sm font-bold uppercase tracking-wider text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-error text-[18px]">gavel</span>
+                Standard Regulatory Grounds <span class="text-error">*</span>
+</label>
+<span class="text-xs text-secondary">Select primary basis</span>
+</div>
+<!-- Standard grounds chips -->
+<div class="flex flex-wrap gap-2 mt-2.5">
+<button class="px-3 py-1.5 rounded-full text-xs font-semibold border border-error bg-error text-white shadow-sm flex items-center gap-1.5 transition-all" type="button">
+<span class="material-symbols-outlined text-[14px]">check</span>
+                Substandard bitumen quality test failure
+              </button>
+<button class="px-3 py-1.5 rounded-full text-xs font-semibold border border-outline bg-surface-container text-on-surface hover:bg-surface-variant transition-colors flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[14px]">add</span>
+                Persistent SLA breaches (&gt;3 incidents)
+              </button>
+<button class="px-3 py-1.5 rounded-full text-xs font-semibold border border-outline bg-surface-container text-on-surface hover:bg-surface-variant transition-colors flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[14px]">add</span>
+                License expired without renewal
+              </button>
+<button class="px-3 py-1.5 rounded-full text-xs font-semibold border border-outline bg-surface-container text-on-surface hover:bg-surface-variant transition-colors flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[14px]">add</span>
+                Legal or municipal compliance dispute
+              </button>
+</div>
+</div>
+<!-- Official Administrative Reason Textarea -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between">
+<label class="text-xs font-bold text-on-surface tracking-wide uppercase" for="deactivation-reason">
+                Official Administrative Reason (Required for audit log) <span class="text-error">*</span>
+</label>
+<span class="text-[11px] font-mono text-secondary">214 / 500 characters</span>
+</div>
+<textarea class="w-full text-xs sm:text-sm font-medium p-3 bg-surface-container-low border border-outline rounded-lg text-on-surface placeholder:text-outline focus:ring-2 focus:ring-error focus:border-error leading-relaxed resize-none" id="deactivation-reason" rows="3">Repeated citizen dispute on Khanbhag Road and failed bitumen compaction density test (Lab Ref: #LAB-SMKC-884). Action initiated under Section 19(B) of Municipal Works Code.</textarea>
+<p class="text-[11px] text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">info</span>
+              This text is permanently recorded in the PWD Statutory Vigilance Database.
+            </p>
+</div>
+</div>
+</div>
+<!-- Modal Action Buttons & Compliance Footer -->
+<div class="p-6 bg-surface-container border-t border-outline-variant space-y-4">
+<div class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3">
+<button class="px-5 py-2.5 rounded-lg border border-outline bg-surface-container-lowest text-on-surface text-xs sm:text-sm font-bold hover:bg-surface-variant transition-colors focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-center gap-2" type="button">
+            Cancel &amp; Retain Active Status
+          </button>
+<button class="px-6 py-2.5 rounded-lg bg-[#b91c1c] hover:bg-[#991b1b] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-error flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]">person_off</span>
+            Deactivate Contractor &amp; Reassign 3 Jobs
+          </button>
+</div>
+<!-- Compliance Footer -->
+<div class="flex items-center justify-center sm:justify-start gap-2 pt-2 border-t border-outline-variant/60 text-[11px] text-secondary font-medium">
+<span class="material-symbols-outlined text-[15px] text-primary">verified_user</span>
+<span>Cryptographic audit log will record action under officer ID: <strong class="text-on-surface font-semibold">#SMKC-ENG-774 (Er. Nilesh Shinde)</strong></span>
+</div>
+</div>
+</div>
+</div>
+</body></html>
