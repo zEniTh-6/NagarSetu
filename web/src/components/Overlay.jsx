@@ -76,7 +76,7 @@ export function Overlay({ open, onClose, title, description, children, footer, p
         className={cx(
           "relative flex max-h-[90dvh] w-full flex-col bg-white text-charcoal-900",
           sheet
-            ? "max-w-xl animate-sheet-up rounded-t-card shadow-sheet pb-[env(safe-area-inset-bottom)]"
+            ? "max-w-[480px] animate-sheet-up rounded-t-card shadow-sheet pb-[env(safe-area-inset-bottom)]"
             : "max-w-lg animate-fade-in rounded-card border border-stone-300 shadow-modal",
           className,
         )}

@@ -66,7 +66,7 @@ export default function ProfilePage() {
         <p className="mt-1 text-caption text-graphite-600">{t("profile.notificationsBody")}</p>
       </Card>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3">
         <Button variant="outline" leftIcon={KeyRound} to="/change-password">
           {t("changePassword.title")}
         </Button>

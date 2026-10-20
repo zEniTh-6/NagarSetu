@@ -10,6 +10,7 @@ import AccountBlockedPage from "./pages/auth/AccountBlockedPage.jsx";
 import InvitePage from "./pages/auth/InvitePage.jsx";
 import RoleHome from "./pages/home/RoleHome.jsx";
 import { CitizenLayout } from "./components/citizen/CitizenLayout.jsx";
+import { MobileColumn } from "./components/MobileColumn.jsx";
 import HomePage from "./pages/citizen/HomePage.jsx";
 import MapPage from "./pages/citizen/MapPage.jsx";
 import ComplaintsPage from "./pages/citizen/ComplaintsPage.jsx";
@@ -47,6 +48,10 @@ export const routes = [
     children: [
       { path: "/verify-email", element: <VerifyEmailPage /> },
       {
+        // Phone column on wide screens (citizen screens are mobile designs).
+        element: <MobileColumn />,
+        children: [
+      {
         path: "/citizen",
         element: <CitizenLayout />,
         children: [
@@ -64,10 +69,15 @@ export const routes = [
       { path: "/citizen/report/supported/:id", element: <SupportedPage /> },
       { path: "/citizen/issues/:id/retake", element: <RetakePage /> },
       { path: "/citizen/issues/:id/not-fixed", element: <NotFixedPage /> },
+        ],
+      },
     ],
   },
   { element: <RequireRole roles={["ADMIN"]} />, children: [{ path: "/admin/*", element: <RoleHome /> }] },
-  { element: <RequireRole roles={["CONTRACTOR"]} />, children: [{ path: "/contractor/*", element: <RoleHome /> }] },
+  {
+    element: <RequireRole roles={["CONTRACTOR"]} />,
+    children: [{ element: <MobileColumn />, children: [{ path: "/contractor/*", element: <RoleHome /> }] }],
+  },
   { path: "*", element: <NotFoundPage /> },
 ];
 

@@ -206,7 +206,11 @@ describe("my complaints", () => {
     expect(await screen.findByText("Active one")).toBeInTheDocument();
     expect(screen.queryByText("Fixed one")).not.toBeInTheDocument();
 
+    expect(screen.getByRole("tab", { name: /Active/ })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: /Active/ }).className).toContain("border-teal-700");
+    expect(screen.getByRole("tab", { name: /Resolved/ }).className).toContain("border-stone-300");
     await userEvent.click(screen.getByRole("tab", { name: /Rejected \/ withdrawn/ }));
+    expect(screen.getByRole("tab", { name: /Rejected \/ withdrawn/ })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByText("Withdrawn one")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("tab", { name: /Supporting/ }));
     expect(await screen.findByText("Someone else's report")).toBeInTheDocument();

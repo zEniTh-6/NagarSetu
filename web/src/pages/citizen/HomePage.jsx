@@ -40,13 +40,13 @@ export default function HomePage() {
         </Alert>
       )}
 
-      <Card variant="hero" className="md:flex md:items-center md:justify-between md:gap-8">
+      <Card variant="hero">
         <div>
           <p className="text-eyebrow uppercase text-brass-400">{t("home.heroEyebrow")}</p>
           <h2 className="mt-2 text-h1 text-ivory-50">{t("home.heroTitle")}</h2>
           <p className="mt-2 max-w-md text-body text-sage-100">{t("home.heroBody")}</p>
         </div>
-        <Button variant="dark" className="mt-5 shrink-0 md:mt-0" leftIcon={Camera} to="/citizen/report">
+        <Button variant="dark" className="mt-5" leftIcon={Camera} to="/citizen/report">
           {t("home.reportCta")}
         </Button>
       </Card>

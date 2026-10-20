@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router";
-import { ClipboardList, Users } from "lucide-react";
+import { Check, ClipboardList, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "../../components/Alert.jsx";
 import { Button } from "../../components/Button.jsx";
@@ -36,7 +36,7 @@ export default function ComplaintsPage() {
   };
 
   const onKeyDown = (e) => {
-    const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
     if (!step) return;
     e.preventDefault();
     const i = TABS.findIndex((x) => x.key === current);
@@ -50,7 +50,7 @@ export default function ComplaintsPage() {
       <h1 className="text-h1 text-charcoal-900">{t("complaints.title")}</h1>
       <p className="mt-1 text-body text-graphite-600">{t("complaints.subtitle")}</p>
 
-      <div role="tablist" aria-label={t("complaints.title")} onKeyDown={onKeyDown} className="mt-5 grid grid-cols-2 gap-1 rounded-control border border-stone-300 bg-white p-1 sm:flex">
+      <div role="tablist" aria-label={t("complaints.title")} onKeyDown={onKeyDown} className="mt-5 grid grid-cols-2 gap-2">
         {TABS.map((x) => {
           const selected = x.key === current;
           const loaded = x.key === "supporting" ? !supporting.isPending : !mine.isPending;
@@ -64,11 +64,16 @@ export default function ComplaintsPage() {
               aria-controls="complaints-panel"
               tabIndex={selected ? 0 : -1}
               onClick={() => select(x.key)}
+              /* Same selected state as the report's category cards: teal border, sage tint, check, bold. */
               className={cx(
-                "min-h-11 flex-1 rounded-[8px] px-3 py-1 text-label",
-                selected ? "bg-forest-900 text-ivory-50" : "text-graphite-600 hover:bg-ivory-50 hover:text-charcoal-900",
+                "flex min-h-12 items-center justify-center gap-1.5 rounded-control px-2 text-label transition-colors",
+                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700",
+                selected
+                  ? "border-2 border-teal-700 bg-sage-100 font-bold text-charcoal-900"
+                  : "border border-stone-300 bg-white font-medium text-graphite-600 hover:border-field-border hover:text-charcoal-900",
               )}
             >
+              {selected && <Check aria-hidden="true" className="size-4 shrink-0 text-teal-700" strokeWidth={3} />}
               {t(`complaints.tab.${x.key}`)}
               {loaded && <span className="tnum ms-1.5 opacity-80">({count(x)})</span>}
             </button>
