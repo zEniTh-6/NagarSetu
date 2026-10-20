@@ -15,14 +15,16 @@ export const json = (status, body) =>
 
 /**
  * Mock fetch with a table of handlers: { "POST /api/auth/login": (body) => json(200, …) }.
- * Unlisted requests answer 404. Returns the mock so tests can inspect calls.
+ * A key may include the query string; otherwise the path alone matches. Multipart bodies are passed
+ * as the FormData itself. Unlisted requests answer 404. Returns the mock so tests can inspect calls.
  */
 export function mockApi(table) {
   const fn = vi.fn(async (url, init = {}) => {
-    const key = `${init.method ?? "GET"} ${url}`;
-    const handler = table[key];
+    const method = init.method ?? "GET";
+    const handler = table[`${method} ${url}`] ?? table[`${method} ${String(url).split("?")[0]}`];
     if (!handler) return json(404, { error: { code: "NOT_FOUND", message: "Not found" } });
-    return handler(init.body ? JSON.parse(init.body) : undefined);
+    const body = init.body instanceof FormData ? init.body : init.body ? JSON.parse(init.body) : undefined;
+    return handler(body, url);
   });
   vi.stubGlobal("fetch", fn);
   return fn;

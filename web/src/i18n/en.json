@@ -150,7 +150,20 @@
       "CITIZEN": "Reporting issues, the feed, the map and your complaints come in the next phase.",
       "ADMIN": "The dashboard, issue review and contractor tools come in the next phase.",
       "CONTRACTOR": "Your assigned jobs and repair evidence upload come in the next phase."
-    }
+    },
+    "heroEyebrow": "See a problem?",
+    "heroTitle": "Report it in a minute",
+    "heroBody": "A photo, the spot on the map and a few words. The department reviews every report.",
+    "reportCta": "Report an issue",
+    "stat": {
+      "active": "Open reports",
+      "resolved": "Resolved",
+      "supporting": "Supporting"
+    },
+    "recent": "Your recent reports",
+    "seeAll": "See all",
+    "emptyTitle": "No reports yet",
+    "emptyBody": "When you report a pothole, garbage or a broken streetlight, you can follow it here."
   },
   "notFound": {
     "title": "Page not found",
@@ -191,15 +204,44 @@
   "timeline": {
     "done": "done",
     "current": "current step",
-    "upcoming": "not reached yet"
+    "upcoming": "not reached yet",
+    "event": {
+      "REPORTED": "Reported",
+      "ACKNOWLEDGED": "Accepted by the department",
+      "ASSIGNED": "Contractor assigned",
+      "IN_PROGRESS": "Work started",
+      "RESOLVED": "Resolved",
+      "REJECTED": "Not accepted",
+      "FORWARDED": "Forwarded to another authority",
+      "DUPLICATE": "Linked to an existing report",
+      "REROUTED": "Moved to another category",
+      "WITHDRAWN": "Withdrawn",
+      "REOPENED": "Reopened by the department",
+      "reroutedDetail": "From {{from}} to {{to}}"
+    }
   },
   "photo": {
     "before": "Before",
     "after": "After",
-    "afterPending": "Repair photo not published yet"
+    "afterPending": "Repair photo not published yet",
+    "empty": "No photo yet",
+    "preview": "Photo of the problem",
+    "camera": "Take photo",
+    "retakeCamera": "Take another photo",
+    "gallery": "Choose from gallery",
+    "error": {
+      "NOT_AN_IMAGE": "That file is not a photo. Choose a JPEG, PNG or WebP photo.",
+      "UNREADABLE": "This photo could not be opened. Try taking it again.",
+      "TOO_SMALL": "This photo is too small. Take a new one."
+    }
   },
   "map": {
-    "label": "Map"
+    "label": "Map",
+    "title": "Map",
+    "subtitle": "Your reports and the reports you support.",
+    "open": "Open",
+    "empty": "Nothing on the map yet",
+    "emptyBody": "Your reports and the ones you support will appear here."
   },
   "errors": {
     "UNKNOWN": "Something went wrong. Please try again.",
@@ -226,6 +268,286 @@
     "RESET_LINK_INVALID": "This reset link is invalid, already used or expired.",
     "INVITE_NOT_FOUND": "This invite link is not valid.",
     "INVITE_USED": "This invite link has already been used.",
-    "INVITE_EXPIRED": "This invite link has expired."
+    "INVITE_EXPIRED": "This invite link has expired.",
+    "OUTSIDE_SERVICE_AREA": "This spot is outside the area NagarSetu covers (Sangli, Miraj and Kupwad).",
+    "CANNOT_WITHDRAW": "The department has already accepted this report, so it can't be withdrawn.",
+    "PHOTO_REQUIRED": "Add a photo of the problem.",
+    "UNSUPPORTED_IMAGE": "Use a JPEG, PNG or WebP photo.",
+    "UNREADABLE_IMAGE": "This photo could not be read. Take it again.",
+    "IMAGE_TOO_SMALL": "This photo is too small. Take a new one.",
+    "PHOTO_TOO_LARGE": "This photo is too large. Take a new one.",
+    "UNKNOWN_CATEGORY": "Choose a category from the list.",
+    "ISSUE_NOT_ACTIVE": "This report is already closed.",
+    "OWN_ISSUE": "This is your own report.",
+    "RETAKE_NOT_REQUESTED": "A new photo is not needed for this report.",
+    "NOT_RESOLVED": "Feedback opens once the issue is resolved.",
+    "FEEDBACK_WINDOW_CLOSED": "The time to answer for this repair has ended.",
+    "ALREADY_RESPONDED": "You already answered for this repair.",
+    "PHOTO_ONLY_FOR_NOT_FIXED": "A photo can only be added to a \"not fixed\" answer."
+  },
+  "nav": {
+    "main": "Main",
+    "home": "Home",
+    "map": "Map",
+    "report": "Report",
+    "complaints": "Complaints",
+    "alerts": "Alerts",
+    "profile": "Profile",
+    "unread": "{{count}} unread"
+  },
+  "category": {
+    "ROADS": "Roads",
+    "GARBAGE": "Garbage",
+    "STREETLIGHT": "Streetlight"
+  },
+  "gate": {
+    "title": "Verify your email to report",
+    "body": "We sent a 6-digit code to {{email}}. Enter it once and you can report issues.",
+    "why1": "It keeps reports from fake accounts out.",
+    "why2": "You get updates on your reports in the app.",
+    "verify": "Enter the code",
+    "later": "Not now"
+  },
+  "report": {
+    "title": "Report an issue",
+    "stepOf": "Step {{step}} of {{total}}",
+    "stepName": {
+      "1": "Photo",
+      "2": "Location",
+      "3": "Details",
+      "4": "Review"
+    },
+    "next": "Continue",
+    "photo": {
+      "title": "Take a photo of the problem",
+      "body": "One clear photo helps the department understand the problem quickly.",
+      "tip1": "Show the whole problem, in daylight if you can.",
+      "tip2": "Stand where the department's team would stand.",
+      "tip3": "Avoid people's faces and number plates."
+    },
+    "location": {
+      "title": "Where is it?",
+      "body": "Move the pin to the exact spot. You can also search for a place or use your location."
+    },
+    "details": {
+      "title": "What is the problem?",
+      "body": "Choose the category and describe what you see.",
+      "category": "Category",
+      "categoryRequired": "Choose a category.",
+      "description": "Description",
+      "placeholder": "For example: deep pothole in the middle of the road, near the bus stop",
+      "languageHint": "Write in English, Hindi or Marathi, or Hindi/Marathi in English letters. We keep your words as written.",
+      "tooShort": "Write at least {{min}} characters."
+    },
+    "review": {
+      "title": "Check and send",
+      "body": "Make sure everything is right. You can't change the report after sending it.",
+      "photo": "Photo",
+      "location": "Location",
+      "details": "Details",
+      "edit": "Edit",
+      "noGps": "No device location was added. That's fine: the department uses the pin.",
+      "final": "After sending, only the department can change the report (for example, move it to another category). You can withdraw it until the department accepts it.",
+      "submit": "Send report"
+    }
+  },
+  "location": {
+    "searchLabel": "Search for a place",
+    "searchPlaceholder": "Road, area or landmark",
+    "searchHint": "Press Enter or the search button.",
+    "search": "Search",
+    "searchFailed": "Search is not available right now. Move the pin by hand instead.",
+    "noResults": "No places found in the NagarSetu area. Try another name or move the pin.",
+    "tapHint": "Tap the map to place the pin",
+    "useMine": "Use my location",
+    "accuracy": "Accurate to about {{distance}}",
+    "gps": {
+      "DENIED": "Location permission is off. You can still place the pin by hand.",
+      "UNAVAILABLE": "Your location is not available. You can still place the pin by hand.",
+      "TIMEOUT": "Finding your location took too long. You can place the pin by hand."
+    },
+    "selected": "Selected spot",
+    "pinTitle": "Report location (drag to move)",
+    "addressLabel": "Landmark or address",
+    "addressHint": "Helps the team find the spot, e.g. \"opposite the post office\"."
+  },
+  "duplicate": {
+    "title": "Is this the same problem?",
+    "body": "Similar reports are already open nearby. If one of them is your problem, support it instead of sending a new report.",
+    "same": "Yes, this is my problem",
+    "submitAnyway": "No, mine is different. Send my report",
+    "away": "{{distance}} away",
+    "supporters_one": "{{count}} supporter",
+    "supporters_other": "{{count}} supporters",
+    "own": "This is your own report.",
+    "openOwn": "Open it"
+  },
+  "retry": {
+    "title": "Connection lost",
+    "body": "Your report hasn't reached NagarSetu yet. We keep trying while this screen is open.",
+    "countdown": "Trying again in {{seconds}} s (attempt {{attempt}})",
+    "sending": "Sending…",
+    "safe": "Trying again is safe: it can never create a second report.",
+    "now": "Try now",
+    "cancel": "Stop and go back"
+  },
+  "submitted": {
+    "header": "Report sent",
+    "title": "Thank you, your report is in",
+    "body": "The department will review it. You will get updates here in the app.",
+    "ref": "Reference {{ref}}",
+    "saved": "Your report is saved. Open it later from My complaints.",
+    "nextTitle": "What happens next",
+    "next1": "We check your photo automatically (this can take a minute).",
+    "next2": "The department accepts the report, or tells you why not.",
+    "next3": "A contractor fixes it and the department checks the repair photo.",
+    "view": "View my report",
+    "home": "Back to home"
+  },
+  "supported": {
+    "header": "Support added",
+    "title": "You now support this report",
+    "body": "No new report was sent and your photo was not uploaded. You'll get the same updates as the person who reported it.",
+    "count_one": "{{count}} person supports it",
+    "count_other": "{{count}} people support it",
+    "point1": "The department sees how many people are affected.",
+    "point2": "Support doesn't change the priority or send anyone by itself; the department decides.",
+    "point3": "When it is fixed, you can say whether it really is.",
+    "view": "View the report"
+  },
+  "validation": {
+    "checkingTitle": "Checking your photo",
+    "checkingBody": "This usually takes under a minute. Your report is already saved.",
+    "retakeTitle": "Please take a new photo",
+    "retakeBody": "Our automatic check could not see the problem clearly in the photo. Your report is not rejected; a new photo helps the department.",
+    "retakeAction": "Take a new photo",
+    "reviewTitle": "A person will check your photo",
+    "reviewBody": "The automatic check wasn't sure, so the department will look at it. You don't need to do anything.",
+    "okBody": "Photo checked. The department will review your report."
+  },
+  "suggestion": {
+    "title": "This may be a {{category}} issue",
+    "body": "You chose {{category}}. If needed, the department will move your report to the right category and tell you. You don't need to do anything."
+  },
+  "complaints": {
+    "title": "My complaints",
+    "subtitle": "Follow your reports and the ones you support.",
+    "tab": {
+      "active": "Active",
+      "resolved": "Resolved",
+      "ended": "Rejected / withdrawn",
+      "supporting": "Supporting"
+    },
+    "empty": {
+      "active": "No open reports",
+      "resolved": "No resolved reports yet",
+      "ended": "Nothing here",
+      "supporting": "You don't support any reports yet",
+      "supportingBody": "When you choose \"Yes, this is my problem\" on a similar report, it appears here."
+    },
+    "endedNote": "Rejected, forwarded, linked to another report, or withdrawn. Open one to see why.",
+    "canWithdraw": "You can withdraw this report until the department accepts it.",
+    "youSupport": "You support this report",
+    "more": "Show more"
+  },
+  "issue": {
+    "reportedOn": "Reported {{date}}",
+    "supporting": "You support this",
+    "photoAlt": "Photo of the reported problem",
+    "description": "Description",
+    "location": "Location",
+    "timeline": "Progress",
+    "notFound": "Report not found",
+    "notFoundBody": "It doesn't exist, or it isn't one you reported or support.",
+    "allComplaints": "All my complaints"
+  },
+  "closed": {
+    "rejectedTitle": "The department did not accept this report",
+    "rejectedBody": "Here is the department's reason.",
+    "forwardedTitle": "Forwarded to another authority",
+    "forwardedBody": "This place isn't looked after by the municipal department. The reason says where it went.",
+    "reason": "Reason",
+    "duplicateTitle": "Linked to an existing report",
+    "duplicateBody": "The same problem was already reported. Your report and your support now count for that one.",
+    "openMain": "Open the main report",
+    "withdrawnTitle": "You withdrew this report"
+  },
+  "resolution": {
+    "title": "Before and after",
+    "beforeAlt": "Photo of the problem when it was reported",
+    "afterAlt": "Repair photo approved by the department",
+    "noPhoto": "Resolved by the department."
+  },
+  "feedback": {
+    "question": "Is it fixed?",
+    "explain": "Your answer helps the department check the work. It doesn't reopen or close anything by itself.",
+    "yes": "Yes, fixed",
+    "no": "Not fixed",
+    "window": "You can answer until {{date}}.",
+    "closed": "The time to answer for this repair has ended.",
+    "thanks": "Thank you for confirming.",
+    "my": {
+      "FIXED": "You said it is fixed",
+      "NOT_FIXED": "You said it is not fixed"
+    },
+    "disputedNote": "The department has been told and will decide what to do."
+  },
+  "notFixed": {
+    "title": "Not fixed",
+    "explain": "Tell the department what is still wrong. They will look at it and decide; the report is not reopened automatically.",
+    "reason": "What is still wrong?",
+    "placeholder": "For example: the hole is back after the rain",
+    "tooShort": "Write at least 3 characters.",
+    "photo": "Photo",
+    "submit": "Send to the department",
+    "sent": "Sent. The department will look at it."
+  },
+  "retake": {
+    "title": "New photo",
+    "body": "Take a clear photo of the problem from where you stand.",
+    "current": "Current photo",
+    "new": "New photo",
+    "submit": "Send new photo",
+    "sent": "New photo sent. We'll check it again.",
+    "keep": "Your report stays open while you do this."
+  },
+  "withdraw": {
+    "action": "Withdraw report",
+    "hint": "You can withdraw this report until the department accepts it.",
+    "title": "Withdraw this report?",
+    "body": "The department will stop working on it. This can't be undone.",
+    "reason": "Reason",
+    "confirm": "Withdraw",
+    "done": "Report withdrawn."
+  },
+  "notifications": {
+    "title": "Alerts",
+    "subtitle": "Updates on your reports and the ones you support.",
+    "readAll": "Mark all as read",
+    "unread": "unread",
+    "empty": "No alerts yet",
+    "emptyBody": "You'll see an alert here when something happens to your reports.",
+    "type": {
+      "ACKNOWLEDGED": "The department accepted the report",
+      "REJECTED": "The department did not accept the report",
+      "FORWARDED": "The report was forwarded to another authority",
+      "ASSIGNED": "A contractor has been assigned",
+      "IN_PROGRESS": "Work has started",
+      "RESOLVED": "Marked as fixed. Is it?",
+      "REROUTED": "The report was moved to another category",
+      "LINKED_DUPLICATE": "The report was linked to an existing report",
+      "REOPENED": "The department reopened the report",
+      "DISPUTE_DISMISSED": "The department reviewed your \"not fixed\" answer",
+      "OFFICIAL_REPLY": "The department replied",
+      "OTHER": "Update on a report"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "verified": "Email verified",
+    "notVerified": "Email not verified",
+    "languageHint": "The app's language. Reports are kept in the language you wrote them in.",
+    "notificationsTitle": "Notifications",
+    "notificationsBody": "Updates arrive here in the app (Alerts). NagarSetu only sends email for your sign-up code and password reset links."
   }
 }
