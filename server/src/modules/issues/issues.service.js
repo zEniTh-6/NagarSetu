@@ -323,6 +323,8 @@ export async function getIssue(prisma, { user, issueId }) {
       ...resolutionView(issue, await approvedRepairPhoto(prisma, issue.id)),
       ...(await citizenFeedbackState(prisma, user, issue)),
       timeline: await citizenTimeline(prisma, issue.id),
+      // Only the reporter may withdraw; supporters follow the outcome.
+      relation: issue.reporterId === user.id ? "REPORTER" : "SUPPORTER",
     });
   }
   return adminIssueView(issue, locations[issue.id], photo, await adminReviewExtras(prisma, { user, issue }));

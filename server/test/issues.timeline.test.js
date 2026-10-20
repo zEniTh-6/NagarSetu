@@ -74,8 +74,10 @@ describe("GET /api/issues/supporting", () => {
     expect(res.body.items[0]).toMatchObject({ status: "REPORTED", supportedAt: expect.any(String) });
     expect(res.body.items[0].flags).toBeUndefined();
 
-    // A supporter can open the issue, timeline included.
+    // A supporter can open the issue, timeline included, and is told they are a supporter.
     expect((await timelineOf(agent, a.id)).map((e) => e.type)).toEqual(["REPORTED"]);
+    expect((await agent.get(`/api/issues/${a.id}`)).body.issue.relation).toBe("SUPPORTER");
+    expect((await otherAgent.get(`/api/issues/${a.id}`)).body.issue.relation).toBe("REPORTER");
     expect((await otherAgent.get("/api/issues/supporting")).body.total).toBe(0);
   });
 
