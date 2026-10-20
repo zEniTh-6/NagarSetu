@@ -12,7 +12,7 @@ export function AuthLayout({ title, subtitle, icon: Icon, backTo, backLabel, her
   const { t } = useTranslation();
   return (
     <div className="min-h-dvh bg-ivory-50 lg:flex lg:items-center lg:justify-center lg:p-8">
-      <div className="mx-auto w-full max-w-md px-4 pt-4 pb-8 sm:pt-8 lg:grid lg:max-w-6xl lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:overflow-hidden lg:rounded-card lg:border lg:border-stone-300 lg:bg-white lg:p-0">
+      <div className="mx-auto w-full max-w-[480px] px-4 pt-4 pb-8 sm:pt-8 lg:grid lg:max-w-6xl lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:overflow-hidden lg:rounded-card lg:border lg:border-stone-300 lg:bg-white lg:p-0">
         {/* Desktop brand panel */}
         <aside className="on-dark hidden bg-forest-900 p-12 text-ivory-50 lg:flex lg:flex-col">
           <Logo tone="dark" />

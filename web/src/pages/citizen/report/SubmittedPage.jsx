@@ -52,7 +52,7 @@ export default function SubmittedPage() {
           </ol>
         </Card>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3">
           <Button to={`/citizen/issues/${id}`}>{t("submitted.view")}</Button>
           <Button variant="outline" to="/citizen">
             {t("submitted.home")}

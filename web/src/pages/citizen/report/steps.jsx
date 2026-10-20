@@ -7,6 +7,7 @@ import { Button } from "../../../components/Button.jsx";
 import { Input } from "../../../components/Input.jsx";
 import { Textarea } from "../../../components/Textarea.jsx";
 import { Alert } from "../../../components/Alert.jsx";
+import { ChoiceCards } from "../../../components/ChoiceCards.jsx";
 import { Spinner } from "../../../components/Spinner.jsx";
 import { PhotoPicker } from "../../../components/citizen/PhotoPicker.jsx";
 import { CategoryTile, useCategoryName } from "../../../components/citizen/CategoryIcon.jsx";
@@ -126,7 +127,6 @@ export function LocationStep({ draft, update, error, onNext }) {
           hint={t("location.searchHint")}
         />
         <Button type="submit" variant="outline" className="mt-7 self-start" loading={searching} leftIcon={Search} aria-label={t("location.search")}>
-          <span className="hidden sm:inline">{t("location.search")}</span>
         </Button>
       </form>
       {searchError && <Alert tone="error" title={searchError} />}
@@ -210,6 +210,7 @@ export function DetailsStep({ draft, update, error, onNext }) {
   const categories = useQuery({ queryKey: qk.categories, queryFn: () => categoriesApi.list().then((r) => r.categories), staleTime: Infinity });
 
   const tooShort = draft.description.trim().length < DESCRIPTION_MIN;
+  // "Continue" is enabled once a category is chosen; a too-short description is explained on press.
   const next = () => {
     setTouched(true);
     if (draft.categoryKey && !tooShort) onNext();
@@ -223,37 +224,19 @@ export function DetailsStep({ draft, update, error, onNext }) {
       </div>
       {error && <Alert tone="error" title={error} />}
 
-      <fieldset>
-        <legend className="mb-2 text-label text-charcoal-900">
-          {t("report.details.category")}
-          <span className="text-error" aria-hidden="true"> *</span>
-        </legend>
-        {categories.isPending ? (
-          <Spinner />
-        ) : categories.error ? (
-          <Alert tone="error" title={t("errors.NETWORK_ERROR")} action={<Button size="sm" variant="outline" onClick={() => categories.refetch()}>{t("common.retry")}</Button>} />
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-3">
-            {categories.data.map((c) => {
-              const checked = draft.categoryKey === c.key;
-              return (
-                <label
-                  key={c.key}
-                  className={cx(
-                    "flex min-h-16 cursor-pointer items-center gap-3 rounded-control border-[1.5px] bg-white p-3 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-teal-700",
-                    checked ? "border-teal-700 bg-sage-100/40" : "border-field-border",
-                  )}
-                >
-                  <input type="radio" name="category" value={c.key} checked={checked} onChange={() => update({ categoryKey: c.key })} className="sr-only" />
-                  <CategoryTile categoryKey={c.key} />
-                  <span className="text-label text-charcoal-900">{categoryName(c)}</span>
-                </label>
-              );
-            })}
-          </div>
-        )}
-        {touched && !draft.categoryKey && <p className="mt-1.5 text-caption text-error">{t("report.details.categoryRequired")}</p>}
-      </fieldset>
+      {categories.isPending ? (
+        <Spinner />
+      ) : categories.error ? (
+        <Alert tone="error" title={t("errors.NETWORK_ERROR")} action={<Button size="sm" variant="outline" onClick={() => categories.refetch()}>{t("common.retry")}</Button>} />
+      ) : (
+        <ChoiceCards
+          label={t("report.details.category")}
+          required
+          value={draft.categoryKey}
+          onChange={(categoryKey) => update({ categoryKey })}
+          options={categories.data.map((c) => ({ value: c.key, label: categoryName(c), icon: <CategoryTile categoryKey={c.key} /> }))}
+        />
+      )}
 
       <Textarea
         label={t("report.details.description")}
@@ -267,9 +250,10 @@ export function DetailsStep({ draft, update, error, onNext }) {
         error={touched && tooShort ? t("report.details.tooShort", { min: DESCRIPTION_MIN }) : undefined}
       />
 
-      <Button fullWidth onClick={next}>
+      <Button fullWidth disabled={!draft.categoryKey} onClick={next}>
         {t("report.next")}
       </Button>
+      {!draft.categoryKey && <p className="-mt-3 text-center text-caption text-graphite-600">{t("report.details.categoryRequired")}</p>}
     </div>
   );
 }

@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 export function PhotoCompare({ before, after, className }) {
   const { t } = useTranslation();
   return (
-    <div className={["grid gap-4 sm:grid-cols-2", className].filter(Boolean).join(" ")}>
+    <div className={["grid gap-4 @2xl:grid-cols-2", className].filter(Boolean).join(" ")}>
       <Photo label={t("photo.before")} photo={before} />
       <Photo label={t("photo.after")} photo={after} emptyText={t("photo.afterPending")} verified />
     </div>

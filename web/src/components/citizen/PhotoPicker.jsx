@@ -49,7 +49,7 @@ export function PhotoPicker({ value, onChange, error: outerError, label }) {
         </div>
       )}
       {message && <Alert tone="error" title={message} />}
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3">
         <Button leftIcon={Camera} loading={busy} onClick={() => camera.current?.click()}>
           {value ? t("photo.retakeCamera") : t("photo.camera")}
         </Button>
