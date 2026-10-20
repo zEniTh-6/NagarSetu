@@ -106,8 +106,8 @@ export async function reportComment(prisma, { user, commentId, reason, note }) {
   return { commentId, reported: true, alreadyReported: already };
 }
 
-const ADMIN_COMMENT_INCLUDE = {
-  author: { select: { name: true, role: true, department: { select: { name: true } } } },
+export const ADMIN_COMMENT_INCLUDE = {
+  author: { select: { name: true, role: true, status: true, department: { select: { name: true } } } },
   hiddenBy: { select: { id: true, name: true } },
   reports: { orderBy: { createdAt: "asc" } },
 };

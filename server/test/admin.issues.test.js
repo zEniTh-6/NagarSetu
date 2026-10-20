@@ -99,6 +99,9 @@ describe("issues table", () => {
 
     const res = await roads.agent.get("/api/admin/dashboard");
     expect(res.body).toEqual({
+      department: { id: expect.any(String), code: "CONSTRUCTION", name: expect.any(String) },
+      newLast24h: 3, // this department's reports from the last 24 hours, any status
+      inProgress: 0,
       waitingForReview: 1,
       needsPriority: 1,
       needsAssignment: 1,
