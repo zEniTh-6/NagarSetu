@@ -5,7 +5,7 @@ import { ACTIVE_STATUSES } from "../../geo/duplicates.js";
 import { issueLocations, distancesFrom } from "../../geo/issues.js";
 import { photoUrl } from "../issues/issues.views.js";
 import { communitySignals } from "./community.js";
-import { suggestedDeadline, deadlineDays } from "../work/deadline.js";
+import { suggestedDeadline, deadlineDays, deadlineView } from "../work/deadline.js";
 import { adminAssignmentView, adminSubmissionView } from "../work/work.views.js";
 import { adminFeedbackView } from "../feedback/feedback.service.js";
 
@@ -21,7 +21,18 @@ const ORDER = {
   support: [{ supporters: { _count: "desc" } }, { upvotes: { _count: "desc" } }, { createdAt: "asc" }],
 };
 
-function listWhere(user, { status, category, flag, priority }) {
+const REF = /^#?([0-9a-f]{4,8})$/i;
+
+/** Ids of the department's issues whose reference (start of the id) matches. Parameterised. */
+async function idsByRef(prisma, user, prefix) {
+  const rows = await prisma.$queryRaw`
+    SELECT id::text AS id FROM issues
+    WHERE department_id = ${departmentScope(user).departmentId}::uuid AND id::text LIKE ${`${prefix.toLowerCase()}%`}
+    LIMIT 50`;
+  return rows.map((r) => r.id);
+}
+
+async function listWhere(prisma, user, { status, category, flag, priority, q, from, to, stage }) {
   const where = { ...departmentScope(user) };
   if (status === "ACTIVE") where.status = { in: ACTIVE_STATUSES };
   else if (status !== "ALL") where.status = status;
@@ -29,12 +40,29 @@ function listWhere(user, { status, category, flag, priority }) {
   if (flag) where.flags = { some: { type: flag, clearedAt: null } };
   if (priority === "NONE") where.priority = null;
   else if (priority) where.priority = priority;
+  if (from || to) where.createdAt = { ...(from ? { gte: from } : {}), ...(to ? { lt: to } : {}) };
+  if (stage === "REPAIR_REVIEW") where.submissions = { some: { status: "SUBMITTED" } };
+  if (q) {
+    const ref = REF.exec(q);
+    const refIds = ref ? await idsByRef(prisma, user, ref[1]) : [];
+    where.AND = [
+      {
+        OR: [
+          { description: { contains: q, mode: "insensitive" } },
+          { addressText: { contains: q, mode: "insensitive" } },
+          { areaName: { contains: q, mode: "insensitive" } },
+          ...(refIds.length ? [{ id: { in: refIds } }] : []),
+        ],
+      },
+    ];
+  }
   return where;
 }
 
 /** The issues table. Default: reports waiting for review (REPORTED), newest first. */
 export async function listAdminIssues(prisma, { user, page, pageSize, sort, ...filters }) {
-  const where = listWhere(user, filters);
+  const where = await listWhere(prisma, user, filters);
+  const now = new Date();
   const [total, issues] = await Promise.all([
     prisma.issue.count({ where }),
     prisma.issue.findMany({
@@ -43,6 +71,8 @@ export async function listAdminIssues(prisma, { user, page, pageSize, sort, ...f
         category: true,
         flags: { where: { clearedAt: null }, orderBy: { createdAt: "asc" } },
         photos: { where: { kind: "ISSUE_ORIGINAL", replacedAt: null }, orderBy: { createdAt: "desc" }, take: 1 },
+        assignments: { where: { endedAt: null }, include: { contractor: { select: { id: true, name: true, status: true } } }, take: 1 },
+        submissions: { where: { status: "SUBMITTED" }, select: { id: true }, take: 1 },
       },
       orderBy: ORDER[sort],
       skip: (page - 1) * pageSize,
@@ -65,6 +95,9 @@ export async function listAdminIssues(prisma, { user, page, pageSize, sort, ...f
       priority: i.priority,
       community: signals[i.id],
       flags: i.flags.map((f) => ({ id: f.id, type: f.type, confirmed: Boolean(f.confirmedAt) })),
+      areaName: i.areaName ?? null,
+      assignment: i.assignments[0] ? listAssignment(i.assignments[0], now) : null,
+      repairToReview: i.submissions.length > 0,
     })),
     page,
     pageSize,
@@ -72,10 +105,22 @@ export async function listAdminIssues(prisma, { user, page, pageSize, sort, ...f
   };
 }
 
+/** Current assignee and deadline for the table. Overdue = past the effective deadline (paused review time added). */
+function listAssignment(a, now) {
+  const deadline = deadlineView(a, now);
+  return {
+    contractor: { id: a.contractor.id, name: a.contractor.name, status: a.contractor.status },
+    startedAt: a.startedAt,
+    deadline,
+    overdue: !deadline.paused && deadline.effectiveDeadline < now,
+  };
+}
+
 /** Dashboard counts for the admin's department. */
 export async function adminDashboard(prisma, { user }) {
   const scope = departmentScope(user);
-  const [byStatus, byFlag, needsPriority, needsAssignment, repairsToReview, needsReassignment, escalated, disputed] = await Promise.all([
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const [byStatus, byFlag, needsPriority, needsAssignment, repairsToReview, needsReassignment, escalated, disputed, newLast24h] = await Promise.all([
     prisma.issue.groupBy({ by: ["status"], where: scope, _count: { _all: true } }),
     prisma.issueFlag.groupBy({
       by: ["type"],
@@ -89,9 +134,14 @@ export async function adminDashboard(prisma, { user }) {
     prisma.assignment.count({ where: { endedAt: null, issue: scope, contractor: { status: { not: "ACTIVE" } } } }),
     prisma.issue.count({ where: { ...scope, flags: { some: { type: "ESCALATED", clearedAt: null } } } }),
     prisma.issue.count({ where: { ...scope, status: "RESOLVED", flags: { some: { type: "DISPUTED", clearedAt: null } } } }),
+    prisma.issue.count({ where: { ...scope, createdAt: { gte: since } } }),
   ]);
+  const department = await prisma.department.findUnique({ where: { id: scope.departmentId }, select: { id: true, code: true, name: true } });
   const statuses = Object.fromEntries(byStatus.map((r) => [r.status, r._count._all]));
   return {
+    department,
+    newLast24h, // reports created in the last 24 hours (any status)
+    inProgress: statuses.IN_PROGRESS ?? 0,
     waitingForReview: statuses.REPORTED ?? 0,
     needsPriority,
     needsAssignment,

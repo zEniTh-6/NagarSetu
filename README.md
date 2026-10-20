@@ -351,9 +351,39 @@ If the server runs elsewhere, set `VITE_API_PROXY_TARGET` before `npm run dev`, 
 | Account blocked | `/account-blocked` | After a lockout, or when a deactivated account logs in |
 | Contractor invite | `/invite/<token>` | Open the `inviteUrl` returned when an admin creates a contractor |
 
-After login everyone lands on their own area (`/citizen`, `/admin`, `/contractor`). The admin and
-contractor areas are placeholders until their screens are built. Opening another role's URL sends
+After login everyone lands on their own area (`/citizen`, `/admin`, `/contractor`). The contractor
+area is a placeholder until its screens are built. Opening another role's URL sends
 you back to your own area; the server still enforces access on every API call.
+
+### Admin screens (Phase 7c)
+
+Log in as a seeded admin (e.g. `admin.construction@nagarsetu.local`, password printed by
+`npm run db:seed`). The admin area is built for desktop screens (1024 px and wider).
+
+| Screen | URL |
+|---|---|
+| Dashboard: counts and "needs your review" / "evidence to verify" | `/admin` |
+| Issues table: search, filters, AI risk, community signal, assignee and deadline | `/admin/issues` |
+| Issue review: photo, map (pin vs phone GPS), AI suggestion, flags, duplicates, decisions, official reply, comments, history | `/admin/issues/<id>` |
+| Repair evidence review: before/after, distance, AI check, history, approve/reject | `/admin/issues/<id>/repair` |
+| Disputes: before/after, citizens' reasons, reopen or keep resolved | `/admin/disputes` |
+| Contractors: invite (similar warning, one-time link), new link, deactivate with jobs | `/admin/contractors` |
+| Comments: reported, hidden, suspended accounts | `/admin/comments` |
+| Audit log (read-only) | `/admin/audit` |
+
+What to check by hand:
+1. Accept a new report with a priority different from the AI suggestion: the dialog asks for a reason.
+2. Reject, forward ("not our jurisdiction"), reroute and link a duplicate: each needs a confirmation;
+   reject, forward and reroute need a reason, and the citizen sees it.
+3. Assign a contractor with a deadline, let the contractor send evidence (see "Contractor work by
+   hand"), then approve or reject it on the repair evidence screen.
+4. As a citizen say "Not fixed"; the dispute appears under Disputes. Reopen or keep resolved.
+5. Invite a contractor with the same phone as an existing one: a warning first, then "Create anyway"
+   shows the one-time link. Deactivate a contractor with active jobs: the jobs are listed.
+6. Report a comment as a citizen; under Comments, hide it, suspend the author (they are logged out),
+   then reactivate them from "Suspended accounts".
+7. Audit log: filter by action, who, issue reference and dates. Another department's admin sees none
+   of your rows.
 
 ### Citizen screens (Phase 7a and 7b)
 

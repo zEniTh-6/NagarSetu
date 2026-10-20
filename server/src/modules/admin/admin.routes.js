@@ -4,6 +4,8 @@ import { validate } from "../../middleware/validate.js";
 import { requireAuth, requireRole } from "../../auth/middleware.js";
 import { makeAdminIssuesController } from "./admin.controller.js";
 import * as community from "../feed/community.service.js";
+import * as queues from "./queues.service.js";
+import { listAuditLog, AUDIT_ACTIONS, AUDIT_TARGETS, AUDIT_ACTORS } from "./auditLog.service.js";
 
 const LEVELS = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
 const STATUSES = ["REPORTED", "ACKNOWLEDGED", "IN_PROGRESS", "RESOLVED", "REJECTED", "DUPLICATE", "WITHDRAWN"];
@@ -21,6 +23,11 @@ const listQuery = z
     flag: z.enum(FLAGS).optional(),
     priority: z.enum([...LEVELS, "NONE"]).optional(),
     sort: z.enum(["newest", "oldest", "risk", "priority", "support"]).default("newest"),
+    // Reference (first characters of the id, "#" optional), description or address.
+    q: z.string().trim().max(100).optional().transform((v) => (v ? v : undefined)),
+    from: z.coerce.date().optional(), // reported on or after
+    to: z.coerce.date().optional(), // reported before (exclusive)
+    stage: z.enum(["REPAIR_REVIEW"]).optional(), // a repair submission waits for the admin
     page: z.coerce.number().int().min(1).default(1),
     pageSize: z.coerce.number().int().min(1).max(100).default(25),
   })
@@ -49,6 +56,23 @@ const hideBody = z.object({ reason }).strict(); // kept in the audit log
 // Shown to everyone exactly as written, signed with the department's name.
 const replyBody = z
   .object({ body: z.string().refine((s) => s.trim().length >= 3, "at least 3 characters").refine((s) => s.length <= 1000, "at most 1000 characters") })
+  .strict();
+const queuePage = { page: z.coerce.number().int().min(1).default(1), pageSize: z.coerce.number().int().min(1).max(100).default(25) };
+const submissionsQuery = z.object({ status: z.enum(["SUBMITTED", "APPROVED", "REJECTED"]).default("SUBMITTED"), ...queuePage }).strict();
+const disputesQuery = z.object(queuePage).strict();
+const moderationQuery = z.object({ filter: z.enum(["reported", "hidden"]).default("reported"), ...queuePage }).strict();
+const suspendBody = z.object({ reason }).strict(); // kept in the audit log
+const auditQuery = z
+  .object({
+    action: z.enum(AUDIT_ACTIONS).optional(),
+    actor: z.enum(AUDIT_ACTORS).optional(),
+    target: z.enum(AUDIT_TARGETS).optional(),
+    issue: z.string().trim().max(40).optional().transform((v) => (v ? v : undefined)),
+    from: z.coerce.date().optional(),
+    to: z.coerce.date().optional(),
+    page: z.coerce.number().int().min(1).default(1),
+    pageSize: z.coerce.number().int().min(1).max(100).default(50),
+  })
   .strict();
 const pageQuery = z.object({ page: z.coerce.number().int().min(1).default(1), pageSize: z.coerce.number().int().min(1).max(100).default(50) }).strict();
 
@@ -84,6 +108,28 @@ export function adminIssuesRouter({ prisma, jobs }) {
   });
   r.post("/comments/:id/hide", validate({ params: idParams, body: hideBody }), async (req, res) => {
     res.json({ comment: await community.hideComment(prisma, { user: req.user, commentId: req.validated.params.id, reason: req.validated.body.reason }) });
+  });
+  // Work queues (Phase 7c, D-026).
+  r.get("/submissions", validate({ query: submissionsQuery }), async (req, res) => {
+    res.json(await queues.listSubmissions(prisma, { user: req.user, ...req.validated.query }));
+  });
+  r.get("/disputes", validate({ query: disputesQuery }), async (req, res) => {
+    res.json(await queues.listDisputes(prisma, { user: req.user, ...req.validated.query }));
+  });
+  r.get("/comments", validate({ query: moderationQuery }), async (req, res) => {
+    res.json(await queues.listModerationComments(prisma, { user: req.user, ...req.validated.query }));
+  });
+  r.get("/citizens/suspended", validate({ query: disputesQuery }), async (req, res) => {
+    res.json(await queues.listSuspendedCitizens(prisma, { user: req.user, ...req.validated.query }));
+  });
+  r.post("/citizens/:id/suspend", validate({ params: idParams, body: suspendBody }), async (req, res) => {
+    res.json({ citizen: await queues.suspendCitizen(prisma, { user: req.user, citizenId: req.validated.params.id, reason: req.validated.body.reason }) });
+  });
+  r.post("/citizens/:id/reactivate", validate({ params: idParams, body: suspendBody }), async (req, res) => {
+    res.json({ citizen: await queues.reactivateCitizen(prisma, { user: req.user, citizenId: req.validated.params.id, reason: req.validated.body.reason }) });
+  });
+  r.get("/audit-log", validate({ query: auditQuery }), async (req, res) => {
+    res.json(await listAuditLog(prisma, { user: req.user, ...req.validated.query }));
   });
   return r;
 }

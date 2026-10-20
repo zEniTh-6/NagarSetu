@@ -399,3 +399,37 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 - **Not copied from Stitch:** downvotes, share, bookmarks, search box, view counts, comment likes,
   threaded replies, voice input, ward numbers, "metres from you".
 - **Not built (later admin phase):** a moderation queue and suspending abusive accounts (brief).
+
+### D-026 — Admin screens, Phase 7c (2026-10-20)
+
+- **Decisions (project owner):**
+  - **A. Suspending citizens:** an admin can suspend a citizen only if that citizen reported,
+    supported or commented on one of the admin's department's issues (anyone else answers 404).
+    Reason required, audited (`USER_DEACTIVATED`, role CITIZEN). It uses the existing deactivated
+    status, so the person is logged out and sees the "account blocked" screen. Their reports and
+    comments stay; the admin hides comments one by one.
+  - **B. Audit log scope:** an admin sees every row about their department's issues (including the
+    issues' assignments, repair submissions and comments) plus every action by an admin of their
+    department (e.g. contractor accounts they created or deactivated, citizens they suspended).
+    Other departments' rows never appear. Read-only.
+  - **C. "New" on the dashboard** = reports created in the last 24 hours. "Awaiting review" = all
+    reports still in REPORTED.
+  - **D. Reactivating a citizen** is included (any admin with the same link to the citizen, reason
+    required, `USER_REACTIVATED`). Deactivate, never delete.
+- **New endpoints:** `GET /api/admin/submissions` (evidence to verify), `GET /api/admin/disputes`,
+  `GET /api/admin/comments?filter=reported|hidden`, `GET /api/admin/citizens/suspended`,
+  `POST /api/admin/citizens/:id/suspend` and `/reactivate`, `GET /api/admin/audit-log`,
+  `GET /api/admin/contractors/:id/jobs` (details for the admin's department, only a count for
+  others). The issues list gained search (reference, description, address, area), a reported-date
+  range, `stage=REPAIR_REVIEW`, and the current assignee with an overdue flag (effective deadline,
+  paused review time counted). The dashboard gained the department, `newLast24h` and `inProgress`.
+- **Web (desktop-first, from 1024 px):** sidebar (Dashboard, Issues, Disputes, Contractors,
+  Comments, Audit log) with waiting counts; top bar with the department, alerts, language switch
+  and log out. Below 1024 px the sidebar opens from a menu button.
+- **AI results are always labelled** "AI" / "AI suggestion" with a note that the admin decides.
+  Community signal shows upvotes, distinct supporters and the share of accounts newer than 7 days.
+- **Every decision is confirmed** in a dialog that says what will happen; actions that need a
+  reason can't be sent without one (at least 3 characters).
+- **Not copied from Stitch:** voice-to-text, SMS/WhatsApp invites, "cryptographic"/official-portal
+  wording, export/CSV, bulk actions, GIS layers, "SLA" countdowns.
+- **Contractor screens** are still a placeholder (next phase).

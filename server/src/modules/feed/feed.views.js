@@ -35,7 +35,7 @@ export function adminCommentView(c) {
     body: c.body,
     createdAt: c.createdAt,
     official: c.isOfficial,
-    author: { id: c.authorId, name: c.author?.name ?? null, role: c.author?.role ?? null, department: c.author?.department?.name ?? null },
+    author: { id: c.authorId, name: c.author?.name ?? null, role: c.author?.role ?? null, status: c.author?.status ?? null, department: c.author?.department?.name ?? null },
     hidden: c.hiddenAt ? { at: c.hiddenAt, reason: c.hiddenReason, by: c.hiddenBy ? { id: c.hiddenBy.id, name: c.hiddenBy.name } : null } : null,
     reports: { total: c.reports?.length ?? 0, byReason, notes: (c.reports ?? []).filter((r) => r.note).map((r) => ({ reason: r.reason, note: r.note, at: r.createdAt })) },
   };

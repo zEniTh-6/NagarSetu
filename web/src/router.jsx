@@ -22,6 +22,15 @@ import ReportPage from "./pages/citizen/report/ReportPage.jsx";
 import SubmittedPage from "./pages/citizen/report/SubmittedPage.jsx";
 import SupportedPage from "./pages/citizen/report/SupportedPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
+import { AdminLayout } from "./components/admin/AdminLayout.jsx";
+import DashboardPage from "./pages/admin/DashboardPage.jsx";
+import AdminIssuesPage from "./pages/admin/IssuesPage.jsx";
+import IssueReviewPage from "./pages/admin/IssueReviewPage.jsx";
+import RepairReviewPage from "./pages/admin/RepairReviewPage.jsx";
+import DisputesPage from "./pages/admin/DisputesPage.jsx";
+import ContractorsPage from "./pages/admin/ContractorsPage.jsx";
+import CommentsPage from "./pages/admin/CommentsPage.jsx";
+import AuditLogPage from "./pages/admin/AuditLogPage.jsx";
 
 // Paths used by the server in emails/links: /reset-password?token=… and /invite/:token.
 export const routes = [
@@ -66,7 +75,26 @@ export const routes = [
       { path: "/citizen/issues/:id/not-fixed", element: <NotFixedPage /> },
     ],
   },
-  { element: <RequireRole roles={["ADMIN"]} />, children: [{ path: "/admin/*", element: <RoleHome /> }] },
+  {
+    element: <RequireRole roles={["ADMIN"]} />,
+    children: [
+      {
+        path: "/admin",
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <DashboardPage /> },
+          { path: "issues", element: <AdminIssuesPage /> },
+          { path: "issues/:id", element: <IssueReviewPage /> },
+          { path: "issues/:id/repair", element: <RepairReviewPage /> },
+          { path: "disputes", element: <DisputesPage /> },
+          { path: "contractors", element: <ContractorsPage /> },
+          { path: "comments", element: <CommentsPage /> },
+          { path: "audit", element: <AuditLogPage /> },
+          { path: "*", element: <NotFoundPage /> },
+        ],
+      },
+    ],
+  },
   { element: <RequireRole roles={["CONTRACTOR"]} />, children: [{ path: "/contractor/*", element: <RoleHome /> }] },
   { path: "*", element: <NotFoundPage /> },
 ];

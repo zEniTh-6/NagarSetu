@@ -6,6 +6,7 @@ import { passwordSchema } from "../../auth/password.js";
 import { tokenFormat } from "../../auth/tokens.js";
 import { emailSchema, nameSchema, phoneSchema } from "../../lib/schemas.js";
 import { makeContractorsController } from "./contractors.controller.js";
+import { contractorJobs } from "../admin/queues.service.js";
 
 const optionalText = z.string().trim().max(100).optional().transform((v) => (v ? v : undefined));
 
@@ -40,6 +41,9 @@ export function adminContractorsRouter({ prisma }) {
   r.post("/similar", validate({ body: similarBody }), c.similar);
   r.post("/", validate({ body: createBody }), c.create);
   r.post("/:id/invite", validate({ params: idParams }), c.reissueInvite);
+  r.get("/:id/jobs", validate({ params: idParams }), async (req, res) => {
+    res.json(await contractorJobs(prisma, { user: req.user, contractorId: req.validated.params.id }));
+  });
   r.post("/:id/deactivate", validate({ params: idParams, body: deactivateBody }), c.deactivate);
   return r;
 }
