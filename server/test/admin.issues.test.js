@@ -57,7 +57,7 @@ describe("issues table", () => {
       category: { key: "ROADS" },
       ai: { verdict: "VALID", riskLevel: "HIGH" },
       priority: null,
-      community: { upvotes: 0, supporters: 0, accounts: 0, newAccounts: 0, lowDiversity: false },
+      community: { upvotes: 0, supporters: 0, accounts: 0, newAccounts: 0, newAccountDays: 7, lowDiversity: false },
       flags: [],
     });
     expect(row.photo.url).toMatch(/^\/api\/photos\//);
@@ -117,7 +117,7 @@ describe("community signal (separate from the AI risk; upvotes ≠ severity)", (
     const issue = await newReport(agent);
     await upvoters(issue.id, 200, 0);
     const res = await roads.agent.get(`/api/issues/${issue.id}`);
-    expect(res.body.issue.community).toEqual({ upvotes: 200, supporters: 0, accounts: 200, newAccounts: 200, lowDiversity: true });
+    expect(res.body.issue.community).toEqual({ upvotes: 200, supporters: 0, accounts: 200, newAccounts: 200, newAccountDays: 7, lowDiversity: true });
   });
 
   it("established accounts → no warning; too few to judge → no warning", async () => {

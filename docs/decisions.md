@@ -350,3 +350,52 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 - **Reverted (project owner, 2026-10-20):** the first version of this decision also kept citizen and
   contractor screens in a centred 480 px column on wide screens. That layout was removed again; the
   citizen, contractor and login layouts are back to how they were before it.
+
+### D-025 — Public feed, map, upvotes, comments and official replies, Phase 7b (2026-10-20)
+
+- **Decisions (project owner):**
+  - **Area name:** looked up once per report in the background with Nominatim reverse geocoding
+    (neighbourhood level, `zoom=14`) from the **approximate** point, and stored. A User-Agent names
+    the app; at most one request per second; failures retry through pg-boss (1 min, then doubling,
+    3 attempts), never in a tight loop. No name → the web app shows "Approximate location".
+    `AREA_LOOKUP_ENABLED=false` turns the lookup off.
+  - **Commenter names:** first name only. Official replies are signed with the department's name,
+    never the admin's.
+  - **Feed access:** signed-in citizens only (unverified citizens can read; upvoting and commenting
+    need a verified email).
+- **Public = D-022:** photo check VALID or acknowledged, and status Reported / Acknowledged /
+  In progress / Resolved. Rejected, withdrawn and linked duplicates never show.
+- **Approximate location:** the server snaps public points to a 0.002° grid (at most ~150 m off);
+  the web app draws a 150 m circle. The map box filters on the snapped point, so moving the box
+  edge can't reveal the exact one. At most 300 pins per box (`truncated` → "zoom in").
+  **Only the reporter, the department admin and the assigned contractor see the exact spot and
+  the typed address.** Supporters get the approximate area too (anyone can press Support on a
+  public report). Public views have no reporter identity, flags, AI result, priority or deadline;
+  the timeline has dates only. Any citizen can load the stripped public copy of a public report's
+  current photo, and the approved repair photo once it is resolved; never the original.
+- **Endpoints:** `GET /api/feed`, `GET /api/feed/map`, the public view through
+  `GET /api/issues/:id`, `POST`/`DELETE /api/issues/:id/upvote`, `GET`/`POST /api/issues/:id/comments`,
+  `POST /api/comments/:id/report`; admin: `GET /api/admin/issues/:id/comments`,
+  `POST /api/admin/issues/:id/replies`, `POST /api/admin/comments/:id/hide`.
+- **Upvotes** are a signal only: one per account, not on your own report, only on open issues
+  (removing always works), rate limited, no notification, no audit row, no priority change. They
+  don't make you a follower; **Support** does (updates + feedback). The admin view shows upvotes,
+  supporters, distinct backers and how many are newer than 7 days (`newAccountDays`, D-018).
+- **Comments:** on public issues only, 1–1000 characters, stored as written, rate limited (30/h,
+  shared with comment reports). A report (spam / abusive / off topic / other, optional note) is one
+  per person and only a signal. The department admin hides a comment with a reason (audited,
+  `COMMENT_HIDDEN`); it then disappears for every citizen, the author included. Official replies
+  can't be reported or hidden.
+- **Official replies:** department admin only, on any status (also before the report is public;
+  the reporter and supporters can read it then). Notifies the reporter and supporters
+  (`OFFICIAL_REPLY`, with the department and the reply's first 140 characters) and writes
+  `OFFICIAL_REPLY_POSTED` to the audit log.
+- **Web:** home = public feed (category chips in the D-024 selected style, "Load more"); map =
+  public pins of the visible area, same-spot pins merged with a count, sheet with Upvote / Support /
+  details; issue detail adds upvote, support, approximate area and comments. The 7a home summary and
+  the "my reports" map were replaced (My complaints keeps them).
+- **Admin screens for hiding and replying come with the admin web app** (there is no admin issue
+  page yet); for now these are API only.
+- **Not copied from Stitch:** downvotes, share, bookmarks, search box, view counts, comment likes,
+  threaded replies, voice input, ward numbers, "metres from you".
+- **Not built (later admin phase):** a moderation queue and suspending abusive accounts (brief).

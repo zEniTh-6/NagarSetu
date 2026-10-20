@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, CalendarClock, CircleCheck, CircleX, Link2, MapPin, ThumbsDown, ThumbsUp, Undo2 } from "lucide-react";
+import { ArrowLeft, CalendarClock, CircleCheck, CircleX, EyeOff, Link2, MapPin, ShieldCheck, ThumbsDown, ThumbsUp, Undo2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "../../components/Alert.jsx";
 import { Button } from "../../components/Button.jsx";
@@ -17,6 +17,8 @@ import { CategoryTile, useCategoryName } from "../../components/citizen/Category
 import { IssueTimeline } from "../../components/citizen/IssueTimeline.jsx";
 import { CategorySuggestion, ValidationNotice } from "../../components/citizen/ValidationNotice.jsx";
 import { useIssue } from "../../components/citizen/useIssue.js";
+import { CommentsSection } from "../../components/citizen/CommentsSection.jsx";
+import { SupportButton, UpvoteButton } from "../../components/citizen/CommunityActions.jsx";
 import { issuesApi, qk } from "../../api/citizen.js";
 import { ApiError } from "../../api/client.js";
 import { errorText } from "../../lib/errors.js";
@@ -185,6 +187,49 @@ function WithdrawButton({ issue }) {
   );
 }
 
+/** Upvote, Support and the counts. Upvotes are a signal only. */
+function CommunityBar({ issue }) {
+  const { t } = useTranslation();
+  const supporters = issue.community?.supporters ?? 0;
+  return (
+    <Card>
+      <div className="flex flex-wrap items-center gap-3">
+        <UpvoteButton issue={issue} />
+        <SupportButton issue={issue} />
+        {supporters > 0 && <span className="tnum text-caption text-graphite-600">{t("community.supporters", { count: supporters })}</span>}
+      </div>
+      {!issue.viewer?.relation && issue.status !== "RESOLVED" && <p className="mt-3 text-caption text-graphite-600">{t("community.supportHint")}</p>}
+      <p className="mt-2 text-caption text-graphite-600">{t("community.upvoteNote")}</p>
+    </Card>
+  );
+}
+
+/** Public view: the area within ~150 m, never the exact spot (D-025). */
+function ApproxLocation({ issue }) {
+  const { t } = useTranslation();
+  const a = issue.approxLocation;
+  return (
+    <Card>
+      <h2 className="text-eyebrow uppercase text-graphite-600">{t("approx.title")}</h2>
+      <p className="mt-2 flex items-start gap-2 text-body text-charcoal-900">
+        <MapPin aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-teal-700" />
+        {issue.areaName || t("feed.approxArea")}
+      </p>
+      {a && (
+        <div className="mt-3">
+          <Suspense fallback={<div className="h-48 rounded-card bg-ivory-50" />}>
+            <PinMap area={a} interactive={false} className="h-48" />
+          </Suspense>
+        </div>
+      )}
+      <p className="mt-2 flex items-center gap-2 text-caption text-graphite-600">
+        <ShieldCheck aria-hidden="true" className="size-4 shrink-0" />
+        {t("approx.note", { radius: a?.radiusM ?? 150 })}
+      </p>
+    </Card>
+  );
+}
+
 export default function IssueDetailPage() {
   const { t, i18n } = useTranslation();
   const { id } = useParams();
@@ -225,6 +270,9 @@ export default function IssueDetailPage() {
   }
 
   const resolved = issue.status === "RESOLVED";
+  // PUBLIC: any citizen's view of a public report. Otherwise the reporter's / supporter's own view.
+  const isPublicView = issue.visibility === "PUBLIC";
+  const isPublic = isPublicView || Boolean(issue.public);
   return (
     <div className="mx-auto max-w-3xl">
       {back}
@@ -247,8 +295,9 @@ export default function IssueDetailPage() {
       </header>
 
       <div className="space-y-4">
-        <ValidationNotice issue={issue} />
-        <CategorySuggestion issue={issue} />
+        {/* Photo-check notes speak to the reporter ("your report", "retake"). */}
+        {issue.relation === "REPORTER" && <ValidationNotice issue={issue} />}
+        {issue.relation === "REPORTER" && <CategorySuggestion issue={issue} />}
         <ClosedNotice issue={issue} />
 
         {resolved ? (
@@ -263,6 +312,8 @@ export default function IssueDetailPage() {
           <p className="mt-2 whitespace-pre-wrap text-body text-charcoal-900">{issue.description}</p>
         </Card>
 
+        {/* Everyone but the reporter (and the admin) sees only the approximate area (D-025). */}
+        {!issue.location && issue.approxLocation && <ApproxLocation issue={issue} />}
         {issue.location && (
           <Card>
             <h2 className="text-eyebrow uppercase text-graphite-600">{t("issue.location")}</h2>
@@ -286,6 +337,17 @@ export default function IssueDetailPage() {
           <IssueTimeline issue={issue} />
         </Card>
 
+        {isPublic ? (
+          <CommunityBar issue={issue} />
+        ) : (
+          ["REPORTED", "ACKNOWLEDGED", "IN_PROGRESS", "RESOLVED"].includes(issue.status) && (
+            <p className="flex items-start gap-2 text-caption text-graphite-600">
+              <EyeOff aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+              {t("community.notPublic")}
+            </p>
+          )
+        )}
+
         {issue.relation === "REPORTER" && issue.status === "REPORTED" && (
           <Card variant="muted">
             <p className="mb-3 text-caption text-graphite-600">{t("withdraw.hint")}</p>
@@ -298,9 +360,11 @@ export default function IssueDetailPage() {
             {t("resolution.noPhoto")}
           </p>
         )}
+        <CommentsSection issueId={issue.id} canPost={isPublic} closed={["REJECTED", "DUPLICATE", "WITHDRAWN"].includes(issue.status)} />
+
         <p className="pt-2 text-center">
-          <Link to="/citizen/complaints" className="text-label text-teal-700 underline-offset-4 hover:underline">
-            {t("issue.allComplaints")}
+          <Link to={isPublicView ? "/citizen" : "/citizen/complaints"} className="text-label text-teal-700 underline-offset-4 hover:underline">
+            {isPublicView ? t("feed.title") : t("issue.allComplaints")}
           </Link>
         </p>
       </div>

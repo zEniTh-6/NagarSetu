@@ -32,8 +32,9 @@ export const AuditAction = Object.freeze({
   SUBMISSION_CREATED: "SUBMISSION_CREATED",
   SUBMISSION_APPROVED: "SUBMISSION_APPROVED",
   SUBMISSION_REJECTED: "SUBMISSION_REJECTED",
-  // Moderation
+  // Moderation and official replies
   COMMENT_HIDDEN: "COMMENT_HIDDEN",
+  OFFICIAL_REPLY_POSTED: "OFFICIAL_REPLY_POSTED",
 });
 
 export const AuditTarget = Object.freeze({

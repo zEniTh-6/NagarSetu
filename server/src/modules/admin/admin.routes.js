@@ -3,6 +3,7 @@ import { z } from "zod";
 import { validate } from "../../middleware/validate.js";
 import { requireAuth, requireRole } from "../../auth/middleware.js";
 import { makeAdminIssuesController } from "./admin.controller.js";
+import * as community from "../feed/community.service.js";
 
 const LEVELS = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
 const STATUSES = ["REPORTED", "ACKNOWLEDGED", "IN_PROGRESS", "RESOLVED", "REJECTED", "DUPLICATE", "WITHDRAWN"];
@@ -44,6 +45,12 @@ const deadlineBody = z.object({ deadlineAt, reason }).strict();
 const approveBody = z.object({ note: optionalReason }).strict();
 const rejectRepairBody = z.object({ reason }).strict(); // sent to the contractor
 const disputeBody = z.object({ reason }).strict(); // shown to the citizens
+const hideBody = z.object({ reason }).strict(); // kept in the audit log
+// Shown to everyone exactly as written, signed with the department's name.
+const replyBody = z
+  .object({ body: z.string().refine((s) => s.trim().length >= 3, "at least 3 characters").refine((s) => s.length <= 1000, "at most 1000 characters") })
+  .strict();
+const pageQuery = z.object({ page: z.coerce.number().int().min(1).default(1), pageSize: z.coerce.number().int().min(1).max(100).default(50) }).strict();
 
 /** /api/admin — department admins only; every query is limited to their department. */
 export function adminIssuesRouter({ prisma, jobs }) {
@@ -68,5 +75,15 @@ export function adminIssuesRouter({ prisma, jobs }) {
   r.post("/submissions/:id/reject", validate({ params: idParams, body: rejectRepairBody }), c.rejectSubmission);
   r.post("/issues/:id/flags/:flagId/clear", validate({ params: flagParams, body: flagBody }), c.clearFlag);
   r.post("/issues/:id/flags/:flagId/confirm", validate({ params: flagParams, body: flagBody }), c.confirmFlag);
+  // Comments and official replies (D-025). The moderation screens come with the admin web app.
+  r.get("/issues/:id/comments", validate({ params: idParams, query: pageQuery }), async (req, res) => {
+    res.json(await community.adminListComments(prisma, { user: req.user, issueId: req.validated.params.id, ...req.validated.query }));
+  });
+  r.post("/issues/:id/replies", validate({ params: idParams, body: replyBody }), async (req, res) => {
+    res.status(201).json({ comment: await community.postOfficialReply(prisma, { user: req.user, issueId: req.validated.params.id, body: req.validated.body.body }) });
+  });
+  r.post("/comments/:id/hide", validate({ params: idParams, body: hideBody }), async (req, res) => {
+    res.json({ comment: await community.hideComment(prisma, { user: req.user, commentId: req.validated.params.id, reason: req.validated.body.reason }) });
+  });
   return r;
 }

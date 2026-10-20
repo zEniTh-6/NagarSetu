@@ -1,30 +1,40 @@
-import { Camera, ChevronRight, MailWarning } from "lucide-react";
-import { Link } from "react-router";
+import { useState } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { Camera, MailWarning, Newspaper } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Alert } from "../../components/Alert.jsx";
 import { Button } from "../../components/Button.jsx";
 import { Card } from "../../components/Card.jsx";
 import { EmptyState } from "../../components/EmptyState.jsx";
 import { Spinner } from "../../components/Spinner.jsx";
-import { IssueCard } from "../../components/citizen/IssueCard.jsx";
-import { ACTIVE_STATUSES, useMine, useSupporting } from "../../components/citizen/useMyIssues.js";
+import { CategoryChips } from "../../components/citizen/CategoryChips.jsx";
+import { FeedCard } from "../../components/citizen/FeedCard.jsx";
+import { feedApi, qk } from "../../api/citizen.js";
 import { useMe } from "../../auth/session.js";
 import { errorText } from "../../lib/errors.js";
 
-// Phase 7a home: the citizen's own reports. The public feed arrives in 7b (OD-1, D-022).
+const PAGE = 20;
+
+// Home = public feed (design/stitch/citizen/home-feed). Only public reports (D-022). Not copied
+// from Stitch: search box, downvotes, share. The citizen's own reports live in My complaints.
 export default function HomePage() {
   const { t, i18n } = useTranslation();
   const { user } = useMe();
-  const mine = useMine();
-  const supporting = useSupporting();
-
-  const active = mine.items.filter((i) => ACTIVE_STATUSES.includes(i.status)).length;
-  const resolved = mine.items.filter((i) => i.status === "RESOLVED").length;
-  const recent = mine.items.slice(0, 3);
+  const [category, setCategory] = useState(null);
+  const q = useInfiniteQuery({
+    queryKey: qk.feed(category),
+    queryFn: ({ pageParam }) => feedApi.list({ category: category ?? undefined, page: pageParam, pageSize: PAGE }),
+    initialPageParam: 1,
+    getNextPageParam: (last) => (last.page * last.pageSize < last.total ? last.page + 1 : undefined),
+  });
+  const items = q.data?.pages.flatMap((p) => p.items) ?? [];
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-h1 text-charcoal-900">{t("home.welcome", { name: user?.name ?? "" })}</h1>
+    <div className="mx-auto max-w-2xl space-y-5">
+      <header>
+        <h1 className="text-h1 text-charcoal-900">{t("feed.title")}</h1>
+        <p className="mt-1 text-body text-graphite-600">{t("feed.subtitle")}</p>
+      </header>
 
       {user && !user.emailVerified && (
         <Alert
@@ -40,60 +50,45 @@ export default function HomePage() {
         </Alert>
       )}
 
-      <Card variant="hero" className="md:flex md:items-center md:justify-between md:gap-8">
-        <div>
-          <p className="text-eyebrow uppercase text-brass-400">{t("home.heroEyebrow")}</p>
-          <h2 className="mt-2 text-h1 text-ivory-50">{t("home.heroTitle")}</h2>
-          <p className="mt-2 max-w-md text-body text-sage-100">{t("home.heroBody")}</p>
-        </div>
-        <Button variant="dark" className="mt-5 shrink-0 md:mt-0" leftIcon={Camera} to="/citizen/report">
-          {t("home.reportCta")}
-        </Button>
-      </Card>
+      <CategoryChips value={category} onChange={setCategory} />
 
-      <div className="grid grid-cols-3 gap-3">
-        {[
-          ["active", active, "/citizen/complaints"],
-          ["resolved", resolved, "/citizen/complaints?tab=resolved"],
-          ["supporting", supporting.total, "/citizen/complaints?tab=supporting"],
-        ].map(([key, value, to]) => (
-          <Link key={key} to={to} className="rounded-card border border-stone-300 bg-white p-4 hover:bg-ivory-50">
-            <p className="tnum text-h1 text-charcoal-900">{mine.isPending ? "–" : value}</p>
-            <p className="text-caption text-graphite-600">{t(`home.stat.${key}`)}</p>
-          </Link>
-        ))}
-      </div>
-
-      <section aria-labelledby="recent">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 id="recent" className="text-h2 text-charcoal-900">
-            {t("home.recent")}
-          </h2>
-          {mine.items.length > 0 && (
-            <Link to="/citizen/complaints" className="inline-flex min-h-11 items-center gap-1 text-label text-teal-700">
-              {t("home.seeAll")}
-              <ChevronRight aria-hidden="true" className="size-4" />
-            </Link>
-          )}
+      {q.isPending ? (
+        <div className="flex justify-center py-16 text-teal-700">
+          <Spinner />
         </div>
-        {mine.isPending ? (
-          <div className="flex justify-center py-8 text-teal-700">
-            <Spinner />
-          </div>
-        ) : mine.error ? (
-          <Alert tone="error" title={errorText(t, i18n, mine.error)} />
-        ) : recent.length === 0 ? (
-          <Card>
-            <EmptyState icon={Camera} title={t("home.emptyTitle")} message={t("home.emptyBody")} />
-          </Card>
-        ) : (
-          <div className="space-y-3">
-            {recent.map((issue) => (
-              <IssueCard key={issue.id} issue={issue} />
+      ) : q.error ? (
+        <Alert tone="error" title={errorText(t, i18n, q.error)} action={<Button size="sm" onClick={() => q.refetch()}>{t("common.retry")}</Button>} />
+      ) : items.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={Newspaper}
+            title={t(category ? "feed.emptyFiltered" : "feed.empty")}
+            message={t("feed.emptyBody")}
+            action={
+              <Button leftIcon={Camera} to="/citizen/report">
+                {t("feed.reportCta")}
+              </Button>
+            }
+          />
+        </Card>
+      ) : (
+        <>
+          <ul className="space-y-4">
+            {items.map((issue) => (
+              <li key={issue.id}>
+                <FeedCard issue={issue} />
+              </li>
             ))}
-          </div>
-        )}
-      </section>
+          </ul>
+          {q.hasNextPage && (
+            <div className="flex justify-center">
+              <Button variant="outline" loading={q.isFetchingNextPage} onClick={() => q.fetchNextPage()}>
+                {t("feed.loadMore")}
+              </Button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

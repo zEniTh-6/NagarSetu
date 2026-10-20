@@ -96,6 +96,15 @@ export const envSchema = z
       return { minLng, minLat, maxLng, maxLat };
     }),
 
+  // Public area names (D-025): the neighbourhood of an issue's APPROXIMATE point, looked up once
+  // in the background with Nominatim (OpenStreetMap). At most one request per second, with a
+  // User-Agent that identifies the app (Nominatim usage policy). false = never look up; the web
+  // app then shows "Approximate location".
+  AREA_LOOKUP_ENABLED: z.enum(["true", "false"]).default("true").transform((v) => v === "true"),
+  NOMINATIM_URL: z.string().url().default("https://nominatim.openstreetmap.org"),
+  NOMINATIM_USER_AGENT: z.string().min(10).default("NagarSetu/0.1 (college prototype; https://github.com/zEniTh-6/NagarSetu)"),
+  AREA_LOOKUP_TIMEOUT_MS: z.coerce.number().int().min(1000).max(60_000).default(10_000),
+
   // Background jobs (pg-boss). Tests turn this off and call the job code directly.
   JOBS_ENABLED: z.enum(["true", "false"]).default("true").transform((v) => v === "true"),
   })

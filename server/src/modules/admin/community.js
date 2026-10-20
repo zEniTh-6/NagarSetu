@@ -52,7 +52,9 @@ export async function communitySignals(db, issueIds, { now = new Date(), rule = 
     issueIds.map((id) => {
       const accounts = back[id]?.accounts ?? 0;
       const newAccounts = back[id]?.newAccounts ?? 0;
-      return [id, { upvotes: up[id] ?? 0, supporters: sup[id] ?? 0, accounts, newAccounts, lowDiversity: isLowDiversity({ accounts, newAccounts }, rule) }];
+      // accounts = distinct backers (upvoters ∪ supporters, reporter excluded); newAccounts = those
+      // created in the last newAccountDays days (supporter diversity, D-018).
+      return [id, { upvotes: up[id] ?? 0, supporters: sup[id] ?? 0, accounts, newAccounts, newAccountDays: rule.newAccountDays, lowDiversity: isLowDiversity({ accounts, newAccounts }, rule) }];
     }),
   );
 }

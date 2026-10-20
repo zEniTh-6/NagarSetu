@@ -24,7 +24,9 @@ describe("login and role redirect", () => {
     const { router } = renderApp("/login");
     await login();
     await waitFor(() => expect(router.state.location.pathname).toBe(path));
-    expect(await screen.findByText(`Welcome, ${user.name}`)).toBeInTheDocument();
+    // Citizens land on the public feed; admins and contractors on their (placeholder) home.
+    const home = user.role === "CITIZEN" ? "Community feed" : `Welcome, ${user.name}`;
+    expect(await screen.findByRole("heading", { level: 1, name: home })).toBeInTheDocument();
   });
 
   it("forces an admin with an initial password to change it first", async () => {
@@ -89,7 +91,7 @@ describe("guards (UX only)", () => {
   it("an API 401 later in the session goes back to login", async () => {
     mockApi({ "GET /api/auth/me": () => json(200, { user: citizen }), "POST /api/auth/logout": () => new Response(null, { status: 204 }) });
     const { router } = renderApp("/citizen");
-    await screen.findByText(`Welcome, ${citizen.name}`);
+    await screen.findByRole("heading", { level: 1, name: "Community feed" });
     const { api } = await import("../../api/client.js");
     mockApi({ "GET /api/issues/mine": () => json(401, { error: { code: "SESSION_EXPIRED" } }), "GET /api/auth/me": loggedOut });
     await api("/issues/mine").catch(() => {});

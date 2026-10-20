@@ -5,6 +5,7 @@ import { createLocalDiskStorage } from "./storage/storage.js";
 import { createJobQueue, createMemoryQueue } from "./jobs/queue.js";
 import { validatePhotoWithGemini, validateRepairWithGemini } from "./ai/gemini.js";
 import { embed } from "./ai/embed.js";
+import { lookupAreaName } from "./places/areaName.js";
 
 const storage = createLocalDiskStorage();
 const jobs = env.JOBS_ENABLED
@@ -15,6 +16,7 @@ const jobs = env.JOBS_ENABLED
       validatePhoto: validatePhotoWithGemini,
       validateRepair: validateRepairWithGemini,
       embed,
+      lookupArea: env.AREA_LOOKUP_ENABLED ? lookupAreaName : null,
     })
   : createMemoryQueue();
 

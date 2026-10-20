@@ -95,6 +95,14 @@ enum SupportSource {
   LINKED_BY_ADMIN // reporter/supporter of an issue the admin linked as a duplicate of this one
 }
 
+// Why a citizen reported a comment (moderation signal for the department admin).
+enum CommentReportReason {
+  SPAM
+  ABUSIVE
+  OFF_TOPIC
+  OTHER
+}
+
 enum NotificationType {
   ACKNOWLEDGED
   REJECTED
@@ -182,6 +190,7 @@ model User {
   upvotes             Upvote[]
   comments            Comment[]            @relation("CommentAuthor")
   hiddenComments      Comment[]            @relation("CommentHiddenBy")
+  commentReports      CommentReport[]
   flagsRaised         IssueFlag[]          @relation("FlagRaisedBy")
   flagsCleared        IssueFlag[]          @relation("FlagClearedBy")
   flagsConfirmed      IssueFlag[]          @relation("FlagConfirmedBy")
@@ -293,6 +302,13 @@ model Issue {
   embeddingAttempts Int                         @default(0) @map("embedding_attempts")
   embeddedAt        DateTime?                   @map("embedded_at")
 
+  // Public area name (neighbourhood) looked up in the background from the APPROXIMATE point
+  // (D-025). Null until looked up, or when no name was found; the web app then says
+  // "Approximate location".
+  areaName           String?   @map("area_name")
+  areaLookupAttempts Int       @default(0) @map("area_lookup_attempts")
+  areaLookedUpAt     DateTime? @map("area_looked_up_at")
+
   // Admin decisions
   priority       Level?  @map("priority") // final priority, admin only
   priorityReason String? @map("priority_reason") // required when it differs from the suggestion
@@ -390,12 +406,30 @@ model Comment {
   hiddenReason String?   @map("hidden_reason")
   createdAt    DateTime  @default(now()) @map("created_at")
 
-  issue    Issue @relation(fields: [issueId], references: [id])
-  author   User  @relation("CommentAuthor", fields: [authorId], references: [id])
-  hiddenBy User? @relation("CommentHiddenBy", fields: [hiddenById], references: [id])
+  issue    Issue           @relation(fields: [issueId], references: [id])
+  author   User            @relation("CommentAuthor", fields: [authorId], references: [id])
+  hiddenBy User?           @relation("CommentHiddenBy", fields: [hiddenById], references: [id])
+  reports  CommentReport[]
 
   @@index([issueId, createdAt])
   @@map("comments")
+}
+
+// A citizen's report of a comment (one per person per comment). Only a signal: the department
+// admin decides whether to hide the comment.
+model CommentReport {
+  id         String              @id @default(uuid()) @db.Uuid
+  commentId  String              @map("comment_id") @db.Uuid
+  reporterId String              @map("reporter_id") @db.Uuid
+  reason     CommentReportReason
+  note       String? // stored as written
+  createdAt  DateTime            @default(now()) @map("created_at")
+
+  comment  Comment @relation(fields: [commentId], references: [id])
+  reporter User    @relation(fields: [reporterId], references: [id])
+
+  @@unique([commentId, reporterId])
+  @@map("comment_reports")
 }
 
 // ---------- Work ----------

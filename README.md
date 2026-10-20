@@ -355,18 +355,18 @@ After login everyone lands on their own area (`/citizen`, `/admin`, `/contractor
 contractor areas are placeholders until their screens are built. Opening another role's URL sends
 you back to your own area; the server still enforces access on every API call.
 
-### Citizen screens (Phase 7a)
+### Citizen screens (Phase 7a and 7b)
 
 Log in as a verified citizen (sign up, then enter the code from the server window).
 
 | Screen | URL |
 |---|---|
-| Home (your recent reports) | `/citizen` |
+| Home: public feed with category filter, upvotes, latest official reply | `/citizen` |
 | Report an issue (photo → location → details → review) | `/citizen/report` |
 | My complaints (Active / Resolved / Rejected or withdrawn / Supporting) | `/citizen/complaints` |
-| Issue detail, timeline, before/after, "Yes, fixed / Not fixed" | `/citizen/issues/<id>` |
+| Issue detail, timeline, before/after, "Yes, fixed / Not fixed", upvote, support, comments | `/citizen/issues/<id>` |
 | Alerts (checked every 30 s) | `/citizen/notifications` |
-| Map of your and supported reports | `/citizen/map` |
+| Map of public reports (approximate pins) | `/citizen/map` |
 | Profile, language, password | `/citizen/profile` |
 
 What to check by hand:
@@ -380,6 +380,24 @@ What to check by hand:
 5. **Resolution:** drive a report to resolved (admin accept → assign → contractor start → evidence →
    approve, see "Contractor work by hand" above). The citizen gets alerts, sees before/after and can
    answer "Yes, fixed" or "Not fixed" (the status stays Resolved; the admin sees a dispute).
+
+6. **Feed (7b):** a report appears in the feed and on the map once its photo check says VALID or
+   the department accepts it (D-022). Without a Gemini key, accept it as the admin
+   (`POST /api/admin/issues/<id>/accept`). Log in as a second citizen: upvote it, comment, report a
+   comment, press Support. Pins and the area are approximate (about 150 m); only the reporter sees
+   the exact spot.
+7. **Official reply and hiding comments (API only for now; the admin screens come next):**
+   In the admin PowerShell window from "Admin review by hand" above (`$a`, `@json`):
+   ```powershell
+   Invoke-RestMethod "$api/admin/issues/$id/replies" @json -WebSession $a -Body '{"body":"Contractor assigned, expected by Friday"}'
+   (Invoke-RestMethod "$api/admin/issues/$id/comments" -WebSession $a).items   # hidden ones and reports included
+   Invoke-RestMethod "$api/admin/comments/<commentId>/hide" @json -WebSession $a -Body '{"reason":"Abusive language"}'
+   ```
+   The reporter and supporters get an alert for the reply; a hidden comment disappears for citizens.
+
+Area names in the feed come from a background lookup with Nominatim (once per report, at most one
+request per second, from the approximate point). Without internet the feed says "Approximate
+location"; set `AREA_LOOKUP_ENABLED=false` in `.env` to switch the lookup off.
 
 The map uses OpenStreetMap tiles and address search uses Nominatim (search runs only when you press
 Enter or the search button). Both need internet access.

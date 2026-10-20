@@ -1,16 +1,17 @@
 // Background jobs on the existing Postgres (pg-boss): report photo check, embeddings, repair photo
-// check, and the scheduled deadline check (escalation).
+// check, public area names, and the scheduled deadline check (escalation).
 import { PgBoss } from "pg-boss";
 import { runPhotoValidation, MAX_ATTEMPTS } from "../modules/issues/validation.service.js";
 import { runIssueEmbedding, MAX_EMBEDDING_ATTEMPTS } from "../modules/issues/duplicates.service.js";
 import { runRepairValidation, MAX_REPAIR_CHECK_ATTEMPTS } from "../modules/work/repairs.service.js";
 import { runDeadlineCheck } from "../modules/work/escalation.service.js";
+import { runAreaLookup, MAX_AREA_ATTEMPTS } from "../modules/feed/areaName.service.js";
 
-export const QUEUE = Object.freeze({ VALIDATE_PHOTO: "validate-photo", EMBED_ISSUE: "embed-issue", VALIDATE_REPAIR: "validate-repair", DEADLINE_CHECK: "deadline-check" });
+export const QUEUE = Object.freeze({ VALIDATE_PHOTO: "validate-photo", EMBED_ISSUE: "embed-issue", VALIDATE_REPAIR: "validate-repair", DEADLINE_CHECK: "deadline-check", AREA_NAME: "area-name" });
 export const DEADLINE_CHECK_CRON = "*/15 * * * *"; // every 15 minutes
 
 /** Real queue (used by `npm run dev` / `npm start`). */
-export function createJobQueue({ connectionString, prisma, storage, validatePhoto, embed, validateRepair }) {
+export function createJobQueue({ connectionString, prisma, storage, validatePhoto, embed, validateRepair, lookupArea }) {
   const boss = new PgBoss({ connectionString, schema: "pgboss" });
   boss.on("error", (err) => console.error("pg-boss error:", err));
 
@@ -50,6 +51,20 @@ export function createJobQueue({ connectionString, prisma, storage, validatePhot
         if (result.outcome === "retry") throw new Error(`Repair check will be retried: ${result.reason}`);
         return result;
       });
+      if (lookupArea) {
+        // One job at a time in this process; lookupArea itself keeps calls ≥ 1.1 s apart (Nominatim).
+        await boss.createQueue(QUEUE.AREA_NAME, {
+          retryLimit: MAX_AREA_ATTEMPTS - 1,
+          retryDelay: 60,
+          retryBackoff: true,
+          retryDelayMax: 60 * 60,
+        });
+        await boss.work(QUEUE.AREA_NAME, { batchSize: 1, localConcurrency: 1 }, async ([job]) => {
+          const result = await runAreaLookup(prisma, job.data, { lookupArea });
+          if (result.outcome === "retry") throw new Error(`Area lookup will be retried: ${result.reason}`);
+          return result;
+        });
+      }
       // Deadline escalation: scheduled, so it also runs after a restart. Only one run at a time.
       await boss.createQueue(QUEUE.DEADLINE_CHECK, { policy: "singleton" });
       await boss.schedule(QUEUE.DEADLINE_CHECK, DEADLINE_CHECK_CRON);
@@ -74,6 +89,11 @@ export function createJobQueue({ connectionString, prisma, storage, validatePhot
 
     enqueueRepairValidation({ submissionId }) {
       return boss.send(QUEUE.VALIDATE_REPAIR, { submissionId }, { singletonKey: `repair:${submissionId}` });
+    },
+
+    enqueueAreaLookup({ issueId }) {
+      if (!lookupArea) return null;
+      return boss.send(QUEUE.AREA_NAME, { issueId }, { singletonKey: `area:${issueId}` });
     },
 
     /** On start-up, queue checks that never got queued (e.g. the server stopped right after a report). */
@@ -101,6 +121,17 @@ export function createJobQueue({ connectionString, prisma, storage, validatePhot
       });
       for (const s of repairs) await this.enqueueRepairValidation({ submissionId: s.id });
       if (repairs.length) console.log(`Queued ${repairs.length} pending repair check(s)`);
+
+      if (lookupArea) {
+        const unnamed = await prisma.issue.findMany({
+          where: { areaLookedUpAt: null, areaLookupAttempts: { lt: MAX_AREA_ATTEMPTS }, status: { in: ["REPORTED", "ACKNOWLEDGED", "IN_PROGRESS", "RESOLVED"] } },
+          select: { id: true },
+          orderBy: { createdAt: "desc" },
+          take: 500,
+        });
+        for (const issue of unnamed) await this.enqueueAreaLookup({ issueId: issue.id });
+        if (unnamed.length) console.log(`Queued ${unnamed.length} pending area lookup(s)`);
+      }
     },
 
     stop: () => boss.stop({ graceful: true }),
@@ -123,6 +154,10 @@ export function createMemoryQueue() {
     },
     async enqueueRepairValidation(data) {
       sent.push({ name: QUEUE.VALIDATE_REPAIR, data });
+      return `memory-${sent.length}`;
+    },
+    async enqueueAreaLookup(data) {
+      sent.push({ name: QUEUE.AREA_NAME, data });
       return `memory-${sent.length}`;
     },
     async sweep() {},

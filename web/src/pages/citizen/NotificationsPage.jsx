@@ -26,6 +26,7 @@ export function useNotificationText() {
     const lines = [];
     if (n.type === "REROUTED") lines.push(t("timeline.event.reroutedDetail", { from: categoryName(p.fromCategory), to: categoryName(p.toCategory) }));
     if (p.reason) lines.push(p.reason); // admin's words, shown as written
+    if (n.type === "OFFICIAL_REPLY" && p.excerpt) lines.push(p.department ? `${p.department}: ${p.excerpt}` : p.excerpt);
     return { title, body: lines.join(" — ") };
   };
 }
