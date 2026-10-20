@@ -35,7 +35,7 @@ export default function SupportedPage() {
             <li>{t("supported.point3")}</li>
           </ul>
         </Card>
-        <div className="grid gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <Button to={`/citizen/issues/${id}`}>{t("supported.view")}</Button>
           <Button variant="outline" to="/citizen">
             {t("submitted.home")}

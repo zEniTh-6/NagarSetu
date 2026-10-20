@@ -111,7 +111,7 @@ function Resolution({ issue }) {
           <h3 className="text-h3 text-charcoal-900">{t("feedback.question")}</h3>
           <p className="mt-1 text-body text-graphite-600">{t("feedback.explain")}</p>
           {error && <Alert tone="error" className="mt-3" title={errorText(t, i18n, error)} />}
-          <div className="mt-4 grid gap-3">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <Button leftIcon={ThumbsUp} loading={busy} onClick={fixed}>
               {t("feedback.yes")}
             </Button>

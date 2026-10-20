@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ChoiceCards } from "./ChoiceCards.jsx";
-import { admin, citizen, contractor, json, mockApi, renderApp } from "../test/utils.jsx";
+import { citizen, json, mockApi, renderApp } from "../test/utils.jsx";
 
 vi.mock("../lib/image.js", async (orig) => ({
   ...(await orig()),
@@ -92,33 +92,5 @@ describe("report: category step", () => {
     await userEvent.click(screen.getByRole("radio", { name: "Garbage" }));
     expect(screen.getByRole("radio", { name: "Garbage" })).toHaveAttribute("aria-checked", "true");
     expect(next).toBeEnabled();
-  });
-});
-
-describe("phone column (MobileColumn)", () => {
-  const notifications = () => json(200, { items: [], unread: 0, total: 0, page: 1, pageSize: 50 });
-  const page = () => json(200, { items: [], page: 1, pageSize: 50, total: 0 });
-
-  it("citizen screens, including the bottom navigation, are inside the 480px column", async () => {
-    mockApi({ "GET /api/auth/me": () => json(200, { user: citizen }), "GET /api/notifications": notifications, "GET /api/issues/mine": page, "GET /api/issues/supporting": page });
-    renderApp("/citizen");
-    const nav = await screen.findByRole("navigation", { name: "Main" });
-    const column = nav.closest("[data-mobile-column]");
-    expect(column).not.toBeNull();
-    expect(column.className).toContain("max-w-[480px]");
-    expect(nav.className).toContain("max-w-[480px]"); // fixed, but as wide as the column
-    expect(column).toContainElement(screen.getByRole("main"));
-  });
-
-  it("report flow and contractor home are in the column; admin is not", async () => {
-    mockApi({ "GET /api/auth/me": () => json(200, { user: contractor }) });
-    const { unmount } = renderApp("/contractor");
-    expect((await screen.findByText(`Welcome, ${contractor.name}`)).closest("[data-mobile-column]")).not.toBeNull();
-    unmount();
-
-    mockApi({ "GET /api/auth/me": () => json(200, { user: admin }) });
-    renderApp("/admin");
-    const heading = await screen.findByText(`Welcome, ${admin.name}`);
-    await waitFor(() => expect(heading.closest("[data-mobile-column]")).toBeNull());
   });
 });

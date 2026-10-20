@@ -15,7 +15,7 @@ export default function RoleHome() {
   const needsVerify = user.role === "CITIZEN" && !user.emailVerified;
 
   return (
-    <AppShell compact={user.role === "CONTRACTOR"}>
+    <AppShell>
       <p className="text-eyebrow uppercase text-brass-700">{t(`role.${user.role}`)}</p>
       <h1 className="mt-1 text-h1 text-charcoal-900">{t("home.welcome", { name: user.name })}</h1>
       {needsVerify && (

@@ -341,17 +341,12 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 - **Not copied from Stitch:** SMS/WhatsApp, offline sync, voice input, "auto-dispatched / fast
   track", automatic reopen, the "Closed" tab, "official portal" wording.
 
-### D-024 — Phone column for citizen and contractor; one selected style (2026-10-20)
+### D-024 — One selected style for choices (2026-10-20)
 
-- **Layout:** on screens wider than a phone, citizen and contractor screens (header, content and
-  bottom navigation) stay in one centred column, at most 480 px wide, with Warm Ivory around it
-  (Stitch: "a constrained 480–640 px application viewport"). Admin keeps the full-width layout.
-  Login and signup use the same 480 px column below 1024 px and keep their desktop design above.
-- **No screen-width breakpoints inside the column:** `sm:`/`md:` follow the window, not the column,
-  so citizen and contractor code uses none. Shared components that adapt (Card padding, PhotoCompare)
-  use container queries (`@lg:`, `@2xl:`) and follow the column or the admin page instead. Toasts and
-  bottom sheets stay centred and at most 480 px wide.
 - **Selected state** for choices (report category cards, My complaints tabs; later filter chips and
   reasons): 2 px Deep Teal border, Sage Tint background, check icon, bold label; unselected is white
   with a Stone Grey border. Category cards are a radio group (arrows, Enter/Space, one Tab stop,
   visible focus ring); "Continue" is enabled once a category is chosen.
+- **Reverted (project owner, 2026-10-20):** the first version of this decision also kept citizen and
+  contractor screens in a centred 480 px column on wide screens. That layout was removed again; the
+  citizen, contractor and login layouts are back to how they were before it.

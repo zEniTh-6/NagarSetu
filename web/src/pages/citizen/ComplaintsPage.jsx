@@ -50,7 +50,7 @@ export default function ComplaintsPage() {
       <h1 className="text-h1 text-charcoal-900">{t("complaints.title")}</h1>
       <p className="mt-1 text-body text-graphite-600">{t("complaints.subtitle")}</p>
 
-      <div role="tablist" aria-label={t("complaints.title")} onKeyDown={onKeyDown} className="mt-5 grid grid-cols-2 gap-2">
+      <div role="tablist" aria-label={t("complaints.title")} onKeyDown={onKeyDown} className="mt-5 grid grid-cols-2 gap-2 sm:flex">
         {TABS.map((x) => {
           const selected = x.key === current;
           const loaded = x.key === "supporting" ? !supporting.isPending : !mine.isPending;
@@ -66,7 +66,7 @@ export default function ComplaintsPage() {
               onClick={() => select(x.key)}
               /* Same selected state as the report's category cards: teal border, sage tint, check, bold. */
               className={cx(
-                "flex min-h-12 items-center justify-center gap-1.5 rounded-control px-2 text-label transition-colors",
+                "flex min-h-12 items-center justify-center gap-1.5 rounded-control px-2 text-label transition-colors sm:flex-1",
                 "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700",
                 selected
                   ? "border-2 border-teal-700 bg-sage-100 font-bold text-charcoal-900"
