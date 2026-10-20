@@ -1,4 +1,4 @@
-// Citizen endpoints (server/src/modules/issues, server/src/modules/notifications).
+// Citizen endpoints (server/src/modules/issues, feed, notifications).
 import { api } from "./client.js";
 
 const qs = (params) => {
@@ -55,6 +55,14 @@ export const issuesApi = {
   },
   /** Only while REPORTED. → { issue } */
   withdraw: (id, reason) => api(`/issues/${id}/withdraw`, { method: "POST", body: reason ? { reason } : {} }),
+  /** One per account; not on your own report. → { issueId, upvoted, alreadyUpvoted, upvotes } */
+  upvote: (id) => api(`/issues/${id}/upvote`, { method: "POST" }),
+  /** → { issueId, upvoted: false, upvotes } */
+  removeUpvote: (id) => api(`/issues/${id}/upvote`, { method: "DELETE" }),
+  /** Visible comments, newest first. → { items: [{ id, body, createdAt, official, author, mine, reportedByMe }], page, pageSize, total } */
+  comments: (id, { page = 1, pageSize = 20 } = {}) => api(`/issues/${id}/comments${qs({ page, pageSize })}`),
+  /** Body is sent as written. → 201 { comment } */
+  addComment: (id, body) => api(`/issues/${id}/comments`, { method: "POST", body: { body } }),
   /** verdict FIXED | NOT_FIXED; NOT_FIXED needs a reason, photo optional. → 201 { feedback } */
   feedback: (id, { verdict, reason, photo }) => {
     const f = new FormData();
@@ -63,6 +71,18 @@ export const issuesApi = {
     if (photo) f.append("photo", photo, "photo.jpg");
     return api(`/issues/${id}/feedback`, { method: "POST", form: f });
   },
+};
+
+export const feedApi = {
+  /** Public issues (D-022), newest first. → { items: [public card], page, pageSize, total } */
+  list: ({ category, page = 1, pageSize = 20 } = {}) => api(`/feed${qs({ category, page, pageSize })}`),
+  /** bbox = "minLng,minLat,maxLng,maxLat". → { pins: [{ id, lat, lng, category, status }], truncated } */
+  map: ({ bbox, category }, { signal } = {}) => api(`/feed/map${qs({ bbox, category })}`, { signal }),
+};
+
+export const commentsApi = {
+  /** reason SPAM | ABUSIVE | OFF_TOPIC | OTHER. → { commentId, reported, alreadyReported } */
+  report: (id, { reason, note }) => api(`/comments/${id}/report`, { method: "POST", body: note?.trim() ? { reason, note } : { reason } }),
 };
 
 export const notificationsApi = {
@@ -80,4 +100,8 @@ export const qk = {
   supporting: ["issues", "supporting"],
   issue: (id) => ["issues", "one", id],
   notifications: ["notifications"],
+  feed: (category) => ["feed", "list", category ?? "ALL"],
+  feedAll: ["feed"],
+  map: (bbox, category) => ["feed", "map", bbox, category ?? "ALL"],
+  comments: (id) => ["issues", "comments", id],
 };

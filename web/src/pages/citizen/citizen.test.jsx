@@ -8,7 +8,6 @@ vi.mock("../../lib/image.js", async (orig) => ({
   preparePhoto: vi.fn(async () => ({ blob: new Blob(["jpeg"], { type: "image/jpeg" }), width: 1600, height: 1200, capturedAt: 1760000000000 })),
 }));
 vi.mock("../../components/citizen/PinMap.jsx", () => ({ default: () => <div>map preview</div> }));
-vi.mock("../../components/citizen/IssuesMap.jsx", () => ({ default: ({ issues }) => <ul aria-label="map pins">{issues.map((i) => <li key={i.id}>{i.id}</li>)}</ul> }));
 
 const ID = "3f8a2c10-0000-4000-8000-000000000001";
 const ID2 = "9b1d4e20-0000-4000-8000-000000000002";
@@ -36,6 +35,8 @@ const base = (extra = {}) => ({
   "GET /api/notifications": () => json(200, { items: [], unread: 0, total: 0, page: 1, pageSize: 50 }),
   "GET /api/issues/mine": () => page([]),
   "GET /api/issues/supporting": () => page([]),
+  [`GET /api/issues/${ID}/comments`]: () => page([]),
+  [`GET /api/issues/${ID2}/comments`]: () => page([]),
   ...extra,
 });
 
@@ -249,23 +250,7 @@ describe("notifications", () => {
   });
 });
 
-describe("home, map and profile", () => {
-  it("home shows counts and recent reports; map shows mine + supported once each", async () => {
-    mockApi(
-      base({
-        "GET /api/issues/mine": () => page([issue()]),
-        "GET /api/issues/supporting": () => page([issue({ id: ID2, relation: "SUPPORTER" }), issue()]),
-      }),
-    );
-    const { router } = renderApp("/citizen");
-    expect(await screen.findByText("Deep pothole near the bus stop")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Report an issue" })).toHaveAttribute("href", "/citizen/report");
-
-    await router.navigate("/citizen/map");
-    const pins = await screen.findByRole("list", { name: "map pins" });
-    expect(within(pins).getAllByRole("listitem").map((li) => li.textContent)).toEqual([ID, ID2]);
-  });
-
+describe("profile", () => {
   it("profile has the language switch and no SMS/WhatsApp settings", async () => {
     mockApi(base());
     renderApp("/citizen/profile");

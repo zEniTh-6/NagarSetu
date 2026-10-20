@@ -151,19 +151,7 @@
       "ADMIN": "The dashboard, issue review and contractor tools come in the next phase.",
       "CONTRACTOR": "Your assigned jobs and repair evidence upload come in the next phase."
     },
-    "heroEyebrow": "See a problem?",
-    "heroTitle": "Report it in a minute",
-    "heroBody": "A photo, the spot on the map and a few words. The department reviews every report.",
-    "reportCta": "Report an issue",
-    "stat": {
-      "active": "Open reports",
-      "resolved": "Resolved",
-      "supporting": "Supporting"
-    },
-    "recent": "Your recent reports",
-    "seeAll": "See all",
-    "emptyTitle": "No reports yet",
-    "emptyBody": "When you report a pothole, garbage or a broken streetlight, you can follow it here."
+    "reportCta": "Report an issue"
   },
   "notFound": {
     "title": "Page not found",
@@ -237,11 +225,7 @@
   },
   "map": {
     "label": "Map",
-    "title": "Map",
-    "subtitle": "Your reports and the reports you support.",
-    "open": "Open",
-    "empty": "Nothing on the map yet",
-    "emptyBody": "Your reports and the ones you support will appear here."
+    "title": "Map"
   },
   "errors": {
     "UNKNOWN": "Something went wrong. Please try again.",
@@ -283,7 +267,10 @@
     "NOT_RESOLVED": "Feedback opens once the issue is resolved.",
     "FEEDBACK_WINDOW_CLOSED": "The time to answer for this repair has ended.",
     "ALREADY_RESPONDED": "You already answered for this repair.",
-    "PHOTO_ONLY_FOR_NOT_FIXED": "A photo can only be added to a \"not fixed\" answer."
+    "PHOTO_ONLY_FOR_NOT_FIXED": "A photo can only be added to a \"not fixed\" answer.",
+    "ISSUE_NOT_PUBLIC": "This report isn't public yet.",
+    "OWN_COMMENT": "This is your own comment.",
+    "OFFICIAL_REPLY": "Official replies can't be reported."
   },
   "nav": {
     "main": "Main",
@@ -458,7 +445,7 @@
     "location": "Location",
     "timeline": "Progress",
     "notFound": "Report not found",
-    "notFoundBody": "It doesn't exist, or it isn't one you reported or support.",
+    "notFoundBody": "It doesn't exist, isn't public yet, or you can't see it.",
     "allComplaints": "All my complaints"
   },
   "closed": {
@@ -549,5 +536,81 @@
     "languageHint": "The app's language. Reports are kept in the language you wrote them in.",
     "notificationsTitle": "Notifications",
     "notificationsBody": "Updates arrive here in the app (Alerts). NagarSetu only sends email for your sign-up code and password reset links."
+  },
+  "feed": {
+    "title": "Community feed",
+    "subtitle": "Public reports in Sangli, Miraj and Kupwad. A report appears here once its photo check passes or the department accepts it.",
+    "filterLabel": "Filter by category",
+    "all": "All",
+    "approxArea": "Approximate location",
+    "empty": "No public reports yet",
+    "emptyBody": "Reports appear here once their photo check passes or the department accepts them.",
+    "emptyFiltered": "No public reports in this category yet",
+    "loadMore": "Load more",
+    "comments_one": "{{count}} comment",
+    "comments_other": "{{count}} comments",
+    "photoAlt": "Photo of the reported problem",
+    "yours": "Your report",
+    "reportCta": "Report an issue"
+  },
+  "community": {
+    "upvote": "Upvote",
+    "upvoted": "Upvoted",
+    "upvotes_one": "{{count}} upvote",
+    "upvotes_other": "{{count}} upvotes",
+    "ownReport": "You can't upvote your own report",
+    "verifyFirst": "Verify your email to upvote and comment",
+    "closed": "This report is closed for upvotes",
+    "upvoteNote": "Upvotes show how many people care. They don't set the priority; the department does.",
+    "support": "Support",
+    "supporting": "Supporting",
+    "supported": "You now support this report",
+    "supportHint": "Support it to get updates and to say whether the repair worked.",
+    "supporters_one": "{{count}} supporter",
+    "supporters_other": "{{count}} supporters",
+    "notPublic": "Only you, its supporters and the department can see this report until its photo check passes or the department accepts it."
+  },
+  "comments": {
+    "title": "Comments",
+    "empty": "No comments yet",
+    "emptyBody": "Add something useful, like how long the problem has been there.",
+    "label": "Your comment",
+    "send": "Post comment",
+    "posted": "Comment posted",
+    "verifyFirst": "Verify your email to comment.",
+    "notPublicYet": "Comments open once the report is public.",
+    "official": "Official reply",
+    "departmentFallback": "Department",
+    "you": "You",
+    "report": "Report comment",
+    "reported": "Reported",
+    "reportTitle": "Report this comment",
+    "reportBody": "The department will look at it and can hide it.",
+    "reasonLabel": "Why are you reporting it?",
+    "reason": {
+      "SPAM": "Spam or advertising",
+      "ABUSIVE": "Abusive or hateful",
+      "OFF_TOPIC": "Not about this problem",
+      "OTHER": "Something else"
+    },
+    "note": "Anything to add?",
+    "sendReport": "Send report",
+    "reportSent": "Thanks. The department will review it.",
+    "loadMore": "Show older comments"
+  },
+  "publicMap": {
+    "subtitle": "Public reports. Pins show the approximate area, not the exact spot.",
+    "truncated": "Showing the newest {{count}} reports in this view. Zoom in to see all of them.",
+    "none": "No public reports in this part of the map.",
+    "group_one": "{{count}} report in this area",
+    "group_other": "{{count}} reports in this area",
+    "pin_one": "{{category}}: {{count}} report",
+    "pin_other": "{{category}}: {{count}} reports",
+    "details": "View details",
+    "error": "Couldn't load the reports for this area."
+  },
+  "approx": {
+    "title": "Approximate area",
+    "note": "Shown within about {{radius}} m, to protect the reporter's privacy."
   }
 }

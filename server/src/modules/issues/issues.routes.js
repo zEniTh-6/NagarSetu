@@ -4,6 +4,7 @@ import { validate } from "../../middleware/validate.js";
 import { singlePhoto } from "../../middleware/upload.js";
 import { requireAuth, requireRole, requireVerified } from "../../auth/middleware.js";
 import { makeIssuesController } from "./issues.controller.js";
+import * as community from "../feed/community.service.js";
 
 // Multipart fields arrive as text; numbers are coerced. Empty optional fields count as missing.
 const blankToUndefined = (v) => (v === "" || v === null ? undefined : v);
@@ -58,6 +59,10 @@ const feedbackBody = z
   })
   .strict()
   .refine((b) => b.verdict !== "NOT_FIXED" || b.reason, { message: "say what is still wrong", path: ["reason"] });
+// Stored exactly as written; whitespace-only is not a comment.
+const commentBody = z
+  .object({ body: z.string().refine((s) => s.trim().length >= 1, "write something").refine((s) => s.length <= 1000, "at most 1000 characters") })
+  .strict();
 const photoQuery = z.object({ variant: z.enum(["public", "original"]).default("public") });
 
 export function issuesRouter({ prisma, limiters, storage, jobs, embed }) {
@@ -72,6 +77,19 @@ export function issuesRouter({ prisma, limiters, storage, jobs, embed }) {
   r.post("/:id/support", ...citizen, requireVerified, limiters.upvote, validate({ params: idParams, body: supportBody }), c.support);
   r.post("/:id/photo", ...citizen, requireVerified, limiters.report, singlePhoto(), validate({ params: idParams, body: retakeBody }), c.retakePhoto);
   r.post("/:id/feedback", ...citizen, requireVerified, limiters.feedback, singlePhoto(), validate({ params: idParams, body: feedbackBody }), c.feedback);
+  // Upvotes and comments (D-025). Upvote shares the upvote limiter with Support.
+  r.post("/:id/upvote", ...citizen, requireVerified, limiters.upvote, validate({ params: idParams }), async (req, res) => {
+    res.json(await community.upvote(prisma, { user: req.user, issueId: req.validated.params.id }));
+  });
+  r.delete("/:id/upvote", ...citizen, requireVerified, limiters.upvote, validate({ params: idParams }), async (req, res) => {
+    res.json(await community.removeUpvote(prisma, { user: req.user, issueId: req.validated.params.id }));
+  });
+  r.get("/:id/comments", ...citizen, validate({ params: idParams, query: pageQuery }), async (req, res) => {
+    res.json(await community.listComments(prisma, { user: req.user, issueId: req.validated.params.id, ...req.validated.query }));
+  });
+  r.post("/:id/comments", ...citizen, requireVerified, limiters.comment, validate({ params: idParams, body: commentBody }), async (req, res) => {
+    res.status(201).json({ comment: await community.addComment(prisma, { user: req.user, issueId: req.validated.params.id, body: req.validated.body.body }) });
+  });
   r.post("/:id/withdraw", ...citizen, validate({ params: idParams, body: withdrawBody }), c.withdraw);
   r.get("/:id", requireAuth(prisma), validate({ params: idParams }), c.getOne);
   return r;

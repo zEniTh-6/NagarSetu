@@ -11,6 +11,19 @@ import { citizenIssueView, adminIssueView, resolutionView } from "./issues.views
 import { validCandidateIds, duplicateReason } from "./duplicates.service.js";
 import { adminReviewExtras } from "../admin/adminIssues.service.js";
 import { isFollower, citizenFeedbackState } from "../feedback/feedback.service.js";
+import { queueAreaLookup } from "../feed/areaName.service.js";
+import { publicIssueDetails, followerCommunity } from "../feed/feed.service.js";
+import { isPublic } from "../feed/visibility.js";
+import { approximateLocations, APPROX_RADIUS_M } from "../../geo/public.js";
+
+/**
+ * The exact spot and the typed address are for the reporter, the admin and the assigned contractor
+ * only (brief). Supporters get the approximate area, like everyone else (D-025).
+ */
+function withoutExactLocation(view, approx) {
+  const { location: _location, addressText: _addressText, ...rest } = view;
+  return { ...rest, approxLocation: approx ? { ...approx, radiusM: APPROX_RADIUS_M } : null };
+}
 
 const notFound = () => new AppError(404, "NOT_FOUND", "Not found");
 const actorOf = (u) => ({ id: u.id, role: u.role });
@@ -126,6 +139,7 @@ export async function createIssue(prisma, { user, input, file, storage, jobs, se
   if (result.created) {
     await queueCheck(jobs, { issueId, photoId });
     await queueEmbedding(jobs, issueId);
+    await queueAreaLookup(jobs, issueId);
   }
   return { created: result.created, issue: await citizenView(prisma, result.id) };
 }
@@ -250,9 +264,11 @@ export async function listSupportedIssues(prisma, { user, page, pageSize }) {
     }),
   ]);
   const issues = rows.map((r) => r.issue);
-  const locations = await issueLocations(prisma, issues.map((i) => i.id));
+  const approx = await approximateLocations(prisma, issues.map((i) => i.id));
   return {
-    items: rows.map((r) => citizenIssueView(r.issue, locations[r.issue.id], r.issue.photos[0], { supportedAt: r.createdAt })),
+    items: rows.map((r) =>
+      withoutExactLocation(citizenIssueView(r.issue, null, r.issue.photos[0], { supportedAt: r.createdAt, areaName: r.issue.areaName ?? null }), approx[r.issue.id]),
+    ),
     page,
     pageSize,
     total,
@@ -304,8 +320,12 @@ export async function citizenTimeline(db, issueId) {
 }
 
 /**
- * One issue. Reporter → citizen view; admin of the issue's department → admin view.
- * Everyone else → 404 (same as a missing issue). Contractors arrive with assignments.
+ * One issue.
+ *   - admin of the issue's department → admin view;
+ *   - its reporter or a supporter → citizen view (exact location, timeline with reasons, feedback);
+ *   - any other citizen → public view, only if the issue is public (D-022): no reporter, approximate
+ *     location (D-025);
+ *   - everyone else → 404 (same as a missing issue). Contractors use /api/contractor.
  */
 export async function getIssue(prisma, { user, issueId }) {
   const issue = await prisma.issue.findUnique({
@@ -314,20 +334,33 @@ export async function getIssue(prisma, { user, issueId }) {
   });
   if (!issue) throw notFound();
   const isAdmin = user.role === "ADMIN" && user.departmentId === issue.departmentId;
-  // Reporter and supporters get the citizen view (supporters get the outcome and can give feedback).
-  if (!isAdmin && !(await isFollower(prisma, user, issue))) throw notFound();
-
-  const [locations, photo] = await Promise.all([issueLocations(prisma, [issue.id]), currentPhoto(prisma, issue.id)]);
-  if (!isAdmin) {
-    return citizenIssueView(issue, locations[issue.id], photo, {
-      ...resolutionView(issue, await approvedRepairPhoto(prisma, issue.id)),
-      ...(await citizenFeedbackState(prisma, user, issue)),
-      timeline: await citizenTimeline(prisma, issue.id),
-      // Only the reporter may withdraw; supporters follow the outcome.
-      relation: issue.reporterId === user.id ? "REPORTER" : "SUPPORTER",
-    });
+  if (isAdmin) {
+    const [locations, photo] = await Promise.all([issueLocations(prisma, [issue.id]), currentPhoto(prisma, issue.id)]);
+    return adminIssueView(issue, locations[issue.id], photo, await adminReviewExtras(prisma, { user, issue }));
   }
-  return adminIssueView(issue, locations[issue.id], photo, await adminReviewExtras(prisma, { user, issue }));
+  if (user.role !== "CITIZEN") throw notFound();
+
+  if (!(await isFollower(prisma, user, issue))) {
+    const view = isPublic(issue) ? await publicIssueDetails(prisma, { user, issue, timeline: await citizenTimeline(prisma, issue.id) }) : null;
+    if (!view) throw notFound();
+    return view;
+  }
+
+  const isReporter = issue.reporterId === user.id;
+  const [locations, photo] = await Promise.all([
+    isReporter ? issueLocations(prisma, [issue.id]) : approximateLocations(prisma, [issue.id]),
+    currentPhoto(prisma, issue.id),
+  ]);
+  const view = citizenIssueView(issue, isReporter ? locations[issue.id] : null, photo, {
+    visibility: "FOLLOWER",
+    ...resolutionView(issue, await approvedRepairPhoto(prisma, issue.id)),
+    ...(await citizenFeedbackState(prisma, user, issue)),
+    ...(await followerCommunity(prisma, { user, issue })),
+    timeline: await citizenTimeline(prisma, issue.id),
+    // Only the reporter may withdraw; supporters follow the outcome.
+    relation: isReporter ? "REPORTER" : "SUPPORTER",
+  });
+  return isReporter ? view : withoutExactLocation(view, locations[issue.id]);
 }
 
 /** The published repair photo: the one from the approved submission. */
@@ -343,6 +376,8 @@ function approvedRepairPhoto(db, issueId) {
  *   - department admin: every photo of the issue;
  *   - reporter and supporters: the report photo, and a repair photo only once the admin approved it
  *     (published); a feedback photo only to the citizen who added it;
+ *   - any other citizen, when the issue is public (D-022): its current report photo, and the
+ *     approved repair photo once it is RESOLVED;
  *   - contractor: while assigned, the report photo and their own repair photos.
  * Everyone else: 404.
  */
@@ -366,8 +401,10 @@ export async function getPhotoFile(prisma, { user, photoId, variant, storage }) 
 async function canSeePublicCopy(db, user, photo) {
   if (user.role === "CITIZEN") {
     if (photo.kind === "FEEDBACK") return photo.uploadedById === user.id;
-    if (!(await isFollower(db, user, photo.issue))) return false;
-    return photo.kind === "ISSUE_ORIGINAL" || photo.repairSubmission?.status === "APPROVED";
+    if (await isFollower(db, user, photo.issue)) return photo.kind === "ISSUE_ORIGINAL" || photo.repairSubmission?.status === "APPROVED";
+    if (!isPublic(photo.issue)) return false;
+    if (photo.kind === "ISSUE_ORIGINAL") return !photo.replacedAt;
+    return photo.issue.status === "RESOLVED" && photo.repairSubmission?.status === "APPROVED";
   }
   if (user.role === "CONTRACTOR") {
     const assigned = await db.assignment.count({ where: { issueId: photo.issueId, contractorId: user.id, endedAt: null } });

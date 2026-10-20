@@ -13,9 +13,8 @@ export const DEFAULT_LIMITS = Object.freeze({
   duplicateCheck: { windowMs: HOUR, limit: 60 }, // per user (one per report form, plus edits)
   repairUpload: { windowMs: HOUR, limit: 20 }, // per contractor
   feedback: { windowMs: HOUR, limit: 20 }, // per user
-  // Attached in later phases:
-  upvote: { windowMs: HOUR, limit: 100 }, // per user
-  comment: { windowMs: HOUR, limit: 30 }, // per user
+  upvote: { windowMs: HOUR, limit: 100 }, // per user (upvote, remove upvote, support)
+  comment: { windowMs: HOUR, limit: 30 }, // per user (comments and comment reports)
 });
 
 const byIp = (req) => ipKeyGenerator(req.ip ?? "unknown");

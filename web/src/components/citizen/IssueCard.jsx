@@ -23,10 +23,11 @@ export function IssueCard({ issue, footer, supporting }) {
           <div className="min-w-0 flex-1">
             <p className="text-label text-charcoal-900">{categoryName(issue.category)}</p>
             <p className="mt-0.5 line-clamp-2 text-body text-charcoal-900">{issue.description}</p>
-            {issue.addressText && (
+            {/* Supporters get the area name, never the reporter's typed address (D-025). */}
+            {(issue.addressText || issue.approxLocation) && (
               <p className="mt-1 flex items-center gap-1 text-caption text-graphite-600">
                 <MapPin aria-hidden="true" className="size-4 shrink-0" />
-                <span className="truncate">{issue.addressText}</span>
+                <span className="truncate">{issue.addressText || issue.areaName || t("feed.approxArea")}</span>
               </p>
             )}
             {supporting && (

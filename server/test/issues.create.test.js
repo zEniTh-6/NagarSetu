@@ -47,6 +47,7 @@ describe("creating a report", () => {
     expect(jobs.sent).toEqual([
       { name: "validate-photo", data: { issueId: issue.id, photoId: photo.id } },
       { name: "embed-issue", data: { issueId: issue.id } },
+      { name: "area-name", data: { issueId: issue.id } },
     ]);
     expect(await prisma.auditLog.count({ where: { action: "ISSUE_CREATED", targetId: issue.id, actorId: citizen.id } })).toBe(1);
   });
@@ -82,7 +83,7 @@ describe("idempotency (client request ID)", () => {
     expect(retry.body.issue.id).toBe(first.body.issue.id);
     expect(await prisma.issue.count()).toBe(1);
     expect(await prisma.photo.count()).toBe(1);
-    expect(jobs.sent.map((j) => j.name)).toEqual(["validate-photo", "embed-issue"]); // queued once, not per retry
+    expect(jobs.sent.map((j) => j.name)).toEqual(["validate-photo", "embed-issue", "area-name"]); // queued once, not per retry
   });
 
   it("network loss mid-report: two identical requests at once still make exactly one issue", async () => {

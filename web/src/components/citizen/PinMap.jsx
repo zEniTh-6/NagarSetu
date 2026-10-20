@@ -22,15 +22,16 @@ function FollowPin({ pin, zoom }) {
 /**
  * pin: { lat, lng } | null · device: { lat, lng, accuracyM } | null · onMove(pin) when dragged or tapped.
  * `followKey` changes when the pin should be brought into view (search result, "use my location").
+ * area: { lat, lng, radiusM } draws an approximate area (public view, D-025) instead of a pin.
  */
-export default function PinMap({ pin, device, onMove, followKey, interactive = true, className = "h-80" }) {
+export default function PinMap({ pin, device, area, onMove, followKey, interactive = true, className = "h-80" }) {
   const { t } = useTranslation();
-  const center = pin ?? SANGLI_CENTER;
+  const center = pin ?? area ?? SANGLI_CENTER;
   return (
     <div role="region" aria-label={t("map.label")} className={["isolate overflow-hidden rounded-card border border-stone-300", className].join(" ")}>
       <MapContainer
         center={[center.lat, center.lng]}
-        zoom={pin ? 17 : 13}
+        zoom={pin ? 17 : area ? 15 : 13}
         scrollWheelZoom={false}
         dragging={interactive}
         zoomControl={interactive}
@@ -43,6 +44,7 @@ export default function PinMap({ pin, device, onMove, followKey, interactive = t
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        {area && <Circle center={[area.lat, area.lng]} radius={area.radiusM} pathOptions={{ color: "#285347", weight: 2, dashArray: "6 6", fillOpacity: 0.15 }} />}
         {device && <Circle center={[device.lat, device.lng]} radius={device.accuracyM} pathOptions={{ color: "#285347", weight: 1, fillOpacity: 0.12 }} />}
         {pin && (
           <Marker
