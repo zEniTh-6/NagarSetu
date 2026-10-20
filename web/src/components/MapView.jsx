@@ -18,7 +18,7 @@ export const SANGLI_CENTER = [16.8352, 74.5998];
 export function MapView({ center = SANGLI_CENTER, zoom = 14, className = "h-72", children, label }) {
   const { t } = useTranslation();
   return (
-    <div role="region" aria-label={label ?? t("map.label")} className={["overflow-hidden rounded-card border border-stone-300", className].join(" ")}>
+    <div role="region" aria-label={label ?? t("map.label")} className={["isolate overflow-hidden rounded-card border border-stone-300", className].join(" ")}>
       <MapContainer center={center} zoom={zoom} scrollWheelZoom={false} className="size-full">
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

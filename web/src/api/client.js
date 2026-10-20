@@ -31,10 +31,11 @@ export function setAuthHandlers(next) {
  * @param {object} [opts]
  * @param {string} [opts.method]
  * @param {unknown} [opts.body] sent as JSON
+ * @param {FormData} [opts.form] sent as multipart (photo uploads); the browser sets the boundary
  * @param {AbortSignal} [opts.signal]
  * @param {boolean} [opts.authRedirect=true] false on login/signup/etc.: their 401/403 are answers, not "session gone"
  */
-export async function api(path, { method = "GET", body, signal, authRedirect = true } = {}) {
+export async function api(path, { method = "GET", body, form, signal, authRedirect = true } = {}) {
   let res;
   try {
     res = await fetch(`${API_BASE}${path}`, {
@@ -45,7 +46,7 @@ export async function api(path, { method = "GET", body, signal, authRedirect = t
         Accept: "application/json",
         ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
       },
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: form ?? (body !== undefined ? JSON.stringify(body) : undefined),
     });
   } catch (err) {
     if (err?.name === "AbortError") throw err;

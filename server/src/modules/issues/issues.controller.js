@@ -55,6 +55,10 @@ export const makeIssuesController = ({ prisma, storage, jobs, embed }) => ({
     res.json(await svc.listMyIssues(prisma, { user: req.user, ...req.validated.query }));
   },
 
+  async supporting(req, res) {
+    res.json(await svc.listSupportedIssues(prisma, { user: req.user, ...req.validated.query }));
+  },
+
   async getOne(req, res) {
     res.json({ issue: await svc.getIssue(prisma, { user: req.user, issueId: req.validated.params.id }) });
   },

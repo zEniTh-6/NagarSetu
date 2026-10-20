@@ -25,6 +25,7 @@
   --color-brass-50: #faf6ee; /* brass tint (verified badge ground) */
   --color-brass-400: #b49a68; /* on dark: eyebrow, stats, primary button */
   --color-brass-700: #7d6a3e; /* brass text/icons on light */
+  --color-clay-50: #f6e7e1; /* clay tint (Garbage icon tile) */
   --color-clay-600: #b65c40; /* Garbage category accent */
 
   /* Semantic (full colour = text + icon; tint = badge ground) */
