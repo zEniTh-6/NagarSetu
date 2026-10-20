@@ -278,3 +278,26 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 - **Next (Phase 6, should-haves):** feed with upvotes and comments, comment moderation, official
   replies. Then the web app.
 
+### D-021 — Web app foundation (2026-10-20)
+
+- **Tokens:** `design/stitch/DESIGN.md` is the token source (colours, type scale, 16 px cards /
+  10 px controls / pill radius). `DESIGN.stitch.md` has a different, Material-style token set; it is
+  only used through the Stitch screens as layout reference. Tailwind 4 keeps the theme in CSS
+  (`web/src/styles/theme.css`); its default colour palette is switched off so only our tokens exist.
+  The linked-duplicate status has no colour in DESIGN.md and uses the neutral `#5D6872`.
+- **Session:** the web app never handles the JWT. Vite proxies `/api` to the server so the
+  httpOnly, SameSite=Strict cookie (D-006) works on `localhost:5173`. On load the app asks
+  `GET /api/auth/me`. Any 401 sends the user to `/login?next=…`, `PASSWORD_CHANGE_REQUIRED` to
+  `/change-password`, `ACCOUNT_DEACTIVATED` to the blocked screen. Route guards are UX only.
+- **After signup:** the server creates the account without a session, and email verification
+  needs one, so the web app logs in with the details just typed and opens the OTP screen.
+  Unverified citizens can still log in; their home shows a "verify your email" banner. The full
+  verify-before-reporting gate comes with the report screens.
+- **Password rules shown** are the server's only: at least 8 characters, at most 72 bytes. The
+  Stitch screens' uppercase/number/symbol rules are not used.
+- **Not copied from Stitch:** SMS/WhatsApp, "remember device", "reset via SMS/OTP", terms checkboxes,
+  ward selection at signup, helpline numbers and SMKC/official wording (see design/stitch/README.md).
+- **Fonts and icons:** Inter and Noto Sans Devanagari bundled via `@fontsource`; Lucide line icons.
+  The logo is a simple bridge mark, not a government emblem.
+- **Reset password screen** (`/reset-password?token=…`, the link the server emails) has no Stitch
+  design; it follows the forgot-password layout.

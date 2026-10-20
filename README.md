@@ -12,7 +12,7 @@ Future scope: [docs/future-scope.md](docs/future-scope.md)
 
 - Windows with PowerShell
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (running)
-- Node.js LTS (needed from later phases, for `server/` and `web/`)
+- Node.js 22.22 or newer (LTS), for `server/` and `web/`
 
 Only the database runs in Docker. The server and web app run directly on your machine.
 
@@ -317,6 +317,47 @@ Later, when a phase changes `server/prisma/schema.prisma`, create and apply a mi
 - **"We need to reset the public schema"** — you ran `db:migrate` on a fresh database; run `npm run db:deploy` instead.
 - **Lost the admin passwords** — reset the database (`docker compose down -v`, then steps 1 and 4 again). This deletes all data.
 
-## Web app
+## 5. Web app (Phase 6)
 
-Coming in a later phase (`web/`: React + Vite).
+React + Vite + Tailwind 4 in `web/`. It talks to the server through Vite's `/api` proxy, so the
+server's login cookie works without any extra setup. Start the database and the server first
+(sections 1 and 4); the server must run on port 4000 with `WEB_ORIGIN=http://localhost:5173` in `.env`.
+
+```powershell
+cd web
+npm install          # first time, and after package.json changes
+npm run dev          # http://localhost:5173  (leave it running)
+```
+
+Other commands (from `web/`):
+
+```powershell
+npm test             # Vitest + Testing Library (no server or database needed)
+npm run build        # production build into web/dist
+npm run preview      # serve the build on http://localhost:5173 (also proxies /api)
+```
+
+If the server runs elsewhere, set `VITE_API_PROXY_TARGET` before `npm run dev`, e.g.
+`$env:VITE_API_PROXY_TARGET="http://localhost:4001"`.
+
+### What to try in the browser
+
+| Screen | URL | How to reach it |
+|---|---|---|
+| Login (mobile + desktop layout) | `/login` | Wrong password shows one generic error; 5 wrong tries lock the account |
+| Citizen signup → email OTP | `/signup` → `/verify-email` | With `MAIL_TRANSPORT=log` the 6-digit code is printed in the server window |
+| Forgot / reset password | `/forgot-password` → `/reset-password?token=…` | The reset link is printed in the server window |
+| Forced change password | `/change-password` | Log in as a seeded admin with the printed initial password |
+| Account blocked | `/account-blocked` | After a lockout, or when a deactivated account logs in |
+| Contractor invite | `/invite/<token>` | Open the `inviteUrl` returned when an admin creates a contractor |
+
+After login everyone lands on their own area (`/citizen`, `/admin`, `/contractor`). These are
+placeholders until the role screens are built. Opening another role's URL sends you back to your
+own area; the server still enforces access on every API call.
+
+Notes:
+- All text is in `web/src/i18n/{en,hi,mr}.json` (same keys in each; a test checks this).
+  The language choice is remembered in the browser.
+- Design tokens (colours, fonts, radius, spacing) are in `web/src/styles/theme.css`, copied from
+  `design/stitch/DESIGN.md`. Tailwind 4 has no `tailwind.config.js`; the theme lives in CSS.
+- Fonts (Inter, Noto Sans Devanagari) are bundled with the app; no Google Fonts request.

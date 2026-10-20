@@ -1,0 +1,231 @@
+{
+  "brand": {
+    "caption": "Civic infrastructure • Sangli",
+    "prototypeNotice": "NagarSetu is an educational college prototype. It is not an official municipal or government portal."
+  },
+  "common": {
+    "back": "Back",
+    "backToLogin": "Back to login",
+    "cancel": "Cancel",
+    "close": "Close",
+    "dismiss": "Dismiss",
+    "loading": "Loading…",
+    "logout": "Log out",
+    "optional": "Optional",
+    "retry": "Try again",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
+  },
+  "language": {
+    "label": "Language"
+  },
+  "role": {
+    "CITIZEN": "Citizen",
+    "ADMIN": "Department admin",
+    "CONTRACTOR": "Contractor"
+  },
+  "fields": {
+    "name": "Full name",
+    "email": "Email address",
+    "phone": "Mobile number",
+    "password": "Password",
+    "createPassword": "Create password",
+    "currentPassword": "Current password",
+    "initialPassword": "Initial password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password"
+  },
+  "password": {
+    "rule": "At least {{min}} characters.",
+    "ruleNew": "At least {{min}} characters, different from the current one.",
+    "tooShort": "Use at least {{min}} characters.",
+    "tooLong": "This password is too long. Use a shorter one.",
+    "mismatch": "The two passwords don't match."
+  },
+  "auth": {
+    "hero": {
+      "title": "Report. Track. See it fixed.",
+      "body": "One place for citizens, department admins and repair contractors to follow a civic issue from report to verified repair.",
+      "point1": "Report with a photo and the exact location",
+      "point2": "Follow every status change",
+      "point3": "Repairs are checked by an admin before closing"
+    }
+  },
+  "login": {
+    "title": "Log in",
+    "subtitle": "Use the email and password of your NagarSetu account.",
+    "submit": "Log in",
+    "forgot": "Forgot password?",
+    "newCitizen": "New citizen?",
+    "createAccount": "Create account",
+    "staffNote": "Department admins and contractors log in here too, with the email their account was created with.",
+    "invalidHelp": "Check your email and password, or reset your password.",
+    "missing": "Enter your email and password.",
+    "sessionExpired": "Your session has ended. Please log in again.",
+    "passwordReset": "Your password has been changed. Log in with the new password."
+  },
+  "signup": {
+    "title": "Create citizen account",
+    "subtitle": "Report civic issues and follow them until they are fixed.",
+    "citizensOnlyTitle": "Only citizens can sign up",
+    "citizensOnly": "Department admins and contractors get their accounts from the NagarSetu team or a department admin.",
+    "emailHint": "We will email you a 6-digit code to verify this address.",
+    "phoneHint": "At least 10 digits.",
+    "submit": "Create account",
+    "haveAccount": "Already registered?",
+    "login": "Log in",
+    "invalid": {
+      "name": "Enter your name (at least 2 characters).",
+      "email": "Enter a valid email address.",
+      "phone": "Enter a phone number with at least 10 digits.",
+      "password": "Use at least 8 characters."
+    }
+  },
+  "otp": {
+    "title": "Verify your email",
+    "subtitle": "Enter the 6-digit code we sent to:",
+    "codeLabel": "Verification code",
+    "digitLabel": "Digit {{n}} of {{total}}",
+    "submit": "Verify and continue",
+    "incomplete": "Enter all 6 digits.",
+    "resend": "Send a new code",
+    "resendIn": "You can ask for a new code in",
+    "resent": "A new code has been sent.",
+    "notSent": "We could not send the code just now. Ask for a new one below.",
+    "verified": "Email verified.",
+    "later": "You need a verified email to report issues or upvote. You can also verify later.",
+    "skip": "Verify later"
+  },
+  "forgot": {
+    "title": "Forgot password",
+    "subtitle": "Enter your account email. We will send you a link to choose a new password.",
+    "submit": "Send reset link",
+    "sentTitle": "Check your email",
+    "sentBody": "If this email is registered, a reset link is on its way. It works once and expires in {{minutes}} minutes."
+  },
+  "reset": {
+    "title": "Choose a new password",
+    "subtitle": "This logs you out on every device.",
+    "submit": "Save new password",
+    "invalidTitle": "Link not valid",
+    "requestNew": "Request a new link"
+  },
+  "changePassword": {
+    "title": "Change password",
+    "subtitle": "Choose a new password for your account.",
+    "requiredTitle": "Change your password",
+    "requiredBody": "This is your first login. Replace the initial password you were given before you continue.",
+    "submit": "Save and continue",
+    "currentRequired": "Enter your current password.",
+    "done": "Password changed."
+  },
+  "blocked": {
+    "deactivatedTitle": "Your account has been deactivated",
+    "deactivatedBody": "You can't log in with this account. Contact the department admin who manages your account.",
+    "lockedTitle": "Too many attempts",
+    "lockedBody": "Login is paused after several wrong passwords. Wait for the timer, or reset your password to unlock the account now.",
+    "cooldown": "Login paused",
+    "remaining": "{{time}} remaining",
+    "tryNow": "You can try again now",
+    "lockedChip": "Locked",
+    "resetInstead": "Reset password instead"
+  },
+  "invite": {
+    "title": "Set up your contractor account",
+    "subtitle": "A department admin invited you to NagarSetu. Check your details and choose a password.",
+    "step1": "Step 1 · Your details",
+    "step2": "Step 2 · Choose a password",
+    "expires": "This link works once and expires on {{date}}.",
+    "submit": "Activate account",
+    "deadTitle": "Invite link not usable",
+    "askAdmin": "Ask the admin who invited you for a new link."
+  },
+  "home": {
+    "welcome": "Welcome, {{name}}",
+    "verifyTitle": "Verify your email",
+    "verifyBody": "You need a verified email before you can report an issue or upvote.",
+    "verifyAction": "Verify now",
+    "comingTitle": "More screens are on the way",
+    "coming": {
+      "CITIZEN": "Reporting issues, the feed, the map and your complaints come in the next phase.",
+      "ADMIN": "The dashboard, issue review and contractor tools come in the next phase.",
+      "CONTRACTOR": "Your assigned jobs and repair evidence upload come in the next phase."
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "This page doesn't exist or you don't have access to it.",
+    "home": "Go to my home"
+  },
+  "status": {
+    "REPORTED": "Reported",
+    "ACKNOWLEDGED": "Acknowledged",
+    "IN_PROGRESS": "In progress",
+    "RESOLVED": "Resolved",
+    "REJECTED": "Rejected",
+    "DUPLICATE": "Linked duplicate",
+    "WITHDRAWN": "Withdrawn",
+    "FORWARDED": "Forwarded"
+  },
+  "flag": {
+    "SUSPICIOUS": "Suspicious",
+    "POSSIBLE_DUPLICATE": "Possible duplicate",
+    "PENDING_REVIEW": "Pending review",
+    "ESCALATED": "Escalated",
+    "DISPUTED": "Disputed"
+  },
+  "priority": {
+    "label": "{{level}} priority",
+    "LOW": "Low",
+    "MEDIUM": "Medium",
+    "HIGH": "High",
+    "CRITICAL": "Critical"
+  },
+  "ai": {
+    "suggestion": "AI suggestion: {{verdict}}",
+    "VALID": "Valid",
+    "INVALID": "Invalid",
+    "UNCERTAIN": "Uncertain",
+    "PENDING": "Checking"
+  },
+  "timeline": {
+    "done": "done",
+    "current": "current step",
+    "upcoming": "not reached yet"
+  },
+  "photo": {
+    "before": "Before",
+    "after": "After",
+    "afterPending": "Repair photo not published yet"
+  },
+  "map": {
+    "label": "Map"
+  },
+  "errors": {
+    "UNKNOWN": "Something went wrong. Please try again.",
+    "INTERNAL_ERROR": "Something went wrong on our side. Please try again.",
+    "NETWORK_ERROR": "Can't reach NagarSetu. Check your connection and try again.",
+    "RATE_LIMITED": "Too many tries. Please wait a few minutes and try again.",
+    "VALIDATION_FAILED": "Some details are not valid. Check the form and try again.",
+    "NOT_AUTHENTICATED": "Please log in.",
+    "SESSION_EXPIRED": "Your session has ended. Please log in again.",
+    "FORBIDDEN": "You don't have access to this.",
+    "NOT_FOUND": "Not found.",
+    "INVALID_CREDENTIALS": "Wrong email or password",
+    "ACCOUNT_LOCKED": "Too many failed attempts. Try again in {{retryAfterMinutes}} minutes.",
+    "ACCOUNT_DEACTIVATED": "This account has been deactivated.",
+    "PASSWORD_CHANGE_REQUIRED": "Change your password to continue.",
+    "EMAIL_NOT_VERIFIED": "Verify your email first.",
+    "EMAIL_TAKEN": "An account with this email already exists. Log in instead.",
+    "OTP_INVALID": "Wrong code. Attempts left: {{count}}.",
+    "OTP_EXPIRED": "This code has expired. Ask for a new one.",
+    "OTP_TOO_MANY_ATTEMPTS": "Too many wrong codes. Ask for a new one.",
+    "OTP_COOLDOWN": "Please wait {{retryAfterSeconds}} seconds before asking for a new code.",
+    "WRONG_CURRENT_PASSWORD": "The current password is wrong.",
+    "PASSWORD_UNCHANGED": "Choose a password different from the current one.",
+    "RESET_LINK_INVALID": "This reset link is invalid, already used or expired.",
+    "INVITE_NOT_FOUND": "This invite link is not valid.",
+    "INVITE_USED": "This invite link has already been used.",
+    "INVITE_EXPIRED": "This invite link has expired."
+  }
+}
