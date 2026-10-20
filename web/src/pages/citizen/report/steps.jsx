@@ -127,6 +127,7 @@ export function LocationStep({ draft, update, error, onNext }) {
           hint={t("location.searchHint")}
         />
         <Button type="submit" variant="outline" className="mt-7 self-start" loading={searching} leftIcon={Search} aria-label={t("location.search")}>
+          <span className="hidden sm:inline">{t("location.search")}</span>
         </Button>
       </form>
       {searchError && <Alert tone="error" title={searchError} />}
@@ -232,6 +233,7 @@ export function DetailsStep({ draft, update, error, onNext }) {
         <ChoiceCards
           label={t("report.details.category")}
           required
+          gridClassName="sm:grid-cols-3"
           value={draft.categoryKey}
           onChange={(categoryKey) => update({ categoryKey })}
           options={categories.data.map((c) => ({ value: c.key, label: categoryName(c), icon: <CategoryTile categoryKey={c.key} /> }))}

@@ -10,7 +10,7 @@ const VARIANTS = {
   muted: "bg-ivory-50 border border-stone-300 text-charcoal-900",
 };
 
-export function Card({ as: Tag = "div", variant = "default", padding = "p-4 @lg:p-6", className, children, ...rest }) {
+export function Card({ as: Tag = "div", variant = "default", padding = "p-4 sm:p-6", className, children, ...rest }) {
   return (
     <Tag className={cx("rounded-card", VARIANTS[variant], padding, className)} {...rest}>
       {children}

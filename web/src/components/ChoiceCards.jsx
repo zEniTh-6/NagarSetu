@@ -10,7 +10,7 @@ import { cx } from "../lib/cx.js";
  * options: [{ value, label, description?, icon?: ReactNode }]
  * The 1px → 2px border change is balanced with padding so nothing shifts.
  */
-export function ChoiceCards({ label, required, options, value, onChange, error, className, columns = 1 }) {
+export function ChoiceCards({ label, required, options, value, onChange, error, className, columns = 1, gridClassName }) {
   const labelId = useId();
   const errorId = useId();
   const refs = useRef([]);
@@ -54,7 +54,7 @@ export function ChoiceCards({ label, required, options, value, onChange, error, 
         aria-required={required || undefined}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
-        className={cx("grid gap-3", columns === 2 && "grid-cols-2", columns === 3 && "grid-cols-3")}
+        className={cx("grid gap-3", columns === 2 && "grid-cols-2", columns === 3 && "grid-cols-3", gridClassName)}
       >
         {options.map((o, i) => {
           const checked = o.value === value;

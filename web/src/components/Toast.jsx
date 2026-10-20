@@ -42,7 +42,7 @@ function ToastRegion({ toasts, onDismiss }) {
     <div
       aria-live="polite"
       aria-relevant="additions"
-      className="pointer-events-none fixed inset-x-0 top-0 z-[60] flex flex-col items-center gap-2 p-4"
+      className="pointer-events-none fixed inset-x-0 top-0 z-[60] flex flex-col items-center gap-2 p-4 sm:items-end"
     >
       {toasts.map((toast) => {
         const tone = TONES[toast.tone] ?? TONES.info;
