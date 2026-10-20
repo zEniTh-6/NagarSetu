@@ -68,6 +68,7 @@ export function issuesRouter({ prisma, limiters, storage, jobs, embed }) {
   r.post("/", ...citizen, requireVerified, limiters.report, singlePhoto(), validate({ body: createBody }), c.create);
   r.post("/duplicate-check", ...citizen, requireVerified, limiters.duplicateCheck, validate({ body: duplicateCheckBody }), c.duplicateCheck);
   r.get("/mine", ...citizen, validate({ query: pageQuery }), c.mine);
+  r.get("/supporting", ...citizen, validate({ query: pageQuery }), c.supporting);
   r.post("/:id/support", ...citizen, requireVerified, limiters.upvote, validate({ params: idParams, body: supportBody }), c.support);
   r.post("/:id/photo", ...citizen, requireVerified, limiters.report, singlePhoto(), validate({ params: idParams, body: retakeBody }), c.retakePhoto);
   r.post("/:id/feedback", ...citizen, requireVerified, limiters.feedback, singlePhoto(), validate({ params: idParams, body: feedbackBody }), c.feedback);

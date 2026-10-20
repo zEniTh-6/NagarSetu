@@ -237,6 +237,72 @@ export async function listMyIssues(prisma, { user, page, pageSize }) {
   };
 }
 
+/** Issues the citizen supports (duplicate popup "yes", support button, or linked by an admin), newest support first. */
+export async function listSupportedIssues(prisma, { user, page, pageSize }) {
+  const [total, rows] = await Promise.all([
+    prisma.issueSupporter.count({ where: { userId: user.id } }),
+    prisma.issueSupporter.findMany({
+      where: { userId: user.id },
+      include: { issue: { include: { ...ISSUE_INCLUDE, photos: { where: currentPhotoWhere, orderBy: { createdAt: "desc" }, take: 1 } } } },
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+  ]);
+  const issues = rows.map((r) => r.issue);
+  const locations = await issueLocations(prisma, issues.map((i) => i.id));
+  return {
+    items: rows.map((r) => citizenIssueView(r.issue, locations[r.issue.id], r.issue.photos[0], { supportedAt: r.createdAt })),
+    page,
+    pageSize,
+    total,
+  };
+}
+
+// Audit actions that make up the citizen's timeline. Internal steps (flags, priority, deadlines,
+// submissions, contractor identity) are never included.
+const TIMELINE_ACTIONS = [
+  AuditAction.ISSUE_CREATED,
+  AuditAction.ISSUE_STATUS_CHANGED,
+  AuditAction.ISSUE_LINKED_DUPLICATE,
+  AuditAction.ISSUE_REROUTED,
+  AuditAction.ASSIGNMENT_CREATED,
+  AuditAction.ISSUE_REOPENED,
+];
+
+/** One audit row → one citizen timeline entry (or null). Only reasons written for the citizen are passed on. */
+function timelineEntry(row) {
+  const at = row.createdAt;
+  const m = row.metadata ?? {};
+  switch (row.action) {
+    case AuditAction.ISSUE_CREATED:
+      return { type: "REPORTED", at };
+    case AuditAction.ISSUE_STATUS_CHANGED:
+      if (m.to === "REJECTED") return { type: "REJECTED", at, rejectionType: m.rejectionType ?? null, reason: row.reason ?? null };
+      if (["ACKNOWLEDGED", "IN_PROGRESS", "RESOLVED", "WITHDRAWN"].includes(m.to)) return { type: m.to, at };
+      return null;
+    case AuditAction.ISSUE_LINKED_DUPLICATE:
+      return { type: "DUPLICATE", at, duplicateOfId: m.duplicateOfId ?? null, reason: row.reason ?? null };
+    case AuditAction.ISSUE_REROUTED:
+      return { type: "REROUTED", at, fromCategory: m.fromCategory ?? null, toCategory: m.toCategory ?? null, reason: row.reason ?? null };
+    case AuditAction.ASSIGNMENT_CREATED:
+      return { type: "ASSIGNED", at };
+    case AuditAction.ISSUE_REOPENED:
+      return { type: "REOPENED", at, reason: row.reason ?? null };
+    default:
+      return null;
+  }
+}
+
+/** What happened to an issue, oldest first, built from the audit log (citizen-safe). */
+export async function citizenTimeline(db, issueId) {
+  const rows = await db.auditLog.findMany({
+    where: { targetType: AuditTarget.ISSUE, targetId: issueId, action: { in: TIMELINE_ACTIONS } },
+    orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+  });
+  return rows.map(timelineEntry).filter(Boolean);
+}
+
 /**
  * One issue. Reporter → citizen view; admin of the issue's department → admin view.
  * Everyone else → 404 (same as a missing issue). Contractors arrive with assignments.
@@ -256,6 +322,7 @@ export async function getIssue(prisma, { user, issueId }) {
     return citizenIssueView(issue, locations[issue.id], photo, {
       ...resolutionView(issue, await approvedRepairPhoto(prisma, issue.id)),
       ...(await citizenFeedbackState(prisma, user, issue)),
+      timeline: await citizenTimeline(prisma, issue.id),
     });
   }
   return adminIssueView(issue, locations[issue.id], photo, await adminReviewExtras(prisma, { user, issue }));
