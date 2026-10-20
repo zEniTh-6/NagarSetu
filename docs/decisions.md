@@ -9,7 +9,7 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 ### OD-1 — Public feed visibility
 - **Question:** does a report appear in the public feed immediately, or only after validation passes / the admin acknowledges it?
 - **Brief suggests:** only after (avoids spam and offensive photos).
-- **Status:** undecided
+- **Status:** **decided** — see D-022
 
 ### OD-2 — Who can deactivate a contractor
 - **Question:** which admins may deactivate a contractor account?
@@ -301,3 +301,42 @@ write the choice, the reason and the date, and move it under "Decisions taken".
   The logo is a simple bridge mark, not a government emblem.
 - **Reset password screen** (`/reset-password?token=…`, the link the server emails) has no Stitch
   design; it follows the forgot-password layout.
+
+### D-022 — Public feed and map show a report only after it passes a check (closes OD-1) (2026-10-20)
+
+- **Decision (project owner):** a report appears in the public feed and on the public map only
+  once the photo check says VALID **or** the department admin has acknowledged it (the brief's
+  recommendation). Until then only the reporter, its supporters and the department admin see it.
+- **Why:** keeps spam, selfies and offensive photos out of public view without waiting for the
+  admin when the AI is confident. UNCERTAIN and INVALID reports wait for the admin.
+- **Built in Phase 7b** (feed, map of all public issues, upvotes, comments with a report button
+  and admin hide, official admin replies). Public pins use approximate locations (brief).
+
+### D-023 — Citizen web screens, Phase 7a (2026-10-20)
+
+- **Screens:** home (own reports), map (own + supported issues), verify-email gate, report flow
+  (photo → location → details → review → submitted), retake photo, category suggestion, duplicate
+  sheet, supported, connection lost & retrying, My complaints (Active / Resolved / Rejected or
+  withdrawn / Supporting), issue detail with timeline, resolved before/after with "Yes, fixed /
+  Not fixed", not-fixed form, rejected / forwarded / linked detail, notifications, profile.
+- **Server additions:** the citizen issue view has `timeline` (from the audit log: reported,
+  accepted, contractor assigned, work started, resolved, rejected/forwarded with the admin's reason,
+  linked, rerouted, withdrawn, reopened; no contractor identity, deadlines, priorities or flags) and
+  `relation` (REPORTER / SUPPORTER; only the reporter may withdraw). New `GET /api/issues/supporting`
+  for the "Supporting" tab: supporters get resolution notices and can give feedback.
+- **Photos** are resized in the browser to at most 2048 px (JPEG 85 %) before upload; the server
+  still checks the bytes, strips EXIF/GPS from public copies and resizes again. The capture time
+  sent is the file's date (a hint only).
+- **Location:** draggable pin, tap to move, "use my location" with its accuracy circle (denied or
+  unavailable is neutral). Nominatim search on Enter/button only, at most one request per second,
+  limited to the service area (D-012). The web app's copy of the bounding box only warns early; the
+  server decides (OUTSIDE_SERVICE_AREA).
+- **Retries:** one `clientRequestId` per draft. A network error or 5xx shows "connection lost" and
+  retries after 2, 4, 8, 15, 30 s (or "Try now"); the server returns the first report for a repeated
+  id. No offline queue: leaving the page drops the draft (offline reporting is future scope).
+- **Duplicate check failure never blocks:** the report is sent without the popup.
+- **Category suggestion** is information only (D-017): no "change category" button.
+- **Notifications** are polled every 30 s while the page is visible; the text is written by the web
+  app from the type and params, so it follows the user's language; admins' reasons are shown as written.
+- **Not copied from Stitch:** SMS/WhatsApp, offline sync, voice input, "auto-dispatched / fast
+  track", automatic reopen, the "Closed" tab, "official portal" wording.

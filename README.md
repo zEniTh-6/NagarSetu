@@ -351,9 +351,38 @@ If the server runs elsewhere, set `VITE_API_PROXY_TARGET` before `npm run dev`, 
 | Account blocked | `/account-blocked` | After a lockout, or when a deactivated account logs in |
 | Contractor invite | `/invite/<token>` | Open the `inviteUrl` returned when an admin creates a contractor |
 
-After login everyone lands on their own area (`/citizen`, `/admin`, `/contractor`). These are
-placeholders until the role screens are built. Opening another role's URL sends you back to your
-own area; the server still enforces access on every API call.
+After login everyone lands on their own area (`/citizen`, `/admin`, `/contractor`). The admin and
+contractor areas are placeholders until their screens are built. Opening another role's URL sends
+you back to your own area; the server still enforces access on every API call.
+
+### Citizen screens (Phase 7a)
+
+Log in as a verified citizen (sign up, then enter the code from the server window).
+
+| Screen | URL |
+|---|---|
+| Home (your recent reports) | `/citizen` |
+| Report an issue (photo → location → details → review) | `/citizen/report` |
+| My complaints (Active / Resolved / Rejected or withdrawn / Supporting) | `/citizen/complaints` |
+| Issue detail, timeline, before/after, "Yes, fixed / Not fixed" | `/citizen/issues/<id>` |
+| Alerts (checked every 30 s) | `/citizen/notifications` |
+| Map of your and supported reports | `/citizen/map` |
+| Profile, language, password | `/citizen/profile` |
+
+What to check by hand:
+1. **Report:** take or choose a photo, place the pin (or "Use my location"), pick a category, write
+   a description, send. The "submitted" screen shows the photo check running.
+2. **Duplicate sheet:** report the same problem again from a second citizen at the same spot.
+   "Yes, this is my problem" adds support (no new report); it then shows under "Supporting".
+3. **Connection lost:** in the browser's DevTools set the network to Offline and press "Send report".
+   "Connection lost" appears; switch back online and press "Try now": one report is created.
+4. **Withdraw:** open a report that is still "Reported" and withdraw it.
+5. **Resolution:** drive a report to resolved (admin accept → assign → contractor start → evidence →
+   approve, see "Contractor work by hand" above). The citizen gets alerts, sees before/after and can
+   answer "Yes, fixed" or "Not fixed" (the status stays Resolved; the admin sees a dispute).
+
+The map uses OpenStreetMap tiles and address search uses Nominatim (search runs only when you press
+Enter or the search button). Both need internet access.
 
 Notes:
 - All text is in `web/src/i18n/{en,hi,mr}.json` (same keys in each; a test checks this).
