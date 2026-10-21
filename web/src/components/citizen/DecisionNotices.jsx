@@ -36,7 +36,7 @@ export function FeedbackResponse({ issue }) {
   const Icon = d?.outcome === "REOPENED" ? RotateCcw : ShieldCheck;
   return (
     <section id={RESPONSE_ID} tabIndex={-1} aria-label={t("response.title")} className="scroll-mt-20 space-y-3 outline-none">
-      <div className="rounded-card border border-stone-300 bg-ivory-50 p-4 text-body text-charcoal-900">
+      <div className="rounded-card border border-stone-300 bg-white p-4 text-body text-charcoal-900">
         <p>
           <span className="font-semibold">{t("response.youSaid")}</span>
           <span className="text-graphite-600"> — {t(d ? "response.reviewed" : "response.waiting")}</span>
