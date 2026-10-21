@@ -141,14 +141,9 @@
     "askAdmin": "Ask the admin who invited you for a new link."
   },
   "home": {
-    "welcome": "Welcome, {{name}}",
     "verifyTitle": "Verify your email",
     "verifyBody": "You need a verified email before you can report an issue or upvote.",
     "verifyAction": "Verify now",
-    "comingTitle": "More screens are on the way",
-    "coming": {
-      "CONTRACTOR": "Your assigned jobs and repair evidence upload come in the next phase."
-    },
     "reportCta": "Report an issue"
   },
   "notFound": {
@@ -297,7 +292,11 @@
     "ALREADY_SUSPENDED": "This account is already suspended.",
     "NOT_SUSPENDED": "This account is not suspended.",
     "ALREADY_HIDDEN": "This comment is already hidden.",
-    "CANNOT_HIDE_OFFICIAL": "Official replies can't be hidden."
+    "CANNOT_HIDE_OFFICIAL": "Official replies can't be hidden.",
+    "ALREADY_STARTED": "Work on this job has already started.",
+    "NOT_STARTED": "Start the work before sending evidence.",
+    "REQUEST_ID_REUSED": "Something went wrong with this upload. Go back and try again.",
+    "ISSUE_NOT_IN_PROGRESS": "This job is not in progress."
   },
   "nav": {
     "main": "Main",
@@ -556,6 +555,16 @@
       "OTHER": "Update on a report",
       "ESCALATED": "A deadline has passed",
       "DISPUTE_RAISED": "A citizen says it isn't fixed"
+    },
+    "contractor": {
+      "subtitle": "New jobs, deadline changes and the department's decisions on your evidence.",
+      "emptyBody": "You'll see an alert here when a job is assigned to you or your evidence is checked.",
+      "ASSIGNED": "New job assigned to you",
+      "REWORK_REQUESTED": "Rework requested on your evidence",
+      "DEADLINE_CHANGED": "A deadline was changed",
+      "ASSIGNMENT_ENDED": "A job was given to someone else",
+      "RESOLVED": "Your repair was approved",
+      "deadline": "Deadline: {{date}}"
     }
   },
   "profile": {
@@ -897,7 +906,9 @@
         "dismiss": "Kept resolved",
         "clearFlag": "Flag cleared",
         "confirmFlag": "Flag confirmed"
-      }
+      },
+      "contractorNote": "Instructions for the contractor",
+      "contractorNoteHint": "Optional. The contractor sees this as written."
     },
     "repair": {
       "back": "Back to the issue",
@@ -932,7 +943,12 @@
       "rejectReason": "What needs to be redone (shown to the contractor)",
       "rejected": "Rework requested",
       "reviewed": "This submission was already reviewed.",
-      "pausedNote": "The deadline clock is paused while you review."
+      "pausedNote": "The deadline clock is paused while you review.",
+      "source": "Photo source",
+      "fromCamera": "Taken with the in-app camera",
+      "fromGallery": "Uploaded from the gallery",
+      "galleryNote": "the photo may be older than it looks; the capture time is not proof. A signal only.",
+      "sourceUnknown": "Not reported"
     },
     "disputes": {
       "title": "Disputes",
@@ -1115,6 +1131,129 @@
       },
       "from": "From",
       "to": "Until"
+    }
+  },
+  "contractor": {
+    "nav": {
+      "jobs": "My jobs",
+      "alerts": "Alerts",
+      "profile": "Profile"
+    },
+    "stage": {
+      "NEW": "New",
+      "IN_PROGRESS": "In progress",
+      "REWORK": "Rework requested",
+      "SUBMITTED": "Evidence submitted",
+      "COMPLETED": "Completed"
+    },
+    "deadline": {
+      "days_one": "{{count}} day",
+      "days_other": "{{count}} days",
+      "hours_one": "{{count}} hour",
+      "hours_other": "{{count}} hours",
+      "underHour": "less than an hour",
+      "due": "Due in {{span}}",
+      "overdue": "Overdue by {{span}}",
+      "paused": "Deadline paused while your evidence is checked (was {{date}})"
+    },
+    "jobs": {
+      "title": "My jobs",
+      "subtitle": "Only jobs assigned to you. Start the work, then send a photo of the repair.",
+      "tab": {
+        "new": "New",
+        "inProgress": "In progress",
+        "submitted": "Submitted",
+        "completed": "Completed"
+      },
+      "empty": {
+        "new": "No new jobs",
+        "inProgress": "No jobs in progress",
+        "submitted": "No evidence waiting for review",
+        "completed": "No completed jobs yet"
+      }
+    },
+    "job": {
+      "assignedOn": "Assigned {{date}}",
+      "assignedBy": "Assigned by {{department}}",
+      "note": "Note from the department",
+      "photoAlt": "The citizen's photo of the problem",
+      "openMaps": "Open in Google Maps",
+      "start": "Start work",
+      "startTitle": "Start work on this job?",
+      "startBody": "The issue becomes In progress and the citizen is told. Send a photo of the repair when you finish.",
+      "started": "Work started",
+      "submitEvidence": "Submit repair evidence",
+      "submissions_one": "Evidence sent ({{count}})",
+      "submissions_other": "Evidence sent ({{count}})",
+      "waiting": "Your evidence is being checked",
+      "waitingBody": "The department reviews it. The deadline is paused until then.",
+      "noResolve": "Only the department can mark an issue resolved, after checking your evidence.",
+      "notYours": "This job isn't available",
+      "notYoursBody": "It doesn't exist or isn't assigned to you any more."
+    },
+    "evidence": {
+      "title": "Repair evidence",
+      "photoTitle": "Photo of the repair",
+      "photoHint": "Stand where the citizen stood and frame the same spot. The reference shows their photo.",
+      "reference": "Reference",
+      "originalAlt": "The citizen's photo, for framing",
+      "yourPhoto": "Your repair photo",
+      "overlay": "Show the citizen's photo over mine",
+      "overlayStrength": "Overlay strength",
+      "camera": "Take photo",
+      "retake": "Take again",
+      "gallery": "Choose from gallery",
+      "galleryNote": "A camera photo is preferred. Photos from the gallery are marked for the department.",
+      "fromCamera": "Taken with the camera",
+      "fromGallery": "From the gallery",
+      "takenAt": "taken {{when}}",
+      "locating": "Getting your location…",
+      "located": "Location added (accuracy {{accuracy}})",
+      "locationDenied": "Location is off. You can still send; the department will see no location.",
+      "locationUnavailable": "Couldn't get your location. You can still send.",
+      "note": "Note",
+      "noteHint": "What you did, in a few words.",
+      "uploading": "Uploading… {{percent}}%",
+      "progress": "Upload progress",
+      "send": "Send evidence",
+      "afterSend": "The department checks it. You'll get an alert either way.",
+      "sent": "Evidence sent",
+      "retrySafe": "Trying again is safe: it can never send the evidence twice.",
+      "submitNew": "Submit new evidence",
+      "notNow": {
+        "NEW": "Start the work before sending evidence.",
+        "SUBMITTED": "Your evidence is being checked. You can send new evidence if the department asks for rework.",
+        "COMPLETED": "This job is completed.",
+        "OTHER": "You can't send evidence for this job now."
+      }
+    },
+    "submission": {
+      "title": "Evidence status",
+      "backToJob": "Back to the job",
+      "none": "You haven't sent evidence for this job yet.",
+      "SUBMITTED": "Waiting for review",
+      "APPROVED": "Approved",
+      "REJECTED": "Rework requested",
+      "explain": {
+        "SUBMITTED": "The department is checking your evidence. The deadline is paused until then.",
+        "APPROVED": "The department approved your repair. The issue is resolved.",
+        "REJECTED": "The department asked for rework. Fix it and send new evidence."
+      },
+      "adminReason": "Department's reason",
+      "photoAlt": "Your repair photo",
+      "history": "All evidence for this job",
+      "attempt": "Attempt {{n}}",
+      "sentAt": "Sent {{when}}",
+      "reason": "Reason: {{reason}}"
+    },
+    "profile": {
+      "phone": "Phone",
+      "email": "Email",
+      "workType": "Work type",
+      "licence": "Licence or registration",
+      "activeJobs": "Active jobs",
+      "completedJobs": "Completed jobs",
+      "changeHint": "To change these details, ask a department admin."
     }
   }
 }

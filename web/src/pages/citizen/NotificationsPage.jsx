@@ -11,20 +11,26 @@ import { useCategoryName } from "../../components/citizen/CategoryIcon.jsx";
 import { useNotifications } from "../../components/citizen/useNotifications.js";
 import { notificationsApi, qk } from "../../api/citizen.js";
 import { errorText } from "../../lib/errors.js";
-import { formatRelative, shortRef } from "../../lib/format.js";
+import { formatDate, formatRelative, shortRef } from "../../lib/format.js";
+import { useMe } from "../../auth/session.js";
 import { cx } from "../../lib/cx.js";
 
 /** Text for a notification: the server stores a type + params; we write the sentence in the user's language. */
 export function useNotificationText() {
   const { t, i18n } = useTranslation();
   const categoryName = useCategoryName();
+  const { user } = useMe();
+  const contractor = user?.role === "CONTRACTOR";
   return (n) => {
     const p = n.params ?? {};
     let titleKey = `notifications.type.${n.type}`;
+    // Contractors get their own wording (e.g. "Your repair was approved").
+    if (contractor && i18n.exists(`notifications.contractor.${n.type}`)) titleKey = `notifications.contractor.${n.type}`;
     if (n.type === "REJECTED" && p.rejectionType === "NOT_OUR_JURISDICTION") titleKey = "notifications.type.FORWARDED";
     const title = i18n.exists(titleKey) ? t(titleKey) : t("notifications.type.OTHER");
     const lines = [];
     if (n.type === "REROUTED") lines.push(t("timeline.event.reroutedDetail", { from: categoryName(p.fromCategory), to: categoryName(p.toCategory) }));
+    if (contractor && p.deadlineAt) lines.push(t("notifications.contractor.deadline", { date: formatDate(p.deadlineAt, i18n.resolvedLanguage) }));
     if (p.reason) lines.push(p.reason); // admin's words, shown as written
     if (n.type === "OFFICIAL_REPLY" && p.excerpt) lines.push(p.department ? `${p.department}: ${p.excerpt}` : p.excerpt);
     return { title, body: lines.join(" — ") };
@@ -35,6 +41,7 @@ export default function NotificationsPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { user } = useMe();
   const { data, isPending, error, refetch } = useNotifications();
   const text = useNotificationText();
   const lang = i18n.resolvedLanguage;
@@ -43,7 +50,7 @@ export default function NotificationsPage() {
     if (!n.readAt) {
       notificationsApi.read(n.id).then(() => qc.invalidateQueries({ queryKey: qk.notifications })).catch(() => {});
     }
-    if (n.issueId) navigate(`/citizen/issues/${n.issueId}`);
+    if (n.issueId) navigate(user?.role === "CONTRACTOR" ? `/contractor/jobs/${n.issueId}` : `/citizen/issues/${n.issueId}`);
   };
   const readAll = async () => {
     await notificationsApi.readAll().catch(() => {});
@@ -55,7 +62,7 @@ export default function NotificationsPage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-h1 text-charcoal-900">{t("notifications.title")}</h1>
-          <p className="mt-1 text-body text-graphite-600">{t("notifications.subtitle")}</p>
+          <p className="mt-1 text-body text-graphite-600">{t(user?.role === "CONTRACTOR" ? "notifications.contractor.subtitle" : "notifications.subtitle")}</p>
         </div>
         {data?.unread > 0 && (
           <Button variant="ghost" size="sm" leftIcon={CheckCheck} onClick={readAll}>
@@ -73,7 +80,7 @@ export default function NotificationsPage() {
           <Alert tone="error" title={errorText(t, i18n, error)} action={<Button size="sm" variant="outline" onClick={() => refetch()}>{t("common.retry")}</Button>} />
         ) : data.items.length === 0 ? (
           <Card>
-            <EmptyState icon={BellOff} title={t("notifications.empty")} message={t("notifications.emptyBody")} />
+            <EmptyState icon={BellOff} title={t("notifications.empty")} message={t(user?.role === "CONTRACTOR" ? "notifications.contractor.emptyBody" : "notifications.emptyBody")} />
           </Card>
         ) : (
           <ul className="overflow-hidden rounded-card border border-stone-300 bg-white">

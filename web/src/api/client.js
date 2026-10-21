@@ -66,16 +66,19 @@ export async function api(path, { method = "GET", body, form, signal, authRedire
   }
 
   if (res.ok) return data;
+  throw apiFailure(res.status, data, res.statusText, authRedirect);
+}
 
+/** Turns an error response into an ApiError and tells the app about lost sessions (shared with uploads). */
+export function apiFailure(status, data, statusText = "", authRedirect = true) {
   const e = data?.error;
-  const err = new ApiError(res.status, e?.code ?? `HTTP_${res.status}`, e?.message ?? res.statusText, e?.details);
-
+  const err = new ApiError(status, e?.code ?? `HTTP_${status}`, e?.message ?? statusText, e?.details);
   if (authRedirect) {
-    if (res.status === 401) handlers.onUnauthenticated?.(err);
+    if (status === 401) handlers.onUnauthenticated?.(err);
     else if (err.code === "PASSWORD_CHANGE_REQUIRED") handlers.onPasswordChangeRequired?.(err);
     else if (err.code === "ACCOUNT_DEACTIVATED") handlers.onDeactivated?.(err);
   }
-  throw err;
+  return err;
 }
 
 /** Field errors from a VALIDATION_FAILED response: { email: "must be …" }. */

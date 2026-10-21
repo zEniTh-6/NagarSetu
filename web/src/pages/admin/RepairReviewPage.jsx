@@ -3,7 +3,7 @@
 // submission history. Approve → RESOLVED (only the admin can). Reject needs a reason for the contractor.
 import { lazy, Suspense, useState } from "react";
 import { Link, useParams } from "react-router";
-import { ArrowLeft, Check, CircleX, X } from "lucide-react";
+import { ArrowLeft, Camera, Check, CircleX, Images, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AiVerdictChip } from "../../components/AiVerdictChip.jsx";
 import { Button } from "../../components/Button.jsx";
@@ -24,6 +24,29 @@ import { useAdminIssue, useAfterAction } from "./review/useAdminIssue.js";
 
 const AdminMap = lazy(() => import("../../components/admin/AdminMap.jsx"));
 const SUB_STYLE = { SUBMITTED: "bg-warning-tint text-warning", APPROVED: "bg-status-resolved-tint text-status-resolved", REJECTED: "bg-error-tint text-error" };
+
+/** Camera vs gallery, as the contractor app reported it. A signal only, never a rejection (D-027). */
+function CaptureSource({ source }) {
+  const { t } = useTranslation();
+  if (source === "GALLERY") {
+    return (
+      <span className="inline-flex flex-wrap items-center gap-1 font-semibold text-warning">
+        <Images aria-hidden="true" className="size-4" />
+        {t("admin.repair.fromGallery")}
+        <span className="font-normal text-charcoal-900">· {t("admin.repair.galleryNote")}</span>
+      </span>
+    );
+  }
+  if (source === "CAMERA") {
+    return (
+      <span className="inline-flex items-center gap-1">
+        <Camera aria-hidden="true" className="size-4" />
+        {t("admin.repair.fromCamera")}
+      </span>
+    );
+  }
+  return <span className="text-graphite-600">{t("admin.repair.sourceUnknown")}</span>;
+}
 
 export default function RepairReviewPage() {
   const { t, i18n } = useTranslation();
@@ -105,6 +128,10 @@ export default function RepairReviewPage() {
                 <dt className="text-graphite-600">{t("admin.repair.submittedAt")}</dt>
                 <dd><When at={current.submittedAt} /></dd>
               </div>
+              <div className="sm:col-span-2">
+                <dt className="text-graphite-600">{t("admin.repair.source")}</dt>
+                <dd><CaptureSource source={current.captureSource} /></dd>
+              </div>
               {current.note && (
                 <div className="sm:col-span-2">
                   <dt className="text-graphite-600">{t("admin.repair.note")}</dt>
@@ -150,6 +177,7 @@ export default function RepairReviewPage() {
                     <p className="text-graphite-600">
                       <When at={s.submittedAt} /> · {contractorName(s.contractorId)}
                     </p>
+                    {s.captureSource === "GALLERY" && <CaptureSource source="GALLERY" />}
                     {s.review?.reason && <p className="mt-1">{t("admin.repair.reviewReason", { reason: s.review.reason })}</p>}
                   </div>
                 </li>

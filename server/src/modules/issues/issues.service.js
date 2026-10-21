@@ -12,6 +12,7 @@ import { validCandidateIds, duplicateReason } from "./duplicates.service.js";
 import { adminReviewExtras } from "../admin/adminIssues.service.js";
 import { isFollower, citizenFeedbackState } from "../feedback/feedback.service.js";
 import { queueAreaLookup } from "../feed/areaName.service.js";
+import { completedJobOn } from "../work/contractorWork.service.js";
 import { publicIssueDetails, followerCommunity } from "../feed/feed.service.js";
 import { isPublic } from "../feed/visibility.js";
 import { approximateLocations, APPROX_RADIUS_M } from "../../geo/public.js";
@@ -378,7 +379,8 @@ function approvedRepairPhoto(db, issueId) {
  *     (published); a feedback photo only to the citizen who added it;
  *   - any other citizen, when the issue is public (D-022): its current report photo, and the
  *     approved repair photo once it is RESOLVED;
- *   - contractor: while assigned, the report photo and their own repair photos.
+ *   - contractor: while assigned (or after their evidence was approved), the report photo and their
+ *     own repair photos.
  * Everyone else: 404.
  */
 export async function getPhotoFile(prisma, { user, photoId, variant, storage }) {
@@ -407,8 +409,10 @@ async function canSeePublicCopy(db, user, photo) {
     return photo.issue.status === "RESOLVED" && photo.repairSubmission?.status === "APPROVED";
   }
   if (user.role === "CONTRACTOR") {
+    // While assigned, or (read-only) after their own evidence was approved (D-027).
     const assigned = await db.assignment.count({ where: { issueId: photo.issueId, contractorId: user.id, endedAt: null } });
-    return assigned > 0 && (photo.kind === "ISSUE_ORIGINAL" || photo.uploadedById === user.id);
+    const ok = assigned > 0 || (await completedJobOn(db, user, photo.issueId));
+    return ok && (photo.kind === "ISSUE_ORIGINAL" || photo.uploadedById === user.id);
   }
   return false;
 }

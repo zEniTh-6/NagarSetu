@@ -17,13 +17,13 @@ import { errorText } from "../../../lib/errors.js";
 import { newRequestId } from "../../../lib/format.js";
 import { DetailsStep, LocationStep, PhotoStep, ReviewStep } from "./steps.jsx";
 import { DuplicateSheet } from "./DuplicateSheet.jsx";
+import { RETRY_DELAYS_S, retryable } from "../../../lib/retry.js";
 
 const STEPS = 4;
 /** Waits between automatic retries after a lost connection (seconds). */
-export const RETRY_DELAYS_S = [2, 4, 8, 15, 30];
+export { RETRY_DELAYS_S } from "../../../lib/retry.js";
 
 const PHOTO_ERRORS = ["PHOTO_REQUIRED", "UNSUPPORTED_IMAGE", "UNREADABLE_IMAGE", "IMAGE_TOO_SMALL", "PHOTO_TOO_LARGE"];
-const retryable = (err) => err instanceof ApiError && (err.code === "NETWORK_ERROR" || err.status >= 500);
 
 export const emptyDraft = () => ({
   clientRequestId: newRequestId(),

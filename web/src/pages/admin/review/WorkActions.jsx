@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "../../../components/Button.jsx";
 import { Input } from "../../../components/Input.jsx";
 import { Select } from "../../../components/Select.jsx";
+import { Textarea } from "../../../components/Textarea.jsx";
 import { useToast } from "../../../components/Toast.jsx";
 import { ConfirmAction } from "../../../components/admin/ConfirmAction.jsx";
 import { adminApi, ak } from "../../../api/admin.js";
@@ -69,6 +70,7 @@ export function WorkActions({ issue }) {
   const [open, setOpen] = useState(null);
   const [priority, setPriority] = useState(issue.priority ?? issue.ai?.riskLevel ?? "");
   const [contractor, setContractor] = useState("");
+  const [note, setNote] = useState(""); // instructions for the contractor (optional, shown as written)
   const [deadline, setDeadline] = useState(toDateInput(issue.assignment?.deadline?.deadlineAt ?? issue.suggestedDeadline));
   const close = () => setOpen(null);
   const done = (key) => (res) => {
@@ -144,10 +146,11 @@ export function WorkActions({ issue }) {
         description={t("admin.review.assignBody")}
         confirmLabel={t("admin.review.assign")}
         canConfirm={Boolean(contractor && deadline)}
-        onConfirm={() => adminApi.assign(issue.id, { contractorId: contractor, deadlineAt: endOfDay(deadline) }).then(done("assign"))}
+        onConfirm={() => adminApi.assign(issue.id, { contractorId: contractor, deadlineAt: endOfDay(deadline), ...(note.trim() ? { note } : {}) }).then(done("assign"))}
       >
         <ContractorPicker value={contractor} onChange={setContractor} />
         <Input className="mt-4" type="date" label={t("admin.review.deadline")} hint={suggested} required min={minDate} value={deadline} onChange={(e) => setDeadline(e.target.value)} />
+        <Textarea className="mt-4" label={t("admin.review.contractorNote")} hint={t("admin.review.contractorNoteHint")} optional rows={3} maxLength={1000} value={note} onChange={(e) => setNote(e.target.value)} />
       </ConfirmAction>
 
       <ConfirmAction
@@ -158,10 +161,11 @@ export function WorkActions({ issue }) {
         confirmLabel={t("admin.review.reassign")}
         reason="required"
         canConfirm={Boolean(contractor && deadline)}
-        onConfirm={(reason) => adminApi.reassign(issue.id, { contractorId: contractor, deadlineAt: endOfDay(deadline), reason }).then(done("reassign"))}
+        onConfirm={(reason) => adminApi.reassign(issue.id, { contractorId: contractor, deadlineAt: endOfDay(deadline), reason, ...(note.trim() ? { note } : {}) }).then(done("reassign"))}
       >
         <ContractorPicker value={contractor} onChange={setContractor} exclude={current?.contractor?.id} />
         <Input className="mt-4" type="date" label={t("admin.review.deadline")} required min={minDate} value={deadline} onChange={(e) => setDeadline(e.target.value)} />
+        <Textarea className="mt-4" label={t("admin.review.contractorNote")} hint={t("admin.review.contractorNoteHint")} optional rows={3} maxLength={1000} value={note} onChange={(e) => setNote(e.target.value)} />
       </ConfirmAction>
 
       <ConfirmAction

@@ -74,6 +74,13 @@ enum SubmissionStatus {
   REJECTED
 }
 
+// Where repair evidence came from, as the contractor app reports it. Gallery uploads are a signal
+// for the admin (the brief prefers in-app capture; EXIF time is not proof of freshness). Never a rejection.
+enum CaptureSource {
+  CAMERA
+  GALLERY
+}
+
 enum PhotoKind {
   ISSUE_ORIGINAL
   REPAIR_EVIDENCE
@@ -443,6 +450,7 @@ model Assignment {
   assignedById           String    @map("assigned_by_id") @db.Uuid
   departmentId           String    @map("department_id") @db.Uuid // assigning department, logged
   deadlineAt             DateTime  @map("deadline_at") // set only by the admin
+  note                   String? // admin's instructions for the contractor, shown as written
   // Deadline clock pauses while a submission awaits review
   pausedSince            DateTime? @map("paused_since")
   pausedSeconds          Int       @default(0) @map("paused_seconds")
@@ -473,6 +481,7 @@ model RepairSubmission {
   status          SubmissionStatus @default(SUBMITTED)
   note            String?
   capturedAt      DateTime?        @map("captured_at") // original capture time from the device
+  captureSource   CaptureSource?   @map("capture_source") // null = not reported (older submissions)
   deviceLat       Float?           @map("device_lat")
   deviceLng       Float?           @map("device_lng")
   deviceAccuracyM Float?           @map("device_accuracy_m")
