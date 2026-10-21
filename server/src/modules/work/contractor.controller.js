@@ -2,7 +2,10 @@ import * as svc from "./contractorWork.service.js";
 
 export const makeContractorController = ({ prisma, storage, jobs }) => ({
   async list(req, res) {
-    res.json(await svc.listMyJobs(prisma, { user: req.user }));
+    res.json(await svc.listMyJobs(prisma, { user: req.user, ...req.validated.query }));
+  },
+  async me(req, res) {
+    res.json({ contractor: await svc.myProfile(prisma, { user: req.user }) });
   },
   async getOne(req, res) {
     res.json({ job: await svc.getMyJob(prisma, { user: req.user, issueId: req.validated.params.id }) });

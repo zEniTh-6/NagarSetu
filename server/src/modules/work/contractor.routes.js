@@ -10,11 +10,20 @@ const blankToUndefined = (v) => (v === "" || v === null ? undefined : v);
 const optionalNumber = (schema) => z.preprocess(blankToUndefined, z.coerce.number().pipe(schema).optional());
 
 const idParams = z.object({ id: z.string().uuid() });
+const listQuery = z
+  .object({
+    state: z.enum(["active", "completed"]).default("active"),
+    page: z.coerce.number().int().min(1).default(1),
+    pageSize: z.coerce.number().int().min(1).max(50).default(50),
+  })
+  .strict();
 const submitBody = z
   .object({
     clientRequestId: z.string().uuid(), // idempotency key: a retried upload can't create two submissions
     note: z.preprocess(blankToUndefined, z.string().trim().max(1000).optional()),
     capturedAt: z.preprocess(blankToUndefined, z.coerce.date().optional()), // original capture time, kept on retries
+    // How the app got the photo: in-app camera or gallery. A signal for the admin only (D-027).
+    captureSource: z.preprocess(blankToUndefined, z.enum(["CAMERA", "GALLERY"]).optional()),
     deviceLat: optionalNumber(z.number().min(-90).max(90)),
     deviceLng: optionalNumber(z.number().min(-180).max(180)),
     deviceAccuracyM: optionalNumber(z.number().min(0).max(100_000)),
@@ -30,7 +39,8 @@ export function contractorRouter({ prisma, limiters, storage, jobs }) {
   const r = Router();
   const c = makeContractorController({ prisma, storage, jobs });
   r.use(requireAuth(prisma), requireRole("CONTRACTOR"));
-  r.get("/issues", c.list);
+  r.get("/me", c.me);
+  r.get("/issues", validate({ query: listQuery }), c.list);
   r.get("/issues/:id", validate({ params: idParams }), c.getOne);
   r.post("/issues/:id/start", validate({ params: idParams }), c.start);
   r.post("/issues/:id/submissions", limiters.repairUpload, singlePhoto(), validate({ params: idParams, body: submitBody }), c.submit);

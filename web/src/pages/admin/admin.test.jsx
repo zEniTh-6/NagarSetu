@@ -212,10 +212,12 @@ describe("issue review", () => {
     await within(dialog).findByRole("option", { name: /Kulkarni Infra · roads · 2 active jobs/ });
     fireEvent.change(within(dialog).getByLabelText(/^Contractor/), { target: { value: K1 } });
     fireEvent.change(within(dialog).getByLabelText(/^Deadline/), { target: { value: "2026-10-30" } });
+    await userEvent.type(within(dialog).getByLabelText(/Instructions for the contractor/), "Barricade the lane first");
     await userEvent.click(within(dialog).getByRole("button", { name: "Assign contractor" }));
     await waitFor(() => {
       const body = sent(fetch, "POST", `/api/admin/issues/${ID}/assign`);
       expect(body.contractorId).toBe(K1);
+      expect(body.note).toBe("Barricade the lane first");
       expect(new Date(body.deadlineAt).getDate()).toBe(30);
     });
   });
@@ -254,7 +256,7 @@ describe("repair evidence review", () => {
       assignment: { id: "a1", contractor: { id: K1, name: "Kulkarni Infra", status: "ACTIVE" }, deadline: { deadlineAt: "2026-10-30T00:00:00Z", effectiveDeadline: "2026-10-30T00:00:00Z", paused: true }, startedAt: "2026-10-19T08:00:00Z" },
       submissions: [
         { id: "s0", status: "REJECTED", contractorId: K1, submittedAt: "2026-10-19T09:00:00Z", capturedAt: null, device: {}, photo: { id: "e0", url: "/api/photos/e0" }, ai: {}, review: { reason: "Hole still visible" } },
-        { id: SUB, status: "SUBMITTED", contractorId: K1, submittedAt: "2026-10-20T09:00:00Z", capturedAt: "2026-10-20T08:55:00Z", note: "Patched", device: { lat: 16.8525, lng: 74.5816, accuracyM: 8, distanceFromIssueM: 14 }, photo: { id: "e1", url: "/api/photos/e1", originalUrl: "/api/photos/e1?variant=original" }, ai: { verdict: "VALID", reason: "Surface looks level" }, review: null },
+        { id: SUB, status: "SUBMITTED", contractorId: K1, submittedAt: "2026-10-20T09:00:00Z", capturedAt: "2026-10-20T08:55:00Z", note: "Patched", captureSource: "GALLERY", device: { lat: 16.8525, lng: 74.5816, accuracyM: 8, distanceFromIssueM: 14 }, photo: { id: "e1", url: "/api/photos/e1", originalUrl: "/api/photos/e1?variant=original" }, ai: { verdict: "VALID", reason: "Surface looks level" }, review: null },
       ],
     });
 
@@ -263,6 +265,7 @@ describe("repair evidence review", () => {
     renderApp(`/admin/issues/${ID}/repair`);
     expect(await screen.findByText(/14 m from the issue \(phone accuracy 8 m\)/)).toBeInTheDocument();
     expect(screen.getByText("Surface looks level")).toBeInTheDocument();
+    expect(screen.getAllByText("Uploaded from the gallery").length).toBeGreaterThan(0); // a signal, not a rejection
     expect(screen.getByText("Your reason: Hole still visible")).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "Repair evidence" })).toHaveAttribute("src", "/api/photos/e1");
     await userEvent.click(screen.getByRole("button", { name: "Approve → Resolved" }));

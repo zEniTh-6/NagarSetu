@@ -32,16 +32,16 @@ async function loadContractor(db, contractorId) {
   return c;
 }
 
-async function createAssignment(tx, { user, issue, contractor, deadlineAt }) {
+async function createAssignment(tx, { user, issue, contractor, deadlineAt, note }) {
   const assignment = await tx.assignment.create({
-    data: { issueId: issue.id, contractorId: contractor.id, assignedById: user.id, departmentId: user.departmentId, deadlineAt },
+    data: { issueId: issue.id, contractorId: contractor.id, assignedById: user.id, departmentId: user.departmentId, deadlineAt, note: note ?? null },
   });
   await writeAudit(tx, {
     actor: actorOf(user),
     action: AuditAction.ASSIGNMENT_CREATED,
     targetType: AuditTarget.ISSUE,
     targetId: issue.id,
-    metadata: { assignmentId: assignment.id, contractorId: contractor.id, departmentId: user.departmentId, deadlineAt: deadlineAt.toISOString() },
+    metadata: { assignmentId: assignment.id, contractorId: contractor.id, departmentId: user.departmentId, deadlineAt: deadlineAt.toISOString(), ...(note ? { note } : {}) },
   });
   await tx.notification.create({
     data: { userId: contractor.id, type: "ASSIGNED", issueId: issue.id, params: { audience: "CONTRACTOR", deadlineAt: deadlineAt.toISOString() } },
@@ -53,7 +53,7 @@ async function createAssignment(tx, { user, issue, contractor, deadlineAt }) {
  * Assign an ACKNOWLEDGED issue that has a final priority. The status stays ACKNOWLEDGED until the
  * contractor starts work. Reporter and supporters hear that a contractor was assigned (no deadline).
  */
-export async function assignContractor(prisma, { user, issueId, contractorId, deadlineAt, now = new Date() }) {
+export async function assignContractor(prisma, { user, issueId, contractorId, deadlineAt, note, now = new Date() }) {
   const issue = await loadIssue(prisma, user, issueId);
   if (issue.status !== "ACKNOWLEDGED") throw new AppError(409, "NOT_ACKNOWLEDGED", "Accept the report before assigning it");
   if (!issue.priority) throw new AppError(409, "PRIORITY_REQUIRED", "Set the final priority before assigning");
@@ -63,7 +63,7 @@ export async function assignContractor(prisma, { user, issueId, contractorId, de
 
   try {
     await prisma.$transaction(async (tx) => {
-      await createAssignment(tx, { user, issue, contractor, deadlineAt });
+      await createAssignment(tx, { user, issue, contractor, deadlineAt, note });
       await notifyIssueFollowers(tx, { issueId, type: "ASSIGNED", params: {} });
     });
   } catch (err) {
@@ -77,7 +77,7 @@ export async function assignContractor(prisma, { user, issueId, contractorId, de
  * Give the job to another contractor (e.g. the first was deactivated). The old assignment ends
  * with the reason; its history is kept. Not while a repair is waiting for review.
  */
-export async function reassignContractor(prisma, { user, issueId, contractorId, deadlineAt, reason, now = new Date() }) {
+export async function reassignContractor(prisma, { user, issueId, contractorId, deadlineAt, reason, note, now = new Date() }) {
   const issue = await loadIssue(prisma, user, issueId);
   if (!["ACKNOWLEDGED", "IN_PROGRESS"].includes(issue.status)) throw new AppError(409, "ISSUE_NOT_OPEN", "Only open issues can be reassigned");
   const current = await activeAssignment(prisma, issueId);
@@ -105,7 +105,7 @@ export async function reassignContractor(prisma, { user, issueId, contractorId, 
     await tx.notification.create({
       data: { userId: current.contractorId, type: "ASSIGNMENT_ENDED", issueId, params: { reason } },
     });
-    await createAssignment(tx, { user, issue, contractor, deadlineAt });
+    await createAssignment(tx, { user, issue, contractor, deadlineAt, note });
     await clearEscalation(tx, issueId, { actor: actorOf(user), reason: "Reassigned with a new deadline", now });
   });
 }

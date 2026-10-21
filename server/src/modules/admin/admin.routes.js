@@ -46,8 +46,10 @@ const rerouteBody = z.object({ categoryKey, reason }).strict();
 const priorityBody = z.object({ priority: z.enum(LEVELS), reason: optionalReason }).strict();
 const flagBody = z.object({ reason }).strict();
 const deadlineAt = z.coerce.date();
-const assignBody = z.object({ contractorId: z.string().uuid(), deadlineAt }).strict();
-const reassignBody = z.object({ contractorId: z.string().uuid(), deadlineAt, reason }).strict();
+// Optional instructions for the contractor, shown to them as written (D-027).
+const assignNote = z.string().trim().max(1000).optional().transform((v) => (v ? v : undefined));
+const assignBody = z.object({ contractorId: z.string().uuid(), deadlineAt, note: assignNote }).strict();
+const reassignBody = z.object({ contractorId: z.string().uuid(), deadlineAt, reason, note: assignNote }).strict();
 const deadlineBody = z.object({ deadlineAt, reason }).strict();
 const approveBody = z.object({ note: optionalReason }).strict();
 const rejectRepairBody = z.object({ reason }).strict(); // sent to the contractor

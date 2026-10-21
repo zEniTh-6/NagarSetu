@@ -1,6 +1,7 @@
 // Contractor side: see assigned jobs, start work, submit repair evidence.
-// A contractor only ever sees issues currently assigned to them (anything else answers 404),
-// and can never set RESOLVED: only an admin approving a submission does.
+// A contractor only ever sees issues currently assigned to them, plus (read-only) jobs they
+// completed: their own evidence was approved (D-027). Anything else answers 404.
+// A contractor can never set RESOLVED: only an admin approving a submission does.
 import crypto from "node:crypto";
 import { AppError } from "../../lib/AppError.js";
 import { writeAudit, AuditAction, AuditTarget } from "../../audit/audit.js";
@@ -29,6 +30,7 @@ export function classifyRepairGps({ distanceM, accuracyM }, extraM = env.REPAIR_
 }
 
 const JOB_INCLUDE = {
+  department: { select: { name: true } },
   issue: { include: { category: true, photos: { where: { kind: "ISSUE_ORIGINAL", replacedAt: null }, orderBy: { createdAt: "desc" }, take: 1 } } },
   submissions: { include: { photos: true }, orderBy: { createdAt: "asc" } },
 };
@@ -45,8 +47,23 @@ async function jobView(db, assignment, now) {
   return contractorJobView(assignment, locations[assignment.issueId], now);
 }
 
-/** My current jobs, nearest effective deadline first. */
-export async function listMyJobs(prisma, { user, now = new Date() }) {
+/** Ended assignments that count as the contractor's completed work: their evidence was approved. */
+const completedWhere = (user) => ({ contractorId: user.id, endedAt: { not: null }, submissions: { some: { status: "APPROVED" } } });
+
+/**
+ * state=active: my current jobs, nearest effective deadline first.
+ * state=completed: jobs whose repair I did and the admin approved, newest first (paged).
+ */
+export async function listMyJobs(prisma, { user, state = "active", page = 1, pageSize = 50, now = new Date() }) {
+  if (state === "completed") {
+    const where = completedWhere(user);
+    const [total, assignments] = await Promise.all([
+      prisma.assignment.count({ where }),
+      prisma.assignment.findMany({ where, include: JOB_INCLUDE, orderBy: { endedAt: "desc" }, skip: (page - 1) * pageSize, take: pageSize }),
+    ]);
+    const locations = await issueLocations(prisma, assignments.map((a) => a.issueId));
+    return { items: assignments.map((a) => contractorJobView(a, locations[a.issueId], now)), page, pageSize, total };
+  }
   const assignments = await prisma.assignment.findMany({ where: { contractorId: user.id, endedAt: null }, include: JOB_INCLUDE });
   const locations = await issueLocations(prisma, assignments.map((a) => a.issueId));
   const items = assignments.map((a) => contractorJobView(a, locations[a.issueId], now));
@@ -54,8 +71,37 @@ export async function listMyJobs(prisma, { user, now = new Date() }) {
   return { items };
 }
 
+/** My current job for this issue, or (read-only) the one I completed most recently; else 404. */
 export async function getMyJob(prisma, { user, issueId, now = new Date() }) {
-  return jobView(prisma, await myAssignment(prisma, user, issueId), now);
+  const current = await prisma.assignment.findFirst({ where: { issueId, contractorId: user.id, endedAt: null }, include: JOB_INCLUDE });
+  if (current) return jobView(prisma, current, now);
+  const done = await prisma.assignment.findFirst({ where: { issueId, ...completedWhere(user) }, include: JOB_INCLUDE, orderBy: { endedAt: "desc" } });
+  if (!done) throw notFound();
+  return jobView(prisma, done, now);
+}
+
+/** Has this contractor completed (approved evidence) a job on this issue? Used for photo access. */
+export async function completedJobOn(db, user, issueId) {
+  return (await db.assignment.count({ where: { issueId, ...completedWhere(user) } })) > 0;
+}
+
+/** The contractor's own details for the profile (changes go through an admin). */
+export async function myProfile(prisma, { user }) {
+  const [me, active, completed] = await Promise.all([
+    prisma.user.findUnique({ where: { id: user.id } }),
+    prisma.assignment.count({ where: { contractorId: user.id, endedAt: null } }),
+    prisma.assignment.count({ where: completedWhere(user) }),
+  ]);
+  return {
+    id: me.id,
+    name: me.name,
+    email: me.email,
+    phone: me.phone,
+    workType: me.workType,
+    licenceNumber: me.licenceNumber,
+    activeJobs: active,
+    completedJobs: completed,
+  };
 }
 
 /**
@@ -131,6 +177,7 @@ export async function submitRepair(prisma, { user, issueId, input, file, storage
           clientRequestId: input.clientRequestId,
           note: input.note ?? null,
           capturedAt: input.capturedAt ?? null,
+          captureSource: input.captureSource ?? null,
           deviceLat: input.deviceLat ?? null,
           deviceLng: input.deviceLng ?? null,
           deviceAccuracyM: input.deviceAccuracyM ?? null,
@@ -160,7 +207,12 @@ export async function submitRepair(prisma, { user, issueId, input, file, storage
         action: AuditAction.SUBMISSION_CREATED,
         targetType: AuditTarget.ISSUE,
         targetId: issueId,
-        metadata: { submissionId, assignmentId: assignment.id, gpsDistanceM: distanceM == null ? null : Math.round(distanceM) },
+        metadata: {
+          submissionId,
+          assignmentId: assignment.id,
+          gpsDistanceM: distanceM == null ? null : Math.round(distanceM),
+          captureSource: input.captureSource ?? null,
+        },
       });
       if (classifyRepairGps({ distanceM, accuracyM: input.deviceAccuracyM }) === "SUSPICIOUS") {
         await addFlag(tx, {

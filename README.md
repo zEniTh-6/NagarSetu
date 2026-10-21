@@ -351,8 +351,7 @@ If the server runs elsewhere, set `VITE_API_PROXY_TARGET` before `npm run dev`, 
 | Account blocked | `/account-blocked` | After a lockout, or when a deactivated account logs in |
 | Contractor invite | `/invite/<token>` | Open the `inviteUrl` returned when an admin creates a contractor |
 
-After login everyone lands on their own area (`/citizen`, `/admin`, `/contractor`). The contractor
-area is a placeholder until its screens are built. Opening another role's URL sends
+After login everyone lands on their own area (`/citizen`, `/admin`, `/contractor`). Opening another role's URL sends
 you back to your own area; the server still enforces access on every API call.
 
 ### Admin screens (Phase 7c)
@@ -384,6 +383,32 @@ What to check by hand:
    then reactivate them from "Suspended accounts".
 7. Audit log: filter by action, who, issue reference and dates. Another department's admin sees none
    of your rows.
+
+### Contractor screens (Phase 7d)
+
+Create a contractor as an admin (Contractors → Invite), open the one-time link and set a password,
+then log in. The contractor app is built for phones (bottom navigation).
+
+| Screen | URL |
+|---|---|
+| My jobs: New / In progress / Submitted / Completed | `/contractor` |
+| Job detail: photo, description, map + "Open in Google Maps", note, Start work | `/contractor/jobs/<id>` |
+| Submit evidence: camera or gallery, overlay, GPS, note, upload with retry | `/contractor/jobs/<id>/evidence` |
+| Evidence status and history | `/contractor/jobs/<id>/submissions` |
+| Alerts | `/contractor/notifications` |
+| Profile, language, password | `/contractor/profile` |
+
+What to check by hand:
+1. As the admin, assign a job with "Instructions for the contractor"; the contractor sees it on the job.
+2. Start work (confirmation), then send evidence from the camera. On a phone the camera opens; on a
+   computer the browser asks for a file.
+3. In DevTools set the network to Offline and press "Send evidence": "Connection lost" appears; go
+   back online and press "Try now". Only one submission is created.
+4. Send evidence from the gallery: the admin's repair review shows "Uploaded from the gallery".
+5. Reject the evidence as the admin: the job shows "Rework requested" with the reason and "Submit new
+   evidence". Approve it: the job moves to Completed.
+6. Log in as a second contractor and open the first one's job URL: "This job isn't available".
+7. Deactivate the contractor as an admin: their next login shows the blocked screen.
 
 ### Citizen screens (Phase 7a and 7b)
 

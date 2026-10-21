@@ -242,6 +242,12 @@ function WorkPanel({ issue }) {
             <dt>{t("admin.review.started")}</dt>
             <dd>{a.startedAt ? <When at={a.startedAt} /> : t("admin.review.notStarted")}</dd>
           </div>
+          {a.note && (
+            <div>
+              <dt>{t("admin.review.contractorNote")}</dt>
+              <dd className="mt-0.5 whitespace-pre-wrap text-body">{a.note}</dd>
+            </div>
+          )}
         </dl>
       ) : (
         <p className="text-caption text-graphite-600">{t("admin.review.notAssigned")}</p>

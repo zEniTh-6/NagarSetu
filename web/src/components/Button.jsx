@@ -21,9 +21,9 @@ const SIZES = {
   sm: "min-h-11 px-4 text-label",
 };
 
-/** Button, or a router Link styled as one when `to` is given. */
+/** Button, a router Link styled as one when `to` is given, or a plain link (e.g. an external map) with `href`. */
 export const Button = forwardRef(function Button(
-  { variant = "primary", size = "md", loading = false, fullWidth, leftIcon: Left, rightIcon: Right, to, className, children, disabled, type = "button", ...rest },
+  { variant = "primary", size = "md", loading = false, fullWidth, leftIcon: Left, rightIcon: Right, to, href, className, children, disabled, type = "button", ...rest },
   ref,
 ) {
   const classes = cx(
@@ -46,6 +46,13 @@ export const Button = forwardRef(function Button(
     </>
   );
 
+  if (href) {
+    return (
+      <a ref={ref} href={href} className={classes} {...rest}>
+        {content}
+      </a>
+    );
+  }
   if (to) {
     return (
       <Link ref={ref} to={to} className={classes} {...rest}>

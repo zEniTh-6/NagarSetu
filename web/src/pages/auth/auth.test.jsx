@@ -24,8 +24,8 @@ describe("login and role redirect", () => {
     const { router } = renderApp("/login");
     await login();
     await waitFor(() => expect(router.state.location.pathname).toBe(path));
-    // Citizens land on the public feed, admins on their dashboard, contractors on their (placeholder) home.
-    const home = { CITIZEN: "Community feed", ADMIN: "Dashboard", CONTRACTOR: `Welcome, ${user.name}` }[user.role];
+    // Citizens land on the public feed, admins on their dashboard, contractors on their jobs.
+    const home = { CITIZEN: "Community feed", ADMIN: "Dashboard", CONTRACTOR: "My jobs" }[user.role];
     expect(await screen.findByRole("heading", { level: 1, name: home })).toBeInTheDocument();
   });
 

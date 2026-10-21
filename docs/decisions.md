@@ -433,3 +433,34 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 - **Not copied from Stitch:** voice-to-text, SMS/WhatsApp invites, "cryptographic"/official-portal
   wording, export/CSV, bulk actions, GIS layers, "SLA" countdowns.
 - **Contractor screens** are still a placeholder (next phase).
+
+### D-027 — Contractor app, Phase 7d (2026-10-21)
+
+- **Decisions (project owner):**
+  - **A. Department note:** the admin can add optional "Instructions for the contractor" (up to
+    1000 characters) when assigning or reassigning. Stored on the assignment (`assignments.note`),
+    recorded in the `ASSIGNMENT_CREATED` audit metadata, shown to the contractor as written.
+  - **B. Original-photo overlay:** `capture="environment"` opens the phone's own camera app, so a web
+    page can't draw on its viewfinder. The citizen's photo is shown as a reference before capture and
+    can be laid faintly over the captured photo (strength slider) to check the framing and retake.
+  - **C. Completed tab:** only jobs whose evidence the admin approved. A job given to someone else
+    simply leaves the contractor's list (they get an alert); they lose access to it and its photos.
+  - **D. Profile:** `GET /api/contractor/me` (name, phone, email, work type, licence, job counts),
+    read-only; an admin changes details.
+  - **Gallery uploads:** allowed, but each submission records `captureSource` (CAMERA / GALLERY, as
+    the app reports it; null for older submissions). The admin's repair review shows "Uploaded from the
+    gallery" with a note that the capture time is not proof of freshness. A signal only: never a flag,
+    never an automatic rejection.
+- **Server:** `GET /api/contractor/issues?state=completed`; read-only access to a completed job and
+  its photos; the job view gained the assigning department, area name, note and `stage`
+  (NEW / IN_PROGRESS / REWORK / SUBMITTED / COMPLETED, worked out on the server so tabs and labels
+  agree). Start and submit still need an active assignment. There is still no way for a contractor to
+  set RESOLVED.
+- **Web:** bottom navigation (My jobs, Alerts, Profile); tabs New / In progress (incl. rework) /
+  Submitted / Completed; deadline countdown (overdue in red, paused while evidence is reviewed); job
+  detail with "Open in Google Maps" and a confirmed "Start work"; evidence upload resized in the
+  browser with capture time, GPS + accuracy, progress bar and the shared retry rule (same request ID;
+  2, 4, 8, 15, 30 s); evidence status with the admin's reason and full history. Alerts use contractor
+  wording and open the job.
+- **Not copied from Stitch:** SMS, daily progress photos, SLA record, quality checklists, call
+  buttons, "GPS verified / geofenced" claims, official-portal wording.

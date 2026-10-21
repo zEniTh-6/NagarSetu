@@ -8,7 +8,6 @@ import ResetPasswordPage from "./pages/auth/ResetPasswordPage.jsx";
 import ChangePasswordPage from "./pages/auth/ChangePasswordPage.jsx";
 import AccountBlockedPage from "./pages/auth/AccountBlockedPage.jsx";
 import InvitePage from "./pages/auth/InvitePage.jsx";
-import RoleHome from "./pages/home/RoleHome.jsx";
 import { CitizenLayout } from "./components/citizen/CitizenLayout.jsx";
 import HomePage from "./pages/citizen/HomePage.jsx";
 import MapPage from "./pages/citizen/MapPage.jsx";
@@ -31,6 +30,12 @@ import DisputesPage from "./pages/admin/DisputesPage.jsx";
 import ContractorsPage from "./pages/admin/ContractorsPage.jsx";
 import CommentsPage from "./pages/admin/CommentsPage.jsx";
 import AuditLogPage from "./pages/admin/AuditLogPage.jsx";
+import { ContractorLayout } from "./components/contractor/ContractorLayout.jsx";
+import JobsPage from "./pages/contractor/JobsPage.jsx";
+import JobDetailPage from "./pages/contractor/JobDetailPage.jsx";
+import EvidencePage from "./pages/contractor/EvidencePage.jsx";
+import SubmissionsPage from "./pages/contractor/SubmissionsPage.jsx";
+import ContractorProfilePage from "./pages/contractor/ProfilePage.jsx";
 
 // Paths used by the server in emails/links: /reset-password?token=… and /invite/:token.
 export const routes = [
@@ -95,7 +100,25 @@ export const routes = [
       },
     ],
   },
-  { element: <RequireRole roles={["CONTRACTOR"]} />, children: [{ path: "/contractor/*", element: <RoleHome /> }] },
+  {
+    element: <RequireRole roles={["CONTRACTOR"]} />,
+    children: [
+      {
+        path: "/contractor",
+        element: <ContractorLayout />,
+        children: [
+          { index: true, element: <JobsPage /> },
+          { path: "jobs/:id", element: <JobDetailPage /> },
+          { path: "jobs/:id/submissions", element: <SubmissionsPage /> },
+          { path: "notifications", element: <NotificationsPage /> },
+          { path: "profile", element: <ContractorProfilePage /> },
+          { path: "*", element: <NotFoundPage /> },
+        ],
+      },
+      // Full-screen flow (no bottom navigation), like the citizen report flow.
+      { path: "/contractor/jobs/:id/evidence", element: <EvidencePage /> },
+    ],
+  },
   { path: "*", element: <NotFoundPage /> },
 ];
 
