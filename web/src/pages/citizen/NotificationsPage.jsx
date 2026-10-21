@@ -15,6 +15,15 @@ import { formatDate, formatRelative, shortRef } from "../../lib/format.js";
 import { useMe } from "../../auth/session.js";
 import { cx } from "../../lib/cx.js";
 
+// Citizen notifications that carry a decision reason open the issue at the block that shows it.
+const ANCHOR = {
+  DISPUTE_DISMISSED: "feedback-response",
+  REOPENED: "decision",
+  REJECTED: "decision",
+  LINKED_DUPLICATE: "decision",
+  REROUTED: "decision",
+};
+
 /** Text for a notification: the server stores a type + params; we write the sentence in the user's language. */
 export function useNotificationText() {
   const { t, i18n } = useTranslation();
@@ -50,7 +59,8 @@ export default function NotificationsPage() {
     if (!n.readAt) {
       notificationsApi.read(n.id).then(() => qc.invalidateQueries({ queryKey: qk.notifications })).catch(() => {});
     }
-    if (n.issueId) navigate(user?.role === "CONTRACTOR" ? `/contractor/jobs/${n.issueId}` : `/citizen/issues/${n.issueId}`);
+    if (!n.issueId) return;
+    navigate(user?.role === "CONTRACTOR" ? `/contractor/jobs/${n.issueId}` : `/citizen/issues/${n.issueId}${ANCHOR[n.type] ? `#${ANCHOR[n.type]}` : ""}`);
   };
   const readAll = async () => {
     await notificationsApi.readAll().catch(() => {});

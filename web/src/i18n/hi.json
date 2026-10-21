@@ -198,7 +198,9 @@
       "REROUTED": "दूसरी श्रेणी में भेजी गई",
       "WITHDRAWN": "वापस ली गई",
       "REOPENED": "विभाग ने दोबारा खोली",
-      "reroutedDetail": "{{from}} से {{to}} में"
+      "reroutedDetail": "{{from}} से {{to}} में",
+      "DISPUTE_KEPT_RESOLVED": "आपत्ति की समीक्षा — हल ही रखी गई",
+      "REOPENED_AFTER_DISPUTE": "आपत्ति की समीक्षा — दोबारा खोली गई"
     }
   },
   "photo": {
@@ -1255,5 +1257,23 @@
       "completedJobs": "पूरे हुए काम",
       "changeHint": "ये जानकारी बदलने के लिए किसी विभाग एडमिन से कहें।"
     }
+  },
+  "response": {
+    "title": "आपके जवाब पर विभाग का उत्तर",
+    "youSaid": "आपने कहा: ठीक नहीं हुआ",
+    "reviewed": "विभाग ने समीक्षा कर ली",
+    "waiting": "विभाग की समीक्षा का इंतज़ार है",
+    "outcome": {
+      "KEPT_RESOLVED": "हल ही रखी गई",
+      "REOPENED": "काम के लिए दोबारा खोली गई"
+    },
+    "by": "{{department}} · {{date}}",
+    "department": "विभाग",
+    "keptNote": "विभाग ने जाँच कर तय किया कि मरम्मत पूरी हो गई है।",
+    "reopenedNote": "काम फिर से किया जाएगा। हल होने पर आप फिर से जवाब दे सकेंगे।"
+  },
+  "decision": {
+    "reopenedTitle": "विभाग ने दोबारा खोली",
+    "reroutedTitle": "दूसरी श्रेणी में भेजी गई"
   }
 }

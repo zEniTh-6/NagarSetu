@@ -176,3 +176,71 @@ describe("admin decides on disputes (reason logged and shown to the citizen)", (
     expect((await issueRow()).status).toBe("RESOLVED");
   });
 });
+
+describe("the department's decision on a 'not fixed' answer is shown on the issue page", () => {
+  const viewOf = async (a) => (await a.get(`/api/issues/${issueId}`)).body.issue;
+  const deptName = async () => (await prisma.department.findUnique({ where: { code: "CONSTRUCTION" } })).name;
+
+  it("kept resolved: the citizen sees their answer, the decision, the reason as written, the department and the date", async () => {
+    await resolve();
+    await feedback(agent, { verdict: "FIXED" });
+    await feedback(fan.agent, { verdict: "NOT_FIXED", reason: "Puddle still there" });
+
+    // Before the decision: their answer, waiting for review, no more buttons.
+    let fanView = await viewOf(fan.agent);
+    expect(fanView.myFeedback).toMatchObject({ verdict: "NOT_FIXED", reason: "Puddle still there", decision: null });
+    expect(fanView.feedback.canRespond).toBe(false);
+
+    const reason = "Inspected: surface is level — puddle is from a blocked drain";
+    await roads.agent.post(`/api/admin/issues/${issueId}/dispute/dismiss`).send({ reason });
+    fanView = await viewOf(fan.agent);
+    expect(fanView.status).toBe("RESOLVED");
+    expect(fanView.myFeedback.decision).toEqual({ outcome: "KEPT_RESOLVED", reason, department: await deptName(), at: expect.any(String) });
+    expect(fanView.feedback.canRespond).toBe(false);
+    expect(fanView.timeline.at(-1)).toEqual({ type: "DISPUTE_KEPT_RESOLVED", at: expect.any(String), reason });
+    expect(JSON.stringify(fanView)).not.toContain(roads.admin.id); // never the admin's identity
+
+    // The reporter said "fixed": no dispute block of their own, but the timeline shows the decision.
+    const reporterView = await viewOf(agent);
+    expect(reporterView.myFeedback).toBeUndefined();
+    expect(reporterView.timeline.at(-1)).toMatchObject({ type: "DISPUTE_KEPT_RESOLVED", reason });
+
+    // Anyone else (public view): dates only, and no dispute entry at all.
+    const other = await anotherCitizen(prisma, app);
+    const publicView = await viewOf(other.agent);
+    expect(publicView.visibility).toBe("PUBLIC");
+    expect(publicView.myFeedback).toBeUndefined();
+    expect(publicView.timeline.map((e) => e.type)).not.toContain("DISPUTE_KEPT_RESOLVED");
+    expect(JSON.stringify(publicView)).not.toContain("blocked drain");
+  });
+
+  it("reopened after a dispute: shown as the decision while the work is redone, then left to the timeline", async () => {
+    await resolve();
+    await feedback(fan.agent, { verdict: "NOT_FIXED", reason: "Cracked again" });
+    const reason = "Re-inspection failed: crack across the patch";
+    await roads.agent.post(`/api/admin/issues/${issueId}/reopen`).send({ reason });
+
+    const fanView = await viewOf(fan.agent);
+    expect(fanView.status).toBe("ACKNOWLEDGED");
+    expect(fanView.myFeedback).toMatchObject({ verdict: "NOT_FIXED", reason: "Cracked again", decision: { outcome: "REOPENED", reason, department: await deptName() } });
+    expect(fanView.timeline.at(-1)).toMatchObject({ type: "REOPENED", reason, afterDispute: true });
+    // The reporter gave no answer: the reopen reason is still on their page (timeline).
+    const reporterView = await viewOf(agent);
+    expect(reporterView.myFeedback).toBeUndefined();
+    expect(reporterView.timeline.at(-1)).toMatchObject({ type: "REOPENED", reason, afterDispute: true });
+
+    // Resolved again: a new round, the old decision stays in the timeline only.
+    await assign(roads, issueId, worker.contractor.id, inDays(3));
+    await resolve();
+    const again = await viewOf(fan.agent);
+    expect(again.myFeedback).toBeUndefined();
+    expect(again.feedback.canRespond).toBe(true);
+    expect(again.timeline.map((e) => e.type)).toContain("REOPENED");
+  });
+
+  it("a reopen without a dispute is a plain reopen", async () => {
+    await resolve();
+    await roads.agent.post(`/api/admin/issues/${issueId}/reopen`).send({ reason: "Patch is uneven" });
+    expect((await viewOf(agent)).timeline.at(-1)).toMatchObject({ type: "REOPENED", reason: "Patch is uneven", afterDispute: false });
+  });
+});

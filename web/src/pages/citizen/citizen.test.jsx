@@ -258,3 +258,153 @@ describe("profile", () => {
     expect(screen.queryByText(/SMS|WhatsApp/)).not.toBeInTheDocument();
   });
 });
+
+describe("department decisions on the issue page", () => {
+  const resolvedRound = { resolvedAt: "2026-10-22T10:00:00Z", photo: { id: "p2", url: "/api/photos/p2" } };
+  const kept = {
+    outcome: "KEPT_RESOLVED",
+    reason: "Inspected: surface is level, puddle is from a blocked drain",
+    department: "Public Works",
+    at: "2026-10-24T09:00:00Z",
+  };
+  const notifs = (items) => () => json(200, { items, unread: 0, total: items.length, page: 1, pageSize: 50 });
+
+  it("kept resolved: the notification opens the response block with the decision, reason, department and date; no answer buttons", async () => {
+    mockApi(
+      base({
+        "GET /api/notifications": notifs([{ id: "n2", type: "DISPUTE_DISMISSED", issueId: ID, params: { reason: kept.reason }, readAt: "2026-10-24T10:00:00Z", createdAt: "2026-10-24T09:00:00Z" }]),
+        [`GET /api/issues/${ID}`]: () =>
+          json(200, {
+            issue: issue({
+              status: "RESOLVED",
+              relation: "SUPPORTER",
+              resolution: resolvedRound,
+              feedback: { canRespond: false, windowEndsAt: "2026-11-05T10:00:00Z", myResponse: { verdict: "NOT_FIXED", reason: "Puddle still there" } },
+              myFeedback: { verdict: "NOT_FIXED", reason: "Puddle still there", at: "2026-10-23T08:00:00Z", decision: kept },
+              timeline: [
+                { type: "REPORTED", at: "2026-10-18T08:00:00Z" },
+                { type: "RESOLVED", at: "2026-10-22T10:00:00Z" },
+                { type: "DISPUTE_KEPT_RESOLVED", at: kept.at, reason: kept.reason },
+              ],
+            }),
+          }),
+      }),
+    );
+    const { router } = renderApp("/citizen/notifications");
+    await userEvent.click(await screen.findByRole("button", { name: /reviewed your "not fixed" answer/ }));
+    await waitFor(() => expect(router.state.location.hash).toBe("#feedback-response"));
+
+    const block = await screen.findByRole("region", { name: "Department's response to your feedback" });
+    await waitFor(() => expect(document.activeElement).toBe(block)); // opened at this block
+    expect(within(block).getByText("You said: Not fixed")).toBeInTheDocument();
+    expect(within(block).getByText(/reviewed by the department/)).toBeInTheDocument();
+    expect(within(block).getByText("Kept as resolved")).toBeInTheDocument();
+    expect(within(block).getByText(kept.reason)).toBeInTheDocument(); // as written
+    expect(within(block).getByText(/^Public Works · /)).toBeInTheDocument();
+    expect(screen.getByText("Dispute reviewed — kept resolved")).toBeInTheDocument(); // timeline
+    expect(screen.queryByRole("button", { name: "Yes, fixed" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Not fixed" })).not.toBeInTheDocument();
+  });
+
+  it("before the decision: 'You said: Not fixed', waiting for review, no answer buttons", async () => {
+    mockApi(
+      base({
+        [`GET /api/issues/${ID}`]: () =>
+          json(200, {
+            issue: issue({
+              status: "RESOLVED",
+              resolution: resolvedRound,
+              feedback: { canRespond: false, windowEndsAt: "2026-11-05T10:00:00Z", myResponse: { verdict: "NOT_FIXED", reason: "Puddle still there" } },
+              myFeedback: { verdict: "NOT_FIXED", reason: "Puddle still there", at: "2026-10-23T08:00:00Z", decision: null },
+            }),
+          }),
+      }),
+    );
+    renderApp(`/citizen/issues/${ID}`);
+    expect(await screen.findByText(/waiting for the department to review it/)).toBeInTheDocument();
+    expect(screen.queryByText("Department's response to your feedback")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Yes, fixed" })).not.toBeInTheDocument();
+  });
+
+  it("reopened after the citizen's dispute: the response block says reopened, the timeline says 'Dispute reviewed — reopened'", async () => {
+    const reason = "Re-inspection failed: crack across the patch";
+    mockApi(
+      base({
+        [`GET /api/issues/${ID}`]: () =>
+          json(200, {
+            issue: issue({
+              status: "ACKNOWLEDGED",
+              statusReason: reason,
+              myFeedback: { verdict: "NOT_FIXED", reason: "Cracked again", at: "2026-10-23T08:00:00Z", decision: { outcome: "REOPENED", reason, department: "Public Works", at: "2026-10-24T09:00:00Z" } },
+              timeline: [
+                { type: "REPORTED", at: "2026-10-18T08:00:00Z" },
+                { type: "RESOLVED", at: "2026-10-22T10:00:00Z" },
+                { type: "REOPENED", at: "2026-10-24T09:00:00Z", reason, afterDispute: true },
+              ],
+            }),
+          }),
+      }),
+    );
+    renderApp(`/citizen/issues/${ID}#decision`); // the REOPENED notification's link
+    const block = await screen.findByRole("region", { name: "Department's response to your feedback" });
+    await waitFor(() => expect(document.activeElement).toBe(block)); // falls back to the response block
+    expect(within(block).getByText("Reopened for more work")).toBeInTheDocument();
+    expect(within(block).getByText(reason)).toBeInTheDocument();
+    expect(screen.getByText("Dispute reviewed — reopened")).toBeInTheDocument();
+    expect(screen.queryByText("Reopened by the department")).not.toBeInTheDocument(); // not shown twice
+  });
+
+  it("reopened (no dispute of theirs) and rerouted: a notice with the reason, opened from the notification", async () => {
+    mockApi(
+      base({
+        [`GET /api/issues/${ID}`]: () =>
+          json(200, {
+            issue: issue({
+              status: "ACKNOWLEDGED",
+              timeline: [
+                { type: "REPORTED", at: "2026-10-18T08:00:00Z" },
+                { type: "REROUTED", at: "2026-10-18T09:00:00Z", fromCategory: "ROADS", toCategory: "GARBAGE", reason: "It is a dumping spot" },
+                { type: "RESOLVED", at: "2026-10-22T10:00:00Z" },
+                { type: "REOPENED", at: "2026-10-24T09:00:00Z", reason: "Patch is uneven", afterDispute: false },
+              ],
+            }),
+          }),
+      }),
+    );
+    renderApp(`/citizen/issues/${ID}#decision`);
+    const notice = await screen.findByText("Reopened by the department", { selector: "#decision *" });
+    const block = document.getElementById("decision");
+    expect(block).toContainElement(notice);
+    await waitFor(() => expect(document.activeElement).toBe(block));
+    expect(within(block).getByText(/Patch is uneven/)).toBeInTheDocument();
+  });
+
+  it("rerouted while open: the notice shows both categories and the reason", async () => {
+    mockApi(
+      base({
+        [`GET /api/issues/${ID}`]: () =>
+          json(200, {
+            issue: issue({
+              timeline: [
+                { type: "REPORTED", at: "2026-10-18T08:00:00Z" },
+                { type: "REROUTED", at: "2026-10-18T09:00:00Z", fromCategory: "ROADS", toCategory: "GARBAGE", reason: "It is a dumping spot" },
+              ],
+            }),
+          }),
+      }),
+    );
+    renderApp(`/citizen/issues/${ID}`);
+    await screen.findByText("Moved to another category", { selector: "#decision *" });
+    const block = document.getElementById("decision");
+    expect(within(block).getByText(/It is a dumping spot/)).toBeInTheDocument();
+  });
+
+  it("rejected and linked: the reason is in the decision block the notification opens", async () => {
+    mockApi(base({ [`GET /api/issues/${ID}`]: () => json(200, { issue: issue({ status: "DUPLICATE", duplicateOfId: ID2, statusReason: "Same pothole as the earlier report" }) }) }));
+    renderApp(`/citizen/issues/${ID}#decision`);
+    expect(await screen.findByText("Linked to an existing report", { selector: "#decision *" })).toBeInTheDocument();
+    const block = document.getElementById("decision");
+    await waitFor(() => expect(document.activeElement).toBe(block));
+    expect(within(block).getByText(/Same pothole as the earlier report/)).toBeInTheDocument();
+  });
+});
