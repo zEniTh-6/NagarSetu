@@ -1,5 +1,5 @@
-import { lazy, Suspense, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, CalendarClock, CircleCheck, CircleX, EyeOff, Link2, MapPin, ShieldCheck, ThumbsDown, ThumbsUp, Undo2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -18,6 +18,7 @@ import { IssueTimeline } from "../../components/citizen/IssueTimeline.jsx";
 import { CategorySuggestion, ValidationNotice } from "../../components/citizen/ValidationNotice.jsx";
 import { useIssue } from "../../components/citizen/useIssue.js";
 import { CommentsSection } from "../../components/citizen/CommentsSection.jsx";
+import { DECISION_ID, FeedbackResponse, LatestDecision, ReasonQuote, RESPONSE_ID } from "../../components/citizen/DecisionNotices.jsx";
 import { SupportButton, UpvoteButton } from "../../components/citizen/CommunityActions.jsx";
 import { issuesApi, qk } from "../../api/citizen.js";
 import { ApiError } from "../../api/client.js";
@@ -28,17 +29,20 @@ const PinMap = lazy(() => import("../../components/citizen/PinMap.jsx"));
 
 /** Rejected / forwarded / linked duplicate / withdrawn: the citizen is always told why. */
 function ClosedNotice({ issue }) {
+  // Notifications about these decisions open the page at this block (withdrawing is the citizen's own).
+  if (!["REJECTED", "DUPLICATE", "WITHDRAWN"].includes(issue.status)) return null;
+  const notice = <ClosedAlert issue={issue} />;
+  return issue.status === "WITHDRAWN" ? notice : <div id={DECISION_ID} tabIndex={-1} className="scroll-mt-20 outline-none">{notice}</div>;
+}
+
+function ClosedAlert({ issue }) {
   const { t } = useTranslation();
   if (issue.status === "REJECTED") {
     const forwarded = issue.rejectionType === "NOT_OUR_JURISDICTION";
     return (
       <Alert tone={forwarded ? "info" : "error"} title={t(forwarded ? "closed.forwardedTitle" : "closed.rejectedTitle")}>
         <p>{t(forwarded ? "closed.forwardedBody" : "closed.rejectedBody")}</p>
-        {issue.statusReason && (
-          <blockquote className="mt-2 border-s-2 border-current/30 ps-3 text-charcoal-900">
-            <span className="font-semibold">{t("closed.reason")}:</span> {issue.statusReason}
-          </blockquote>
-        )}
+        <ReasonQuote reason={issue.statusReason} />
       </Alert>
     );
   }
@@ -56,7 +60,7 @@ function ClosedNotice({ issue }) {
         }
       >
         <p>{t("closed.duplicateBody")}</p>
-        {issue.statusReason && <p className="mt-1">{issue.statusReason}</p>}
+        <ReasonQuote reason={issue.statusReason} />
       </Alert>
     );
   }
@@ -103,7 +107,9 @@ function Resolution({ issue }) {
         before={issue.photo && { src: issue.photo.url, alt: t("resolution.beforeAlt"), time: formatDateTime(issue.createdAt, lang) }}
         after={issue.resolution?.photo && { src: issue.resolution.photo.url, alt: t("resolution.afterAlt"), time: formatDateTime(issue.resolution.resolvedAt, lang) }}
       />
-      {fb?.myResponse ? (
+      {fb?.myResponse?.verdict === "NOT_FIXED" && issue.myFeedback ? (
+        <FeedbackResponse issue={issue} />
+      ) : fb?.myResponse ? (
         <Alert tone={fb.myResponse.verdict === "FIXED" ? "success" : "warning"} title={t(`feedback.my.${fb.myResponse.verdict}`)}>
           {fb.myResponse.reason && <p>{fb.myResponse.reason}</p>}
           {fb.myResponse.verdict === "NOT_FIXED" && <p className="mt-1">{t("feedback.disputedNote")}</p>}
@@ -237,6 +243,21 @@ export default function IssueDetailPage() {
   const categoryName = useCategoryName();
   const { data: issue, isPending, error, refetch } = useIssue(id);
   const lang = i18n.resolvedLanguage;
+  const { hash } = useLocation();
+  const loaded = Boolean(issue);
+
+  // From a notification: open at the block that explains the decision (#decision / #feedback-response).
+  // A reopen that answered the citizen's own "not fixed" lives in the response block, so either id
+  // falls back to the other.
+  useEffect(() => {
+    if (!loaded || !hash) return;
+    const ids = [hash.slice(1), ...[DECISION_ID, RESPONSE_ID].filter((x) => x !== hash.slice(1))];
+    if (![DECISION_ID, RESPONSE_ID].includes(ids[0])) return;
+    const el = ids.map((x) => document.getElementById(x)).find(Boolean);
+    if (!el) return;
+    el.scrollIntoView?.({ behavior: "smooth", block: "start" });
+    el.focus({ preventScroll: true });
+  }, [loaded, hash, id]);
 
   const back = (
     <button type="button" onClick={() => navigate(-1)} className="tap -ms-2 mb-3 inline-flex items-center gap-2 rounded-control px-2 text-label text-forest-900">
@@ -299,11 +320,16 @@ export default function IssueDetailPage() {
         {issue.relation === "REPORTER" && <ValidationNotice issue={issue} />}
         {issue.relation === "REPORTER" && <CategorySuggestion issue={issue} />}
         <ClosedNotice issue={issue} />
+        <LatestDecision issue={issue} />
 
         {resolved ? (
           <Resolution issue={issue} />
         ) : (
-          issue.photo && <img src={issue.photo.url} alt={t("issue.photoAlt")} className="aspect-[4/3] w-full rounded-card border border-stone-300 object-cover" />
+          <>
+            {issue.photo && <img src={issue.photo.url} alt={t("issue.photoAlt")} className="aspect-[4/3] w-full rounded-card border border-stone-300 object-cover" />}
+            {/* Reopened after this citizen's "not fixed": their answer and the department's response. */}
+            <FeedbackResponse issue={issue} />
+          </>
         )}
 
         <Card>

@@ -10,7 +10,7 @@ import { assertInServiceArea, classifyGps } from "./location.js";
 import { citizenIssueView, adminIssueView, resolutionView } from "./issues.views.js";
 import { validCandidateIds, duplicateReason } from "./duplicates.service.js";
 import { adminReviewExtras } from "../admin/adminIssues.service.js";
-import { isFollower, citizenFeedbackState } from "../feedback/feedback.service.js";
+import { isFollower, citizenFeedbackState, citizenMyFeedback } from "../feedback/feedback.service.js";
 import { queueAreaLookup } from "../feed/areaName.service.js";
 import { completedJobOn } from "../work/contractorWork.service.js";
 import { publicIssueDetails, followerCommunity } from "../feed/feed.service.js";
@@ -285,6 +285,7 @@ const TIMELINE_ACTIONS = [
   AuditAction.ISSUE_REROUTED,
   AuditAction.ASSIGNMENT_CREATED,
   AuditAction.ISSUE_REOPENED,
+  AuditAction.DISPUTE_DISMISSED,
 ];
 
 /** One audit row → one citizen timeline entry (or null). Only reasons written for the citizen are passed on. */
@@ -305,7 +306,9 @@ function timelineEntry(row) {
     case AuditAction.ASSIGNMENT_CREATED:
       return { type: "ASSIGNED", at };
     case AuditAction.ISSUE_REOPENED:
-      return { type: "REOPENED", at, reason: row.reason ?? null };
+      return { type: "REOPENED", at, reason: row.reason ?? null, afterDispute: m.disputed === true };
+    case AuditAction.DISPUTE_DISMISSED:
+      return { type: "DISPUTE_KEPT_RESOLVED", at, reason: row.reason ?? null };
     default:
       return null;
   }
@@ -356,6 +359,7 @@ export async function getIssue(prisma, { user, issueId }) {
     visibility: "FOLLOWER",
     ...resolutionView(issue, await approvedRepairPhoto(prisma, issue.id)),
     ...(await citizenFeedbackState(prisma, user, issue)),
+    ...(await citizenMyFeedback(prisma, user, issue)),
     ...(await followerCommunity(prisma, { user, issue })),
     timeline: await citizenTimeline(prisma, issue.id),
     // Only the reporter may withdraw; supporters follow the outcome.

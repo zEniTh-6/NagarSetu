@@ -464,3 +464,21 @@ write the choice, the reason and the date, and move it under "Decisions taken".
   wording and open the job.
 - **Not copied from Stitch:** SMS, daily progress photos, SLA record, quality checklists, call
   buttons, "GPS verified / geofenced" claims, official-portal wording.
+
+## D-028 — Decision reasons are shown on the citizen's issue page (bug fix)
+
+- **Bug:** after "Not fixed", the admin's "keep resolved" reason reached the citizen only as a
+  notification; `GET /api/issues/:id` and the issue page did not show it.
+- **Server:** the reporter's / supporter's view has `myFeedback` (their own "not fixed" answer and
+  the decision on it: `KEPT_RESOLVED` or `REOPENED`, the admin's reason as written, the department's
+  name, the date). It is shown while the issue is in that round (still RESOLVED with the same
+  resolution, or reopened and not yet resolved again); after a new resolution it stays in the
+  timeline only. The timeline gained `DISPUTE_KEPT_RESOLVED` (with reason), and `REOPENED` carries
+  `afterDispute`. New reopen/dismiss audit rows record `disputed` / `resolvedAt` in their metadata;
+  older reopens show as plain reopens. The public view is unchanged (dates only, no dispute entries).
+- **Web:** a "Department's response to your feedback" block under the before/after photos, with
+  "You said: Not fixed — reviewed by the department / waiting for review"; the Fixed / Not fixed
+  buttons stay hidden once the citizen has answered. An open issue shows its latest reopen or reroute
+  reason in a notice. Notifications open the issue at the block that explains the decision
+  (`#feedback-response` for a reviewed dispute, `#decision` for rejected, forwarded, linked, rerouted
+  and reopened).

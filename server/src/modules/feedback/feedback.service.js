@@ -43,6 +43,35 @@ export async function citizenFeedbackState(db, user, issue, now = new Date()) {
   };
 }
 
+const DISPUTE_DECISIONS = [AuditAction.DISPUTE_DISMISSED, AuditAction.ISSUE_REOPENED];
+
+/**
+ * The citizen's own "not fixed" answer and what the department decided about it: kept resolved or
+ * reopened, the admin's reason as written, the department's name and the date. Shown while the
+ * issue is still in that round (RESOLVED with the same resolution, or reopened and not yet resolved
+ * again); after a new resolution the old decision stays in the timeline.
+ */
+export async function citizenMyFeedback(db, user, issue) {
+  const mine = await db.issueFeedback.findFirst({ where: { issueId: issue.id, userId: user.id }, orderBy: { createdAt: "desc" } });
+  if (!mine || mine.verdict !== "NOT_FIXED") return {};
+  if (issue.resolvedAt && issue.resolvedAt.getTime() !== mine.roundResolvedAt.getTime()) return {};
+  // The first decision after the answer is the one that decided it (a round ends only on reopen).
+  const row = await db.auditLog.findFirst({
+    where: { targetType: AuditTarget.ISSUE, targetId: issue.id, action: { in: DISPUTE_DECISIONS }, createdAt: { gte: mine.createdAt } },
+    include: { actor: { select: { department: { select: { name: true } } } } },
+    orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+  });
+  const decision = row
+    ? {
+        outcome: row.action === AuditAction.DISPUTE_DISMISSED ? "KEPT_RESOLVED" : "REOPENED",
+        reason: row.reason ?? null,
+        department: row.actor?.department?.name ?? null,
+        at: row.createdAt,
+      }
+    : null;
+  return { myFeedback: { verdict: mine.verdict, reason: mine.reason, at: mine.createdAt, decision } };
+}
+
 /** "Yes, fixed" / "Not fixed". One answer per person per resolution. */
 export async function giveFeedback(prisma, { user, issueId, input, file, storage, now = new Date() }) {
   const issue = await prisma.issue.findUnique({ where: { id: issueId } });
@@ -123,14 +152,15 @@ export async function reopenIssue(prisma, { user, issueId, reason, now = new Dat
       data: { status: "ACKNOWLEDGED", resolvedAt: null, statusReason: reason },
     });
     if (count !== 1) throw new AppError(409, "ALREADY_HANDLED", "Someone else already changed this issue");
-    await clearFlags(tx, { issueId, type: "DISPUTED", clearReason: `Reopened: ${reason}`, actor: actorOf(user), now });
+    const disputes = await clearFlags(tx, { issueId, type: "DISPUTED", clearReason: `Reopened: ${reason}`, actor: actorOf(user), now });
     await writeAudit(tx, {
       actor: actorOf(user),
       action: AuditAction.ISSUE_REOPENED,
       targetType: AuditTarget.ISSUE,
       targetId: issueId,
       reason,
-      metadata: { from: "RESOLVED", to: "ACKNOWLEDGED", resolvedAt: issue.resolvedAt?.toISOString() ?? null },
+      // disputed: this reopen also decided a "not fixed" answer (shown as "Dispute reviewed — reopened").
+      metadata: { from: "RESOLVED", to: "ACKNOWLEDGED", resolvedAt: issue.resolvedAt?.toISOString() ?? null, disputed: disputes > 0 },
     });
     await notifyIssueFollowers(tx, { issueId, type: "REOPENED", params: { reason } });
   });
@@ -151,6 +181,7 @@ export async function dismissDispute(prisma, { user, issueId, reason, now = new 
       targetType: AuditTarget.ISSUE,
       targetId: issueId,
       reason,
+      metadata: { resolvedAt: issue.resolvedAt?.toISOString() ?? null },
     });
     const notFixed = await tx.issueFeedback.findMany({
       where: { issueId, roundResolvedAt: issue.resolvedAt, verdict: "NOT_FIXED" },

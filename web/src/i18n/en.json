@@ -198,7 +198,9 @@
       "REROUTED": "Moved to another category",
       "WITHDRAWN": "Withdrawn",
       "REOPENED": "Reopened by the department",
-      "reroutedDetail": "From {{from}} to {{to}}"
+      "reroutedDetail": "From {{from}} to {{to}}",
+      "DISPUTE_KEPT_RESOLVED": "Dispute reviewed — kept resolved",
+      "REOPENED_AFTER_DISPUTE": "Dispute reviewed — reopened"
     }
   },
   "photo": {
@@ -1255,5 +1257,23 @@
       "completedJobs": "Completed jobs",
       "changeHint": "To change these details, ask a department admin."
     }
+  },
+  "response": {
+    "title": "Department's response to your feedback",
+    "youSaid": "You said: Not fixed",
+    "reviewed": "reviewed by the department",
+    "waiting": "waiting for the department to review it",
+    "outcome": {
+      "KEPT_RESOLVED": "Kept as resolved",
+      "REOPENED": "Reopened for more work"
+    },
+    "by": "{{department}} · {{date}}",
+    "department": "The department",
+    "keptNote": "The department checked and decided the repair is done.",
+    "reopenedNote": "The work will be done again. You can answer again once it is resolved."
+  },
+  "decision": {
+    "reopenedTitle": "Reopened by the department",
+    "reroutedTitle": "Moved to another category"
   }
 }

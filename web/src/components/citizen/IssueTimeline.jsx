@@ -13,7 +13,9 @@ const ACTIVE = ["REPORTED", "ACKNOWLEDGED", "IN_PROGRESS"];
 export function buildSteps(issue, t, lang, categoryName) {
   const events = issue.timeline ?? [];
   const steps = events.map((e, i) => {
-    const key = e.type === "REJECTED" && e.rejectionType === "NOT_OUR_JURISDICTION" ? "FORWARDED" : e.type;
+    let key = e.type;
+    if (e.type === "REJECTED" && e.rejectionType === "NOT_OUR_JURISDICTION") key = "FORWARDED";
+    if (e.type === "REOPENED" && e.afterDispute) key = "REOPENED_AFTER_DISPUTE";
     let detail = e.reason ?? null;
     if (e.type === "REROUTED") {
       const moved = t("timeline.event.reroutedDetail", { from: categoryName(e.fromCategory), to: categoryName(e.toCategory) });
