@@ -77,7 +77,7 @@ function LocationPanel({ issue }) {
 }
 
 function AiPanel({ issue }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const categoryName = useCategoryName();
   const ai = issue.ai ?? {};
   return (
@@ -113,12 +113,23 @@ function AiPanel({ issue }) {
           )}
         </dl>
       )}
+      {issue.device?.distanceFromPinM != null && (
+        <div className="mt-3">
+          <p className="flex items-center gap-1.5 text-eyebrow uppercase text-charcoal-900">
+            <MapPin aria-hidden="true" className="size-4 text-teal-700" />
+            {t("admin.review.gapTitle")}
+          </p>
+          <p className="mt-1 text-body text-charcoal-900">
+            {t("admin.review.flagGpsGap", { distance: formatDistance(issue.device.distanceFromPinM, i18n.resolvedLanguage) })}
+          </p>
+        </div>
+      )}
     </section>
   );
 }
 
 function FlagsPanel({ issue }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const toast = useToast();
   const after = useAfterAction(issue.id);
   const [action, setAction] = useState(null); // { flag, kind: "clear" | "confirm" }
@@ -131,6 +142,11 @@ function FlagsPanel({ issue }) {
           <li key={f.id} className="rounded-control border border-stone-300 p-3">
             <FlagChip flag={f.type} />
             {f.reason && <p className="mt-2 break-words text-caption text-charcoal-900">{f.reason}</p>}
+            {f.type === "SUSPICIOUS" && issue.device?.distanceFromPinM != null && (
+              <p className="mt-1 text-caption font-semibold text-charcoal-900">
+                {t("admin.review.flagGpsGap", { distance: formatDistance(issue.device.distanceFromPinM, i18n.resolvedLanguage) })}
+              </p>
+            )}
             {f.confirmed && <p className="mt-1 text-caption font-semibold text-charcoal-900">{t("admin.review.flagConfirmed", { reason: f.confirmed.reason })}</p>}
             {REVIEWABLE.includes(f.type) && !f.confirmed && (
               <div className="mt-2 flex gap-2">

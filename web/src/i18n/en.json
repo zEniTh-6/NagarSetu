@@ -870,6 +870,8 @@
       "keepBody": "The dispute closes and the citizens who said \"not fixed\" see your reason.",
       "flags": "Flags",
       "flagsNote": "Flags never block the workflow. Clear one that doesn't apply, or confirm it as information.",
+      "gapTitle": "Location gap",
+      "flagGpsGap": "{{distance}} between the pin the citizen chose and the phone GPS.",
       "flagConfirmed": "Confirmed: {{reason}}",
       "clearFlag": "Clear",
       "confirmFlag": "Confirm",
