@@ -15,8 +15,8 @@ import { errorText } from "../../lib/errors.js";
 
 const PAGE = 20;
 
-// Home = public feed (design/stitch/citizen/home-feed). Only public reports (D-022). Not copied
-// from Stitch: search box, downvotes, share. The citizen's own reports live in My complaints.
+// Home = public feed (design/mockups/citizen/home-feed). Only public reports (D-022). Not copied
+// from the mockups: search box, downvotes, share. The citizen's own reports live in My complaints.
 export default function HomePage() {
   const { t, i18n } = useTranslation();
   const { user } = useMe();

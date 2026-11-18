@@ -1,8 +1,8 @@
-// Submit repair evidence (design/stitch/contractor/submit-evidence). In-app camera capture is
+// Submit repair evidence (design/mockups/contractor/submit-evidence). In-app camera capture is
 // preferred; the gallery is allowed but the submission is marked "from gallery" for the admin (a
 // signal only, D-027). The photo is resized in the browser; the capture time and phone GPS with its
 // accuracy are kept. One request ID per draft: a lost connection retries with the same ID, so the
-// server never creates two submissions. Not copied from Stitch: checklists, call button, "geofenced"
+// server never creates two submissions. Not copied from the mockups: checklists, call button, "geofenced"
 // claims, daily progress photos.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";

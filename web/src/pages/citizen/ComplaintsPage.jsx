@@ -11,7 +11,7 @@ import { ACTIVE_STATUSES, ENDED_STATUSES, useMine, useSupporting } from "../../c
 import { errorText } from "../../lib/errors.js";
 import { cx } from "../../lib/cx.js";
 
-// Tabs follow real statuses (no "Closed": brief + design/stitch/README.md conflict 7).
+// Tabs follow real statuses (no "Closed" tab: the brief has no such status).
 const TABS = [
   { key: "active", filter: (i) => ACTIVE_STATUSES.includes(i.status) },
   { key: "resolved", filter: (i) => i.status === "RESOLVED" },

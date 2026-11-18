@@ -2,7 +2,7 @@
 //   log    – print to the server console (development; the OTP shows up there)
 //   smtp   – send through SMTP_HOST (nodemailer)
 //   memory – keep in `outbox` (tests)
-// Email is used ONLY for the signup OTP and password reset links (see CLAUDE.md).
+// Email is used ONLY for the signup OTP and password reset links (see docs/brief.md).
 import nodemailer from "nodemailer";
 import { env } from "../config/env.js";
 

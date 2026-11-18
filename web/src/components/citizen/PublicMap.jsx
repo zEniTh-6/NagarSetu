@@ -1,4 +1,4 @@
-// Public map (design/stitch/citizen/map-view). Pins are APPROXIMATE (snapped by the server, D-025);
+// Public map (design/mockups/citizen/map-view). Pins are APPROXIMATE (snapped by the server, D-025);
 // pins on the same spot are one marker with a count. Reports the box whenever the map stops moving.
 // Kept separate so tests can replace it (jsdom can't render Leaflet).
 import { useEffect, useMemo } from "react";

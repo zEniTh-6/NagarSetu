@@ -1,4 +1,4 @@
-// Repair evidence review (design/stitch/admin/repair-evidence-review): original vs evidence, the
+// Repair evidence review (design/mockups/admin/repair-evidence-review): original vs evidence, the
 // contractor's GPS vs the issue point, timestamps, the AI repair check (a suggestion), and the
 // submission history. Approve → RESOLVED (only the admin can). Reject needs a reason for the contractor.
 import { lazy, Suspense, useState } from "react";

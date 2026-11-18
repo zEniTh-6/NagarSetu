@@ -1,4 +1,4 @@
-// Desktop admin frame (design/stitch/admin): left sidebar (Dashboard, Issues, Disputes, Contractors,
+// Desktop admin frame (design/mockups/admin): left sidebar (Dashboard, Issues, Disputes, Contractors,
 // Comments, Audit log) and a top bar with the department name, alerts, language switch and account.
 // Below lg the sidebar opens from a menu button.
 import { useEffect, useRef, useState } from "react";

@@ -1,5 +1,5 @@
-// My jobs (design/stitch/contractor/my-jobs): New / In progress / Submitted / Completed.
-// Only the contractor's own jobs (the server decides). Not copied from Stitch: SLA record, GPS
+// My jobs (design/mockups/contractor/my-jobs): New / In progress / Submitted / Completed.
+// Only the contractor's own jobs (the server decides). Not copied from the mockups: SLA record, GPS
 // "active" badge, ward filters, official-portal wording.
 import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";

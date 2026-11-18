@@ -13,7 +13,7 @@ import { ME_KEY } from "../../auth/session.js";
 import { errorText } from "../../lib/errors.js";
 import { newPasswordErrors } from "../../lib/passwords.js";
 
-// Opened from the emailed link: /reset-password?token=…  (no Stitch screen; follows forgot-password).
+// Opened from the emailed link: /reset-password?token=…  (no mockup; follows forgot-password).
 export default function ResetPasswordPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();

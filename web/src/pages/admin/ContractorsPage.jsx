@@ -1,7 +1,7 @@
-// Contractors (design/stitch/admin/contractors-list, invite-contractor, deactivate-contractor-modal).
+// Contractors (design/mockups/admin/contractors-list, invite-contractor, deactivate-contractor-modal).
 // Any admin can invite or deactivate (D-005). Invite: similar-contractor warning first, then a
 // one-time link shown once with its expiry. Deactivate: reason + the active jobs to reassign
-// (nothing happens to the jobs automatically). Not copied from Stitch: SMS/WhatsApp invites.
+// (nothing happens to the jobs automatically). Not copied from the mockups: SMS/WhatsApp invites.
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";

@@ -1,4 +1,4 @@
-// Disputes queue (design/stitch/admin/disputes-queue): resolved issues where a citizen said "not
+// Disputes queue (design/mockups/admin/disputes-queue): resolved issues where a citizen said "not
 // fixed". The admin reopens (→ ACKNOWLEDGED, follow-up work) or keeps it resolved; either way the
 // reason is shown to the citizens. Nothing happens automatically.
 import { useState } from "react";

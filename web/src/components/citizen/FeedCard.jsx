@@ -1,4 +1,4 @@
-// One public issue in the feed (design/stitch/citizen/home-feed). No reporter, no exact location:
+// One public issue in the feed (design/mockups/citizen/home-feed). No reporter, no exact location:
 // the area name (or "Approximate location"), the stripped public photo and the community counts.
 import { Link } from "react-router";
 import { MapPin, MessageSquare } from "lucide-react";

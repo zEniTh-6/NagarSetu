@@ -2,7 +2,7 @@
 
 Ideas and features that are **out of scope for the prototype**. They are written down
 here so they aren't lost. **Do not build anything on this list** without agreeing
-first (see CLAUDE.md, "Scope rules"). Source: [docs/brief.md](brief.md).
+first (see the scope section of the brief). Source: [docs/brief.md](brief.md).
 
 ## Features (from the brief's build order)
 
