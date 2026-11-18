@@ -1,4 +1,4 @@
-/* Tailwind 4: the theme lives in CSS (no tailwind.config.js). Tokens come from design/stitch/DESIGN.md. */
+/* Tailwind 4: the theme lives in CSS (no tailwind.config.js). Tokens come from design/DESIGN.md. */
 @import "tailwindcss";
 @import "./theme.css";
 

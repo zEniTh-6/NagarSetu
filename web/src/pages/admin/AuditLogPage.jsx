@@ -1,4 +1,4 @@
-// Audit log (design/stitch/admin/audit-log): read-only, department-scoped by the server (D-026).
+// Audit log (design/mockups/admin/audit-log): read-only, department-scoped by the server (D-026).
 // Who, when, what, why. Nothing here can be changed or deleted.
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";

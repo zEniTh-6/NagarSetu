@@ -1,4 +1,4 @@
-// Contractor frame (design/stitch/contractor): app bar and a bottom navigation on phones
+// Contractor frame (design/mockups/contractor): app bar and a bottom navigation on phones
 // (My jobs, Alerts, Profile); the same links sit in the app bar on wider screens.
 import { NavLink, Outlet } from "react-router";
 import { Bell, BriefcaseBusiness, UserRound } from "lucide-react";

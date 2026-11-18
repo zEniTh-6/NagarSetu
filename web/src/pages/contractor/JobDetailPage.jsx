@@ -1,4 +1,4 @@
-// Job detail (design/stitch/contractor/job-detail): the citizen's photo, description, exact location
+// Job detail (design/mockups/contractor/job-detail): the citizen's photo, description, exact location
 // with "Open in Google Maps", priority, deadline and the department's note. "Start work" is
 // confirmed. There is no resolve button: only an admin approving the evidence resolves an issue.
 import { lazy, Suspense, useState } from "react";

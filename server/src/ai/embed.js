@@ -1,4 +1,4 @@
-// The ONE place that turns text into an embedding (CLAUDE.md: `embed(text)` must be swappable).
+// The ONE place that turns text into an embedding (`embed(text)` must be swappable).
 // Model: Gemini gemini-embedding-001, multilingual, cut to 768 dimensions (D-011).
 // Shortened Gemini vectors are not unit length, so we normalise them: then cosine similarity
 // in pgvector (1 - (a <=> b)) behaves as expected.

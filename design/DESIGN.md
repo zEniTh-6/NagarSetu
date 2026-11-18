@@ -1,8 +1,8 @@
 # NagarSetu — DESIGN.md (Heritage Modern × Swiss Minimalism)
 
 Design tokens and rules for the NagarSetu responsive website. Source of truth for the Tailwind
-theme in `web/`. If the Stitch export differs, Stitch screens are the visual reference and this
-file is the token reference; keep them in sync.
+theme in `web/`. The screen mockups in `design/mockups/` are the visual reference; this file is
+the token reference.
 
 ## Brand
 - Name: NagarSetu (wordmark lowercase "nagarsetu"), caption "CIVIC INFRASTRUCTURE • SANGLI"

@@ -116,8 +116,8 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 
 ### D-009 — Email used for signup OTP and password reset only (2026-10-18)
 
-- CLAUDE.md and the brief said "email only for signup OTP"; forgot-password needs email too, so
-  both now say "signup OTP and password reset links". All other notifications stay in-app.
+- The brief said "email only for signup OTP"; forgot-password needs email too, so
+  it now says "signup OTP and password reset links". All other notifications stay in-app.
 
 ### D-010 — INVALID photos go straight back to the citizen (closes OD-3) (2026-10-18)
 
@@ -280,9 +280,9 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 
 ### D-021 — Web app foundation (2026-10-20)
 
-- **Tokens:** `design/stitch/DESIGN.md` is the token source (colours, type scale, 16 px cards /
-  10 px controls / pill radius). `DESIGN.stitch.md` has a different, Material-style token set; it is
-  only used through the Stitch screens as layout reference. Tailwind 4 keeps the theme in CSS
+- **Tokens:** `design/DESIGN.md` is the token source (colours, type scale, 16 px cards /
+  10 px controls / pill radius). The mockups use a different, Material-style token set; they are
+  only used as layout reference. Tailwind 4 keeps the theme in CSS
   (`web/src/styles/theme.css`); its default colour palette is switched off so only our tokens exist.
   The linked-duplicate status has no colour in DESIGN.md and uses the neutral `#5D6872`.
 - **Session:** the web app never handles the JWT. Vite proxies `/api` to the server so the
@@ -294,12 +294,12 @@ write the choice, the reason and the date, and move it under "Decisions taken".
   Unverified citizens can still log in; their home shows a "verify your email" banner. The full
   verify-before-reporting gate comes with the report screens.
 - **Password rules shown** are the server's only: at least 8 characters, at most 72 bytes. The
-  Stitch screens' uppercase/number/symbol rules are not used.
-- **Not copied from Stitch:** SMS/WhatsApp, "remember device", "reset via SMS/OTP", terms checkboxes,
-  ward selection at signup, helpline numbers and SMKC/official wording (see design/stitch/README.md).
+  mockups' uppercase/number/symbol rules are not used.
+- **Not copied from the mockups:** SMS/WhatsApp, "remember device", "reset via SMS/OTP", terms checkboxes,
+  ward selection at signup, helpline numbers and SMKC/official wording.
 - **Fonts and icons:** Inter and Noto Sans Devanagari bundled via `@fontsource`; Lucide line icons.
   The logo is a simple bridge mark, not a government emblem.
-- **Reset password screen** (`/reset-password?token=…`, the link the server emails) has no Stitch
+- **Reset password screen** (`/reset-password?token=…`, the link the server emails) has no mockup
   design; it follows the forgot-password layout.
 
 ### D-022 — Public feed and map show a report only after it passes a check (closes OD-1) (2026-10-20)
@@ -338,7 +338,7 @@ write the choice, the reason and the date, and move it under "Decisions taken".
 - **Category suggestion** is information only (D-017): no "change category" button.
 - **Notifications** are polled every 30 s while the page is visible; the text is written by the web
   app from the type and params, so it follows the user's language; admins' reasons are shown as written.
-- **Not copied from Stitch:** SMS/WhatsApp, offline sync, voice input, "auto-dispatched / fast
+- **Not copied from the mockups:** SMS/WhatsApp, offline sync, voice input, "auto-dispatched / fast
   track", automatic reopen, the "Closed" tab, "official portal" wording.
 
 ### D-024 — One selected style for choices (2026-10-20)
@@ -396,7 +396,7 @@ write the choice, the reason and the date, and move it under "Decisions taken".
   the "my reports" map were replaced (My complaints keeps them).
 - **Admin screens for hiding and replying come with the admin web app** (there is no admin issue
   page yet); for now these are API only.
-- **Not copied from Stitch:** downvotes, share, bookmarks, search box, view counts, comment likes,
+- **Not copied from the mockups:** downvotes, share, bookmarks, search box, view counts, comment likes,
   threaded replies, voice input, ward numbers, "metres from you".
 - **Not built (later admin phase):** a moderation queue and suspending abusive accounts (brief).
 
@@ -430,7 +430,7 @@ write the choice, the reason and the date, and move it under "Decisions taken".
   Community signal shows upvotes, distinct supporters and the share of accounts newer than 7 days.
 - **Every decision is confirmed** in a dialog that says what will happen; actions that need a
   reason can't be sent without one (at least 3 characters).
-- **Not copied from Stitch:** voice-to-text, SMS/WhatsApp invites, "cryptographic"/official-portal
+- **Not copied from the mockups:** voice-to-text, SMS/WhatsApp invites, "cryptographic"/official-portal
   wording, export/CSV, bulk actions, GIS layers, "SLA" countdowns.
 - **Contractor screens** are still a placeholder (next phase).
 
@@ -462,7 +462,7 @@ write the choice, the reason and the date, and move it under "Decisions taken".
   browser with capture time, GPS + accuracy, progress bar and the shared retry rule (same request ID;
   2, 4, 8, 15, 30 s); evidence status with the admin's reason and full history. Alerts use contractor
   wording and open the job.
-- **Not copied from Stitch:** SMS, daily progress photos, SLA record, quality checklists, call
+- **Not copied from the mockups:** SMS, daily progress photos, SLA record, quality checklists, call
   buttons, "GPS verified / geofenced" claims, official-portal wording.
 
 ## D-028 — Decision reasons are shown on the citizen's issue page (bug fix)

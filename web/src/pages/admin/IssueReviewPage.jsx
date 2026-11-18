@@ -1,5 +1,5 @@
-// Issue review (design/stitch/admin/issue-review). Everything an admin needs to decide, with AI
-// results clearly labelled as suggestions. Not copied from Stitch: voice-to-text, "cryptographic"
+// Issue review (design/mockups/admin/issue-review). Everything an admin needs to decide, with AI
+// results clearly labelled as suggestions. Not copied from the mockups: voice-to-text, "cryptographic"
 // wording, official-portal branding.
 import { lazy, Suspense, useState } from "react";
 import { Link, useParams } from "react-router";

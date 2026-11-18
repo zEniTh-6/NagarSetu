@@ -1,6 +1,6 @@
-// Comments on an issue (design/stitch/citizen/issue-detail, "Community feed"). Flat list, newest
+// Comments on an issue (design/mockups/citizen/issue-detail, "Community feed"). Flat list, newest
 // first; official replies highlighted; a report button on other people's comments (D-025).
-// Not copied from Stitch: comment likes, threaded replies, voice input.
+// Not copied from the mockups: comment likes, threaded replies, voice input.
 import { useState } from "react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { Flag, MessageSquare, Send } from "lucide-react";

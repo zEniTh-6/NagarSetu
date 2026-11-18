@@ -1,4 +1,4 @@
-// Frame for login and account screens (from design/stitch/shared/login*.html).
+// Frame for login and account screens (from design/mockups/shared/login*.png).
 // Mobile: compact header (or the hero panel on login), white form card, language switch, notice.
 // Desktop (lg+): Midnight Forest panel on the left, form on the right.
 import { Link } from "react-router";

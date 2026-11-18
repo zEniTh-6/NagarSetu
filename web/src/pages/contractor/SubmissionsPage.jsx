@@ -1,5 +1,5 @@
-// Submission status (design/stitch/contractor/submission-status): the latest evidence (Waiting /
-// Approved / Rework requested with the admin's reason) and the full history. Not copied from Stitch:
+// Submission status (design/mockups/contractor/submission-status): the latest evidence (Waiting /
+// Approved / Rework requested with the admin's reason) and the full history. Not copied from the mockups:
 // SMS receipts, "auto-dispatch".
 import { useNavigate, useParams } from "react-router";
 import { ArrowLeft, Camera, CircleCheck, Clock, Images, RotateCcw } from "lucide-react";

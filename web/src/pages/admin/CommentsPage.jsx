@@ -1,4 +1,4 @@
-// Comment moderation (design/stitch/admin/comment-moderation): reported comments on the department's
+// Comment moderation (design/mockups/admin/comment-moderation): reported comments on the department's
 // issues, hidden ones, and suspended citizens. Reports are signals; the admin hides (reason, audited)
 // and can suspend an abusive account (reason, audited) or reactivate it.
 import { useState } from "react";

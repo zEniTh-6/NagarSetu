@@ -62,7 +62,7 @@ function PinPreview({ id, full }) {
   );
 }
 
-// Map of public issues (D-022), approximate pins (D-025). Not copied from Stitch: search box, voice,
+// Map of public issues (D-022), approximate pins (D-025). Not copied from the mockups: search box, voice,
 // layers, "metres from you".
 export default function MapPage() {
   const { t, i18n } = useTranslation();
