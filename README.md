@@ -1,15 +1,14 @@
 # NagarSetu
 
-NagarSetu is our college project: a web app where citizens can report civic problems
+NagarSetu: a web app where citizens can report civic problems
 (potholes, garbage, broken streetlights) in the Sangli-Miraj-Kupwad area, the right
 municipal department reviews them, a contractor fixes them, and the fix is checked before
 the issue is closed.
 
-> This is a student project and a prototype. It is **not** an official government platform.
 
 ## How it works
 
-1. A citizen signs up (email OTP), takes a photo of the problem, drops a pin on the map and
+1. A citizen signs up, takes a photo of the problem, drops a pin on the map and
    writes a short description in English, Hindi or Marathi.
 2. The photo is checked in the background with Gemini (is it really a pothole / garbage /
    streetlight issue?). The app also looks for similar reports nearby so the same problem
