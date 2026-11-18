@@ -121,29 +121,3 @@ on port 4000 with `WEB_ORIGIN=http://localhost:5173` in `.env`.
 
 After logging in, each role lands on its own area: `/citizen`, `/admin` or `/contractor`.
 
-## Tests
-
-```powershell
-cd server
-npm test        # uses a separate database (TEST_DATABASE_URL, name must end in _test)
-
-cd ..\web
-npm test        # no server or database needed
-```
-
-The server tests create the test database by themselves on the first run and never touch the dev data.
-
-## More documentation
-
-- [docs/brief.md](docs/brief.md): the original problem statement and requirements
-- [docs/decisions.md](docs/decisions.md): design decisions we made along the way and why
-- [docs/testing-guide.md](docs/testing-guide.md): manual test steps for every flow, plus troubleshooting
-- [docs/future-scope.md](docs/future-scope.md): things we left out of the prototype
-
-## Screenshots
-
-<!-- Add screenshots of the running app here -->
-
-## Team
-
-<!-- Add team member names, roll numbers and guide name here -->
